@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Diagnostics - Quick Laundry</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #6366f1;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        .test-section h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #94a3b8;
+        }
+        button {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 12px;
+            margin-bottom: 12px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        .result {
+            margin-top: 16px;
+            padding: 16px;
+            background: #0f172a;
+            border-radius: 8px;
+            border-left: 4px solid #6366f1;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { border-left-color: #22c55e; color: #86efac; }
+        .error { border-left-color: #ef4444; color: #fca5a5; }
+        .info { border-left-color: #3b82f6; color: #93c5fd; }
+        .token-display {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
+            font-size: 12px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Quick Laundry API Diagnostics</h1>
+
+    <div class="test-section">
+        <h2>1️⃣ Check Authentication Token</h2>
+        <button onclick="checkToken()">Check Token</button>
+        <button onclick="clearToken()">Clear Token</button>
+        <div id="tokenResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2️⃣ Verify Admin Authentication</h2>
+        <button onclick="verifyAuth()">Verify Auth</button>
+        <div id="authResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3️⃣ Test Users API Endpoint</h2>
+        <button onclick="testUsersAPI()">Test GET /api/admin/users/list</button>
+        <button onclick="testUsersAPIWithParams()">Test with Filters</button>
+        <div id="usersResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4️⃣ Test Database Connection</h2>
+        <button onclick="testHealth()">Check Health</button>
+        <div id="healthResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5️⃣ Check Flask Routes</h2>
+        <button onclick="checkRoutes()">List Routes</button>
+        <div id="routesResult"></div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        function displayResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        function getToken() {
+            return localStorage.getItem('adminToken') || localStorage.getItem('admin_token');
+        }
+
+        async function checkToken() {
+            const token = getToken();
+            if (token) {
+                displayResult('tokenResult', `✅ Token Found:\n\n${token}\n\nToken Length: ${token.length} characters`, 'success');
+            } else {
+                displayResult('tokenResult', '❌ No token found!\n\nPlease login first at /admin', 'error');
+            }
+        }
+
+        function clearToken() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('admin_token');
+            displayResult('tokenResult', '✅ Token cleared successfully!', 'success');
+        }
+
+        async function verifyAuth() {
+            const token = getToken();
+            if (!token) {
+                displayResult('authResult', '❌ No token found! Please login first.', 'error');
+                return;
+            }
+
+            try {
+                displayResult('authResult', '⏳ Verifying authentication...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/admin/auth/verify`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResult('authResult', 
+                        `✅ Authentication Successful!\n\n` +
+                        `Admin: ${data.data.admin.fullName}\n` +
+                        `Email: ${data.data.admin.email}\n` +
+                        `Role: ${data.data.admin.adminRole}\n` +
+                        `User ID: ${data.data.admin.user_id}\n\n` +
+                        `Full Response:\n${JSON.stringify(data, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    displayResult('authResult', 
+                        `❌ Authentication Failed!\n\n${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                displayResult('authResult', 
+                    `❌ Error:\n\n${error.message}\n\n${error.stack}`,
+                    'error'
+                );
+            }
+        }
+
+        async function testUsersAPI() {
+            const token = getToken();
+            if (!token) {
+                displayResult('usersResult', '❌ No token found! Please login first.', 'error');
+                return;
+            }
+
+            try {
+                displayResult('usersResult', '⏳ Testing users API...', 'info');
+                
+                const url = `${API_BASE}/api/admin/users/list?page=1&limit=5&type=customer`;
+                console.log('Testing URL:', url);
+                
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.success) {
+                    displayResult('usersResult', 
+                        `✅ API Working!\n\n` +
+                        `Total Users: ${data.data.pagination.total}\n` +
+                        `Page: ${data.data.pagination.page}\n` +
+                        `Limit: ${data.data.pagination.limit}\n\n` +
+                        `Users Returned: ${data.data.users.length}\n\n` +
+                        `Full Response:\n${JSON.stringify(data, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    displayResult('usersResult', 
+                        `❌ API Error!\n\n${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                displayResult('usersResult', 
+                    `❌ Error:\n\n${error.message}\n\n${error.stack}`,
+                    'error'
+                );
+            }
+        }
+
+        async function testUsersAPIWithParams() {
+            const token = getToken();
+            if (!token) {
+                displayResult('usersResult', '❌ No token found! Please login first.', 'error');
+                return;
+            }
+
+            try {
+                displayResult('usersResult', '⏳ Testing with filters...', 'info');
+                
+                const params = new URLSearchParams({
+                    page: 1,
+                    limit: 10,
+                    search: '',
+                    status: 'active',
+                    type: 'customer'
+                });
+
+                const url = `${API_BASE}/api/admin/users/list?${params}`;
+                console.log('Testing URL:', url);
+                
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResult('usersResult', 
+                        `✅ Filtered API Working!\n\n` +
+                        `Filter: Active Customers\n` +
+                        `Total Found: ${data.data.pagination.total}\n\n` +
+                        `Sample Users:\n${JSON.stringify(data.data.users.slice(0, 3), null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    displayResult('usersResult', 
+                        `❌ API Error!\n\n${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                displayResult('usersResult', 
+                    `❌ Error:\n\n${error.message}\n\n${error.stack}`,
+                    'error'
+                );
+            }
+        }
+
+        async function testHealth() {
+            try {
+                displayResult('healthResult', '⏳ Checking health...', 'info');
+                
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResult('healthResult', 
+                        `✅ System Healthy!\n\n` +
+                        `Database: ${data.data.database}\n` +
+                        `Services Tables: ${data.data.services_tables}\n` +
+                        `Admin Panel: ${data.data.admin_panel}\n\n` +
+                        `Full Response:\n${JSON.stringify(data, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    displayResult('healthResult', 
+                        `⚠️ System Unhealthy!\n\n${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                displayResult('healthResult', 
+                    `❌ Error:\n\n${error.message}`,
+                    'error'
+                );
+            }
+        }
+
+        async function checkRoutes() {
+            try {
+                displayResult('routesResult', '⏳ Checking routes...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/docs`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const adminRoutes = Object.keys(data.data.endpoints)
+                        .filter(key => key.includes('admin'))
+                        .map(key => `${key}: ${JSON.stringify(data.data.endpoints[key], null, 2)}`)
+                        .join('\n\n');
+
+                    displayResult('routesResult', 
+                        `✅ Routes Found!\n\n` +
+                        `Admin Routes:\n\n${adminRoutes}`,
+                        'success'
+                    );
+                } else {
+                    displayResult('routesResult', 
+                        `❌ Failed to get routes!\n\n${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                displayResult('routesResult', 
+                    `❌ Error:\n\n${error.message}`,
+                    'error'
+                );
+            }
+        }
+
+        // Auto-check token on load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkToken();
+        });
+    </script>
+</body>
+</html>

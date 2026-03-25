@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews Management - Quick Laundry Admin</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* ========== MAIN CONTENT ========== */        /* ── Sidebar Container ── */
+        #sidebar-container {
+            position: fixed;
+            left: 0; top: 0;
+            height: 100vh; width: 280px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        /* Force Reviews active */
+        #sidebar-container a[href="/admin/reviews"],
+        .sidebar a[href="/admin/reviews"] {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 32px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Header */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            color: #22c55e;
+        }
+
+        /* Filters */
+        .filters-section {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .filter-input, .filter-select {
+            background: #0f172a;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: #1e293b;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.1);
+            color: #94a3b8;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.2);
+        }
+
+        /* Reviews Table */
+        .reviews-container {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .bulk-action-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: none;
+        }
+
+        .bulk-action-btn.show {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-approve {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-reject {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .reviews-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #0f172a;
+        }
+
+        th {
+            padding: 16px 24px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 16px 24px;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #6366f1;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .review-content {
+            max-width: 300px;
+        }
+
+        .review-text {
+            color: #cbd5e1;
+            font-size: 13px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .review-service {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 4px 10px;
+            background: rgba(99, 102, 241, 0.1);
+            color: #a5b4fc;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 4px;
+            color: #fbbf24;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-approved {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .badge-pending {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .badge-featured {
+            background: rgba(139, 92, 246, 0.1);
+            color: #a78bfa;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .btn-view {
+            background: rgba(99, 102, 241, 0.1);
+            color: #a5b4fc;
+        }
+
+        .btn-view:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-feature {
+            background: rgba(139, 92, 246, 0.1);
+            color: #a78bfa;
+        }
+
+        .btn-feature:hover {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        .btn-approve-single {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .btn-approve-single:hover {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-reject-single {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .btn-reject-single:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .pagination-info {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: #6366f1;
+            color: #a5b4fc;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(148, 163, 184, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .review-detail-section {
+            margin-bottom: 24px;
+        }
+
+        .review-detail-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .review-detail-value {
+            color: #e2e8f0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .likes-count {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ef4444;
+            font-size: 14px;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(148, 163, 184, 0.2);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            color: #334155;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* Mobile Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            z-index: 999;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+.main-content {
+                margin-left: 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+.main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-row {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .reviews-table {
+                overflow-x: scroll;
+            }
+
+            .pagination {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar-container"></div>
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Reviews Management</h1>
+            <p class="page-subtitle">Manage and moderate customer reviews</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Total Reviews</span>
+                    <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="totalReviews">0</div>
+                <div class="stat-change">All time</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Approved</span>
+                    <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="approvedReviews">0</div>
+                <div class="stat-change" id="approvedPercentage">0%</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Pending</span>
+                    <div class="stat-icon" style="background: rgba(251, 191, 36, 0.1); color: #fbbf24;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="pendingReviews">0</div>
+                <div class="stat-change">Needs review</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Average Rating</span>
+                    <div class="stat-icon" style="background: rgba(251, 191, 36, 0.1); color: #fbbf24;">
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="averageRating">0.0</div>
+                <div class="stat-change">Out of 5.0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">Featured</span>
+                    <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #a78bfa;">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                </div>
+                <div class="stat-value" id="featuredReviews">0</div>
+                <div class="stat-change">Showcased</div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label class="filter-label">Search</label>
+                    <input type="text" class="filter-input" id="searchInput" placeholder="Search reviews, users...">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="approved">Approved</option>
+                        <option value="pending">Pending</option>
+                        <option value="featured">Featured</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Rating</label>
+                    <select class="filter-select" id="ratingFilter">
+                        <option value="">All Ratings</option>
+                        <option value="5">5 Stars</option>
+                        <option value="4">4 Stars</option>
+                        <option value="3">3 Stars</option>
+                        <option value="2">2 Stars</option>
+                        <option value="1">1 Star</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Sort By</label>
+                    <select class="filter-select" id="sortFilter">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="rating_high">Highest Rating</option>
+                        <option value="rating_low">Lowest Rating</option>
+                        <option value="likes">Most Liked</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn btn-primary" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i>
+                    Apply Filters
+                </button>
+                <button class="btn btn-secondary" onclick="resetFilters()">
+                    <i class="fas fa-redo"></i>
+                    Reset
+                </button>
+            </div>
+        </div>
+
+        <!-- Reviews Table -->
+        <div class="reviews-container">
+            <div class="table-header">
+                <div>
+                    <h3 class="table-title">All Reviews</h3>
+                </div>
+                <div class="bulk-actions">
+                    <span id="selectedCount" style="color: #94a3b8; font-size: 14px;"></span>
+                    <button class="bulk-action-btn btn-approve" id="bulkApproveBtn" onclick="bulkAction('approve')">
+                        <i class="fas fa-check"></i>
+                        Approve
+                    </button>
+                    <button class="bulk-action-btn btn-reject" id="bulkRejectBtn" onclick="bulkAction('reject')">
+                        <i class="fas fa-times"></i>
+                        Reject
+                    </button>
+                    <button class="bulk-action-btn btn-delete" id="bulkDeleteBtn" onclick="bulkAction('delete')">
+                        <i class="fas fa-trash"></i>
+                        Delete
+                    </button>
+                </div>
+            </div>
+
+            <div id="reviewsTableContent">
+                <!-- Table will be loaded here -->
+            </div>
+
+            <div class="pagination" id="paginationContainer">
+                <!-- Pagination will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Review Detail Modal -->
+    <div class="modal" id="reviewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Review Details</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Review details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // =====================================================
+        // SIDEBAR COMPONENT LOADER
+        // =====================================================
+        async function loadSidebar() {
+            const paths = [
+                '/static/admin/templates/admin-sidebar.html',
+                '/static/admin/admin-sidebar.html',
+                '/admin-sidebar.html'
+            ];
+            for (const path of paths) {
+                try {
+                    const res = await fetch(path);
+                    if (!res.ok) continue;
+                    const html = await res.text();
+                    const container = document.getElementById('sidebar-container');
+                    container.innerHTML = html;
+                    container.querySelectorAll('script').forEach(function(oldScript) {
+                        const newScript = document.createElement('script');
+                        newScript.textContent = oldScript.textContent;
+                        document.head.appendChild(newScript);
+                        document.head.removeChild(newScript);
+                    });
+                    console.log('✅ Sidebar loaded and scripts executed:', path);
+                    return;
+                } catch (e) { continue; }
+            }
+            console.error('❌ Sidebar could not be loaded from any path');
+        }
+        // =====================================================
+
+        const API_BASE = window.location.origin;
+        let currentPage = 1;
+        let totalPages = 1;
+        let selectedReviews = new Set();
+        let allReviews = [];
+
+        // Get token
+        function getToken() {
+            return localStorage.getItem('adminToken') || localStorage.getItem('admin_token');
+        }
+
+        // Toggle mobile menu
+
+        // Mobile menu outside click — handled by admin-sidebar.html component
+
+        // Logout — handled by admin-sidebar.html via window.handleLogout
+        window.handleLogout = async function() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    const token = getToken();
+                    await fetch(`${API_BASE}/api/admin/auth/logout`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('admin_token');
+                window.location.href = '/admin';
+            }
+        };
+
+        // Load reviews
+        async function loadReviews(page = 1) {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/admin';
+                return;
+            }
+
+            try {
+                const search = document.getElementById('searchInput').value;
+                const status = document.getElementById('statusFilter').value;
+                const rating = document.getElementById('ratingFilter').value;
+                const sort = document.getElementById('sortFilter').value;
+
+                const params = new URLSearchParams({
+                    page: page,
+                    limit: 10,
+                    search: search,
+                    status: status,
+                    rating: rating,
+                    sort: sort
+                });
+
+                document.getElementById('reviewsTableContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+                const response = await fetch(`${API_BASE}/api/admin/reviews/list?${params}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    allReviews = data.data.reviews;
+                    currentPage = data.data.pagination.page;
+                    totalPages = data.data.pagination.pages;
+                    
+                    renderReviewsTable(data.data.reviews);
+                    renderPagination(data.data.pagination);
+                    updateStatistics(data.data.statistics);
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+                document.getElementById('reviewsTableContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="empty-title">Error loading reviews</div>
+                        <div class="empty-text">${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Render reviews table
+        function renderReviewsTable(reviews) {
+            if (reviews.length === 0) {
+                document.getElementById('reviewsTableContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-star"></i></div>
+                        <div class="empty-title">No reviews found</div>
+                        <div class="empty-text">Try adjusting your filters</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = `
+                <div class="reviews-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">
+                                    <input type="checkbox" class="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>User</th>
+                                <th>Review</th>
+                                <th>Rating</th>
+                                <th>Likes</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${reviews.map(review => `
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="checkbox review-checkbox" 
+                                               data-id="${review.review_id}" 
+                                               onchange="toggleReviewSelect(${review.review_id})">
+                                    </td>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                ${review.profile_picture ? 
+                                                    `<img src="${review.profile_picture}" alt="${review.user_name}">` :
+                                                    review.user_name.charAt(0).toUpperCase()
+                                                }
+                                            </div>
+                                            <div class="user-details">
+                                                <div class="user-name">${review.user_name || 'Unknown'}</div>
+                                                <div class="user-email">${review.user_email || 'N/A'}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="review-content">
+                            <div class="review-text">${review.review_text}</div>
+                                            ${review.service_type ? `<span class="review-service">${review.service_type}</span>` : ''}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="rating-stars">
+                                            ${generateStars(review.rating)}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 6px; color: #ef4444;">
+                                            <i class="fas fa-heart"></i>
+                                            <span>${review.like_count || 0}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                                            <span class="badge ${review.is_approved ? 'badge-approved' : 'badge-pending'}">
+                                                ${review.is_approved ? 'Approved' : 'Pending'}
+                                            </span>
+                                            ${review.is_featured ? '<span class="badge badge-featured">Featured</span>' : ''}
+                                        </div>
+                                    </td>
+                                    <td style="color: #94a3b8; font-size: 13px;">
+                                        ${formatDate(review.created_at)}
+                                    </td>
+                                    <td>
+                                        <div class="actions-cell">
+                                            <button class="action-btn btn-view" onclick="viewReview(${review.review_id})" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn btn-feature" onclick="toggleFeature(${review.review_id})" title="Toggle Feature">
+                                                <i class="fas fa-gem"></i>
+                                            </button>
+                                            ${review.is_approved ? 
+                                                `<button class="action-btn btn-reject-single" onclick="rejectReview(${review.review_id})" title="Reject">
+                                                    <i class="fas fa-times"></i>
+                                                </button>` :
+                                                `<button class="action-btn btn-approve-single" onclick="approveReview(${review.review_id})" title="Approve">
+                                                    <i class="fas fa-check"></i>
+                                                </button>`
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('reviewsTableContent').innerHTML = html;
+        }
+
+        // Generate stars HTML
+        function generateStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else {
+                    stars += '<i class="far fa-star" style="color: #334155;"></i>';
+                }
+            }
+            return stars;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Yesterday';
+            if (days < 7) return `${days} days ago`;
+            
+            return date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric' 
+            });
+        }
+
+        // Render pagination
+        function renderPagination(pagination) {
+            const { page, total, pages } = pagination;
+            
+            let html = `
+                <div class="pagination-info">
+                    Showing ${((page - 1) * 10) + 1} to ${Math.min(page * 10, total)} of ${total} reviews
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-btn" onclick="loadReviews(${page - 1})" ${page === 1 ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+            `;
+
+            // Page numbers
+            for (let i = Math.max(1, page - 2); i <= Math.min(pages, page + 2); i++) {
+                html += `
+                    <button class="page-btn ${i === page ? 'active' : ''}" onclick="loadReviews(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+
+            html += `
+                    <button class="page-btn" onclick="loadReviews(${page + 1})" ${page === pages ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('paginationContainer').innerHTML = html;
+        }
+
+        // Update statistics - FIXED VERSION
+        function updateStatistics(stats) {
+            document.getElementById('totalReviews').textContent = stats.total_reviews || 0;
+            document.getElementById('approvedReviews').textContent = stats.approved_count || 0;
+            document.getElementById('pendingReviews').textContent = stats.pending_count || 0;
+            document.getElementById('featuredReviews').textContent = stats.featured_count || 0;
+            
+            // FIX: Convert to number first before calling toFixed
+            const avgRating = parseFloat(stats.average_rating) || 0;
+            document.getElementById('averageRating').textContent = avgRating.toFixed(1);
+            
+            const approvedPercentage = stats.total_reviews > 0 ? 
+                ((stats.approved_count / stats.total_reviews) * 100).toFixed(0) : 0;
+            document.getElementById('approvedPercentage').textContent = `${approvedPercentage}% of total`;
+
+            // Update badge in sidebar
+            const badge = document.getElementById('pendingReviewsBadge');
+            if (badge) badge.textContent = stats.pending_count || 0;
+            if (typeof window.updateSidebarBadges === 'function') {
+                window.updateSidebarBadges(0, stats.pending_count || 0);
+            }
+        }
+
+        // Toggle select all
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.review-checkbox');
+            
+            selectedReviews.clear();
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+                if (selectAll.checked) {
+                    selectedReviews.add(parseInt(checkbox.dataset.id));
+                }
+            });
+            
+            updateBulkActions();
+        }
+
+        // Toggle review select
+        function toggleReviewSelect(reviewId) {
+            if (selectedReviews.has(reviewId)) {
+                selectedReviews.delete(reviewId);
+            } else {
+                selectedReviews.add(reviewId);
+            }
+            updateBulkActions();
+        }
+
+        // Update bulk actions
+        function updateBulkActions() {
+            const count = selectedReviews.size;
+            const selectedCount = document.getElementById('selectedCount');
+            const bulkApproveBtn = document.getElementById('bulkApproveBtn');
+            const bulkRejectBtn = document.getElementById('bulkRejectBtn');
+            const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+
+            if (count > 0) {
+                selectedCount.textContent = `${count} selected`;
+                bulkApproveBtn.classList.add('show');
+                bulkRejectBtn.classList.add('show');
+                bulkDeleteBtn.classList.add('show');
+            } else {
+                selectedCount.textContent = '';
+                bulkApproveBtn.classList.remove('show');
+                bulkRejectBtn.classList.remove('show');
+                bulkDeleteBtn.classList.remove('show');
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            selectedReviews.clear();
+            loadReviews(1);
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('ratingFilter').value = '';
+            document.getElementById('sortFilter').value = 'newest';
+            selectedReviews.clear();
+            loadReviews(1);
+        }
+
+        // View review
+        async function viewReview(reviewId) {
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/reviews/${reviewId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showReviewModal(data.data);
+                } else {
+                    alert('Error loading review details');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading review details');
+            }
+        }
+
+        // Show review modal
+        function showReviewModal(review) {
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="review-detail-section">
+                    <div class="review-detail-label">User Information</div>
+                    <div class="review-detail-value">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <div class="user-avatar">
+                                ${review.profile_picture ? 
+                                    `<img src="${review.profile_picture}" alt="${review.user_name}">` :
+                                    review.user_name.charAt(0).toUpperCase()
+                                }
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: #fff;">${review.user_name || 'Unknown'}</div>
+                                <div style="font-size: 13px; color: #64748b;">${review.user_email || 'N/A'}</div>
+                                <div style="font-size: 13px; color: #64748b;">${review.user_phone || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-detail-section">
+                    <div class="review-detail-label">Rating</div>
+                    <div class="review-detail-value">
+                        <div class="rating-stars" style="font-size: 24px;">
+                            ${generateStars(review.rating)}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-detail-section">
+                    <div class="review-detail-label">Review Text</div>
+                    <div class="review-detail-value" style="line-height: 1.6;">
+                        ${review.review_text}
+                    </div>
+                </div>
+
+                ${review.service_type ? `
+                    <div class="review-detail-section">
+                        <div class="review-detail-label">Service Type</div>
+                        <div class="review-detail-value">
+                            <span class="review-service">${review.service_type}</span>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div class="review-detail-section">
+                    <div class="review-detail-label">Likes</div>
+                    <div class="review-detail-value">
+                        <div class="likes-count">
+                            <i class="fas fa-heart"></i>
+                            <span>${review.like_count || 0} people liked this review</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-detail-section">
+                    <div class="review-detail-label">Status</div>
+                    <div class="review-detail-value">
+                        <div style="display: flex; gap: 8px;">
+                            <span class="badge ${review.is_approved ? 'badge-approved' : 'badge-pending'}">
+                                ${review.is_approved ? 'Approved' : 'Pending'}
+                            </span>
+                            ${review.is_featured ? '<span class="badge badge-featured">Featured</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-detail-section">
+                    <div class="review-detail-label">Dates</div>
+                    <div class="review-detail-value">
+                        <div style="font-size: 13px; color: #94a3b8;">
+                            <div>Created: ${new Date(review.created_at).toLocaleString()}</div>
+                            <div>Updated: ${new Date(review.updated_at).toLocaleString()}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    ${!review.is_approved ? 
+                        `<button class="btn btn-primary" onclick="approveReview(${review.review_id}); closeModal();">
+                            <i class="fas fa-check"></i>
+                            Approve
+                        </button>` :
+                        `<button class="btn btn-secondary" onclick="rejectReview(${review.review_id}); closeModal();">
+                            <i class="fas fa-times"></i>
+                            Reject
+                        </button>`
+                    }
+                    <button class="btn btn-secondary" onclick="toggleFeature(${review.review_id}); closeModal();">
+                        <i class="fas fa-gem"></i>
+                        ${review.is_featured ? 'Unfeature' : 'Feature'}
+                    </button>
+                    <button class="btn btn-secondary" onclick="if(confirm('Delete this review?')) { deleteReview(${review.review_id}); closeModal(); }" style="margin-left: auto;">
+                        <i class="fas fa-trash"></i>
+                        Delete
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('reviewModal').classList.add('show');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('reviewModal').classList.remove('show');
+        }
+
+        // Approve review
+        async function approveReview(reviewId) {
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/reviews/${reviewId}/approve`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadReviews(currentPage);
+                } else {
+                    alert('Error approving review');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error approving review');
+            }
+        }
+
+        // Reject review
+        async function rejectReview(reviewId) {
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/reviews/${reviewId}/reject`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadReviews(currentPage);
+                } else {
+                    alert('Error rejecting review');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error rejecting review');
+            }
+        }
+
+        // Toggle feature
+        async function toggleFeature(reviewId) {
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/reviews/${reviewId}/feature`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadReviews(currentPage);
+                } else {
+                    alert('Error updating feature status');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error updating feature status');
+            }
+        }
+
+        // Delete review
+        async function deleteReview(reviewId) {
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/reviews/${reviewId}/delete`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadReviews(currentPage);
+                } else {
+                    alert('Error deleting review');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error deleting review');
+            }
+        }
+
+        // Bulk action
+        async function bulkAction(action) {
+            if (selectedReviews.size === 0) return;
+
+            const actionText = action === 'delete' ? 'delete' : action;
+            if (!confirm(`Are you sure you want to ${actionText} ${selectedReviews.size} review(s)?`)) {
+                return;
+            }
+
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/reviews/bulk-action`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: action,
+                        review_ids: Array.from(selectedReviews)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    selectedReviews.clear();
+                    loadReviews(currentPage);
+                    alert(data.message);
+                } else {
+                    alert('Error performing bulk action');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error performing bulk action');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadSidebar();
+            loadReviews(1);
+
+            // Add enter key support for search
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    applyFilters();
+                }
+            });
+
+            // Close modal on background click
+            document.getElementById('reviewModal').addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

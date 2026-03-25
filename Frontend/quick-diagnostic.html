@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Diagnostic - Steam Press</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Steam Press Services - Quick Diagnostic</h1>
+        
+        <div class="test-section">
+            <h3>Test 1: Check Backend Connection</h3>
+            <button onclick="testBackend()">🔌 Test Backend</button>
+            <div id="backendStatus" class="status pending">Click button to test...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: Load Services</h3>
+            <button onclick="loadServices()">📡 Load Services</button>
+            <div id="servicesStatus" class="status pending">Click button to test...</div>
+            <div id="servicesList"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Direct API Call</h3>
+            <p>Open this URL in a new tab:</p>
+            <a href="http://127.0.0.1:5000/api/services/category/4" target="_blank">
+                <code>http://127.0.0.1:5000/api/services/category/4</code>
+            </a>
+            <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                If this opens and shows JSON data, your backend is working!
+            </p>
+        </div>
+
+        <div class="test-section">
+            <h3>Console Output</h3>
+            <p>Check your browser console (F12) for detailed logs</p>
+            <pre id="consoleOutput">Waiting for tests...</pre>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:5000';
+        const STEAM_PRESS_CATEGORY_ID = 4;
+        let logOutput = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            const logMessage = `[${timestamp}] ${prefix} ${message}`;
+            console.log(logMessage);
+            logOutput.push(logMessage);
+            document.getElementById('consoleOutput').textContent = logOutput.join('\n');
+        }
+
+        async function testBackend() {
+            const statusDiv = document.getElementById('backendStatus');
+            statusDiv.className = 'status pending';
+            statusDiv.textContent = '⏳ Testing backend connection...';
+            
+            log('Testing backend at: ' + API_BASE_URL);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/services/category/${STEAM_PRESS_CATEGORY_ID}`);
+                log(`Response status: ${response.status}`);
+                
+                if (response.ok) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = '✅ Backend is online and responding!';
+                    log('Backend connection successful!', 'success');
+                    return true;
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = `❌ Backend error: ${response.status} ${response.statusText}`;
+                    log(`Backend returned error: ${response.status}`, 'error');
+                    return false;
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Cannot connect to backend: ${error.message}`;
+                log('Connection failed: ' + error.message, 'error');
+                log('Make sure Flask server is running: python app.py', 'error');
+                return false;
+            }
+        }
+
+        async function loadServices() {
+            const statusDiv = document.getElementById('servicesStatus');
+            const listDiv = document.getElementById('servicesList');
+            
+            statusDiv.className = 'status pending';
+            statusDiv.textContent = '⏳ Loading services...';
+            listDiv.innerHTML = '';
+            
+            log('Loading services from API...');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/services/category/${STEAM_PRESS_CATEGORY_ID}`);
+                const data = await response.json();
+                
+                log('API Response received');
+                log('Success: ' + data.success);
+                log('Data: ' + JSON.stringify(data, null, 2));
+
+                if (data.success && data.data && data.data.services) {
+                    const services = data.data.services;
+                    
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = `✅ Successfully loaded ${services.length} services!`;
+                    log(`Loaded ${services.length} services`, 'success');
+                    
+                    listDiv.innerHTML = '<h4>Available Services:</h4>';
+                    const ul = document.createElement('ul');
+                    services.forEach((service, index) => {
+                        const li = document.createElement('li');
+                        li.textContent = `${service.name} - ₹${service.price} ${service.unit}`;
+                        ul.appendChild(li);
+                        log(`  ${index + 1}. ${service.name} - ₹${service.price} ${service.unit}`);
+                    });
+                    listDiv.appendChild(ul);
+                    
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = '❌ Invalid response format from API';
+                    log('Invalid response format', 'error');
+                    log('Response data: ' + JSON.stringify(data), 'error');
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = `❌ Error: ${error.message}`;
+                log('Error loading services: ' + error.message, 'error');
+            }
+        }
+
+        // Auto-run tests after 1 second
+        setTimeout(() => {
+            log('Starting automatic tests...');
+            testBackend().then(success => {
+                if (success) {
+                    setTimeout(() => loadServices(), 1000);
+                }
+            });
+        }, 1000);
+    </script>
+</body>
+</html>

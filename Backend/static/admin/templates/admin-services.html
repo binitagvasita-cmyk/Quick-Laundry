@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Services Management - Quick Laundry Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Highlight active sidebar link */
+      #sidebar-container a[href="/admin/services"],
+      .sidebar a[href="/admin/services"] {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+        color: #fff !important;
+      }
+
+      /* ===== MAIN ===== */
+      .main-content {
+        margin-left: 280px;
+        padding: 32px;
+        flex: 1;
+        width: calc(100% - 280px);
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 32px;
+      }
+      .page-header-left h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #f1f5f9;
+      }
+      .page-header-left p {
+        color: #64748b;
+        font-size: 14px;
+        margin-top: 4px;
+      }
+
+      .btn-primary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      /* ===== STATS ===== */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .stat-card {
+        background: #1e293b;
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        border-radius: 14px;
+        padding: 24px;
+        text-align: center;
+      }
+      .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        color: #f1f5f9;
+        line-height: 1;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* ===== FILTERS ===== */
+      .filters-bar {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .search-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #1e293b;
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 10px;
+        padding: 11px 16px;
+        flex: 1;
+        min-width: 220px;
+      }
+      .search-box i {
+        color: #64748b;
+        font-size: 14px;
+      }
+      .search-box input {
+        background: none;
+        border: none;
+        outline: none;
+        color: #e2e8f0;
+        font-size: 14px;
+        width: 100%;
+      }
+      .search-box input::placeholder {
+        color: #475569;
+      }
+      .filter-select {
+        background: #1e293b;
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 10px;
+        padding: 11px 16px;
+        color: #e2e8f0;
+        font-size: 14px;
+        cursor: pointer;
+        outline: none;
+        min-width: 150px;
+      }
+      .filter-select option {
+        background: #1e293b;
+      }
+
+      /* ===== TABLE CARD ===== */
+      .table-card {
+        background: #1e293b;
+        border: 1px solid rgba(148, 163, 184, 0.1);
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+      }
+      .table-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+      }
+      .table-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .table-count {
+        font-size: 13px;
+        color: #64748b;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead th {
+        background: rgba(15, 23, 42, 0.6);
+        padding: 12px 20px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748b;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+      }
+      tbody tr {
+        border-bottom: 1px solid rgba(148, 163, 184, 0.06);
+        transition: background 0.15s;
+      }
+      tbody tr:hover {
+        background: rgba(99, 102, 241, 0.04);
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      td {
+        padding: 15px 20px;
+        font-size: 14px;
+        vertical-align: middle;
+      }
+
+      .service-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .service-icon-cell {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        color: white;
+        flex-shrink: 0;
+      }
+      .service-name {
+        font-weight: 600;
+        color: #f1f5f9;
+        font-size: 14px;
+      }
+      .service-desc {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 2px;
+        max-width: 220px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .category-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 500;
+        background: rgba(99, 102, 241, 0.15);
+        color: #a5b4fc;
+        white-space: nowrap;
+      }
+      .price-cell {
+        font-weight: 700;
+        color: #34d399;
+        font-size: 15px;
+      }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .status-active {
+        background: rgba(52, 211, 153, 0.15);
+        color: #34d399;
+      }
+      .status-inactive {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+      }
+      .featured-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+      }
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn-icon {
+        width: 34px;
+        height: 34px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+      .btn-edit {
+        background: rgba(99, 102, 241, 0.15);
+        color: #818cf8;
+      }
+      .btn-edit:hover {
+        background: rgba(99, 102, 241, 0.3);
+      }
+      .btn-delete {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+      }
+      .btn-delete:hover {
+        background: rgba(239, 68, 68, 0.3);
+      }
+      .btn-toggle-active {
+        background: rgba(52, 211, 153, 0.15);
+        color: #34d399;
+      }
+      .btn-toggle-active:hover {
+        background: rgba(52, 211, 153, 0.3);
+      }
+      .btn-toggle-inactive {
+        background: rgba(148, 163, 184, 0.1);
+        color: #94a3b8;
+      }
+      .btn-toggle-inactive:hover {
+        background: rgba(148, 163, 184, 0.2);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 24px;
+        color: #64748b;
+        display: none;
+      }
+      .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.4;
+        display: block;
+      }
+      .empty-state p {
+        font-size: 15px;
+      }
+
+      /* ===== LOADING ===== */
+      .loading-row td {
+        text-align: center;
+        padding: 50px;
+        color: #64748b;
+      }
+      .spinner-inline {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        border: 3px solid rgba(99, 102, 241, 0.3);
+        border-top-color: #6366f1;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ===== MODAL ===== */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9000;
+        background: rgba(0, 0, 0, 0.75);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+      .modal {
+        background: #1e293b;
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 20px;
+        padding: 32px;
+        width: 95%;
+        max-width: 580px;
+        max-height: 92vh;
+        overflow-y: auto;
+      }
+      .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .modal-title i {
+        color: #6366f1;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .form-group.full {
+        grid-column: 1 / -1;
+      }
+      .form-group label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #94a3b8;
+      }
+      .form-control {
+        background: #0f172a;
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: #e2e8f0;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+        font-family: inherit;
+      }
+      .form-control:focus {
+        border-color: #6366f1;
+      }
+      .form-control::placeholder {
+        color: #475569;
+      }
+      textarea.form-control {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .toggle-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 14px;
+        background: #0f172a;
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 10px;
+        cursor: pointer;
+        margin-bottom: 8px;
+        user-select: none;
+      }
+      .toggle-group:last-child {
+        margin-bottom: 0;
+      }
+      .toggle-group label {
+        font-size: 14px;
+        color: #e2e8f0;
+        cursor: pointer;
+        flex: 1;
+      }
+      .toggle-switch {
+        width: 44px;
+        height: 24px;
+        background: #334155;
+        border-radius: 12px;
+        position: relative;
+        flex-shrink: 0;
+        transition: background 0.2s;
+      }
+      .toggle-switch.on {
+        background: #6366f1;
+      }
+      .toggle-switch::after {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        background: white;
+        border-radius: 50%;
+        top: 3px;
+        left: 3px;
+        transition: transform 0.2s;
+      }
+      .toggle-switch.on::after {
+        transform: translateX(20px);
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(148, 163, 184, 0.1);
+      }
+      .btn-cancel {
+        padding: 11px 22px;
+        background: rgba(148, 163, 184, 0.1);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 10px;
+        color: #94a3b8;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-cancel:hover {
+        background: rgba(148, 163, 184, 0.2);
+      }
+      .btn-save {
+        padding: 11px 24px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-save:hover {
+        opacity: 0.9;
+      }
+      .btn-save:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* Confirm Modal */
+      .confirm-modal {
+        max-width: 420px;
+        text-align: center;
+      }
+      .confirm-icon {
+        width: 64px;
+        height: 64px;
+        background: rgba(239, 68, 68, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #ef4444;
+        margin: 0 auto 16px;
+      }
+      .confirm-modal p {
+        color: #94a3b8;
+        font-size: 14px;
+        line-height: 1.7;
+        margin-bottom: 8px;
+      }
+      .btn-danger {
+        padding: 11px 24px;
+        background: #ef4444;
+        border: none;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-danger:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* ===== TOAST ===== */
+      .toast-container {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        min-width: 290px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        animation: slideIn 0.3s ease;
+      }
+      .toast-success {
+        background: #064e3b;
+        border: 1px solid #065f46;
+        color: #34d399;
+      }
+      .toast-error {
+        background: #450a0a;
+        border: 1px solid #7f1d1d;
+        color: #f87171;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(110%);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+      @media (max-width: 1024px) {
+        #sidebar-container {
+          width: 80px;
+        }
+        .main-content {
+          margin-left: 80px;
+          width: calc(100% - 80px);
+        }
+      }
+      @media (max-width: 768px) {
+        #sidebar-container {
+          width: 280px;
+        }
+        .main-content {
+          margin-left: 0;
+          width: 100%;
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toast-container" id="toastContainer"></div>
+    <!-- Sidebar Component -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>
+            <i class="fas fa-box" style="color: #6366f1; margin-right: 12px"></i
+            >Services Management
+          </h1>
+          <p>Add, edit, and manage all services across categories</p>
+        </div>
+        <button class="btn-primary" onclick="openAddModal()">
+          <i class="fas fa-plus"></i> Add New Service
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-number" id="statTotal">—</div>
+          <div class="stat-label">Total Services</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statActive" style="color: #34d399">
+            —
+          </div>
+          <div class="stat-label">Active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statInactive" style="color: #ef4444">
+            —
+          </div>
+          <div class="stat-label">Inactive</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statFeatured" style="color: #fbbf24">
+            —
+          </div>
+          <div class="stat-label">Featured</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-bar">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search services by name, category..."
+            oninput="applyFilters()"
+          />
+        </div>
+        <select
+          class="filter-select"
+          id="categoryFilter"
+          onchange="applyFilters()"
+        >
+          <option value="">All Categories</option>
+        </select>
+        <select
+          class="filter-select"
+          id="statusFilter"
+          onchange="applyFilters()"
+        >
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <select
+          class="filter-select"
+          id="featuredFilter"
+          onchange="applyFilters()"
+        >
+          <option value="">All Types</option>
+          <option value="featured">Featured Only</option>
+        </select>
+      </div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <div class="table-header">
+          <h3>All Services</h3>
+          <span class="table-count" id="tableCount">Loading...</span>
+        </div>
+        <div style="overflow-x: auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Unit</th>
+                <th>Featured</th>
+                <th>Status</th>
+                <th>Order</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="servicesTableBody">
+              <tr class="loading-row">
+                <td colspan="8">
+                  <span class="spinner-inline"></span> Loading services...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="empty-state" id="emptyState">
+            <i class="fas fa-box-open"></i>
+            <p>No services found matching your filters</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Service Modal -->
+    <div class="modal-overlay" id="serviceModal">
+      <div class="modal">
+        <h2 class="modal-title" id="modalTitle">
+          <i class="fas fa-box"></i> Add New Service
+        </h2>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Service Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="serviceName"
+              placeholder="e.g. Men Suit Dry Clean"
+            />
+          </div>
+          <div class="form-group full">
+            <label>Category *</label>
+            <select class="form-control" id="serviceCategory">
+              <option value="">— Select a category —</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Description</label>
+            <textarea
+              class="form-control"
+              id="serviceDescription"
+              placeholder="Brief description of the service..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>Base Price (₹) *</label>
+            <input
+              type="number"
+              class="form-control"
+              id="servicePrice"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+            />
+          </div>
+          <div class="form-group">
+            <label>Price Unit</label>
+            <input
+              type="text"
+              class="form-control"
+              id="servicePriceUnit"
+              placeholder="e.g. piece, Per Pair"
+            />
+          </div>
+          <div class="form-group">
+            <label>FontAwesome Icon Class</label>
+            <input
+              type="text"
+              class="form-control"
+              id="serviceIcon"
+              placeholder="fas fa-tshirt"
+            />
+          </div>
+          <div class="form-group">
+            <label>Image Path</label>
+            <input
+              type="text"
+              class="form-control"
+              id="serviceImagePath"
+              placeholder="services/image.jpg"
+            />
+          </div>
+          <div class="form-group">
+            <label>Display Order</label>
+            <input
+              type="number"
+              class="form-control"
+              id="serviceOrder"
+              value="0"
+              min="0"
+            />
+          </div>
+          <div class="form-group full">
+            <label>Options</label>
+            <div class="toggle-group" onclick="toggleField('isActive')">
+              <label>Active — visible to customers</label>
+              <div class="toggle-switch on" id="toggleIsActive"></div>
+            </div>
+            <div class="toggle-group" onclick="toggleField('isFeatured')">
+              <label>Featured Service — shown on homepage</label>
+              <div class="toggle-switch" id="toggleIsFeatured"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+          <button class="btn-save" id="saveBtn" onclick="saveService()">
+            <i class="fas fa-save"></i> Save Service
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+      <div class="modal confirm-modal">
+        <div class="confirm-icon"><i class="fas fa-trash"></i></div>
+        <h2 class="modal-title" style="justify-content: center">
+          Delete Service?
+        </h2>
+        <p>
+          Are you sure you want to delete<br /><strong
+            id="deleteServiceName"
+            style="color: #f1f5f9; font-size: 15px"
+          ></strong
+          >?
+        </p>
+        <p style="font-size: 12px; color: #475569">
+          This action cannot be undone. Services used in active orders cannot be
+          deleted.
+        </p>
+        <div class="modal-footer" style="justify-content: center">
+          <button class="btn-cancel" onclick="closeConfirmModal()">
+            Cancel
+          </button>
+          <button
+            class="btn-danger"
+            id="confirmDeleteBtn"
+            onclick="confirmDelete()"
+          >
+            <i class="fas fa-trash"></i> Yes, Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // =====================================================
+      // SIDEBAR COMPONENT LOADER
+      // =====================================================
+      async function loadSidebar() {
+        const paths = [
+          "/static/admin/templates/admin-sidebar.html",
+          "/static/admin/admin-sidebar.html",
+          "/admin-sidebar.html",
+        ];
+        for (const path of paths) {
+          try {
+            const res = await fetch(path);
+            if (!res.ok) continue;
+            const html = await res.text();
+            const container = document.getElementById("sidebar-container");
+            container.innerHTML = html;
+            container.querySelectorAll("script").forEach(function (oldScript) {
+              const newScript = document.createElement("script");
+              newScript.textContent = oldScript.textContent;
+              document.head.appendChild(newScript);
+              document.head.removeChild(newScript);
+            });
+            console.log("✅ Sidebar loaded and scripts executed:", path);
+            return;
+          } catch (e) {
+            continue;
+          }
+        }
+        console.error("❌ Sidebar could not be loaded from any path");
+      }
+      // =====================================================
+
+      // ===== API SETUP — matches exact pattern from admin-users.html =====
+      const API_BASE_URL = window.location.origin;
+      const API_ENDPOINTS = {
+        verify: `${API_BASE_URL}/api/admin/auth/verify`,
+        servicesList: `${API_BASE_URL}/api/admin/manage-services/list`,
+        servicesBase: `${API_BASE_URL}/api/admin/manage-services`,
+        categories: `${API_BASE_URL}/api/admin/manage-services/categories/all`,
+        logout: `${API_BASE_URL}/api/admin/auth/logout`,
+        login: `${API_BASE_URL}/admin`,
+      };
+
+      // ===== STATE =====
+      let allServices = [];
+      let editingServiceId = null;
+      let deletingServiceId = null;
+      let formState = { isActive: true, isFeatured: false };
+
+      // ===== AUTH HELPERS — exact same as admin-users.html =====
+      function getToken() {
+        return (
+          localStorage.getItem("adminToken") ||
+          localStorage.getItem("admin_token")
+        );
+      }
+
+      function authHeaders() {
+        return {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        };
+      }
+
+      function redirectToLogin() {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("admin_token");
+        window.location.href = API_ENDPOINTS.login;
+      }
+
+      async function checkAuth() {
+        const token = getToken();
+        if (!token) {
+          redirectToLogin();
+          return false;
+        }
+
+        try {
+          const response = await fetch(API_ENDPOINTS.verify, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const result = await response.json();
+          if (result.success) return true;
+          redirectToLogin();
+          return false;
+        } catch (error) {
+          console.error("Auth check error:", error);
+          redirectToLogin();
+          return false;
+        }
+      }
+
+      // ===== INIT =====
+      document.addEventListener("DOMContentLoaded", async () => {
+        await loadSidebar();
+        const isAuthed = await checkAuth();
+        if (!isAuthed) return;
+        await loadCategories();
+        await loadServices();
+      });
+
+      // ===== LOAD CATEGORIES =====
+      async function loadCategories() {
+        try {
+          const res = await fetch(API_ENDPOINTS.categories, {
+            headers: authHeaders(),
+          });
+          const data = await res.json();
+          if (data.success) {
+            const cats = data.data.categories;
+            const filterSel = document.getElementById("categoryFilter");
+            const formSel = document.getElementById("serviceCategory");
+            cats.forEach((c) => {
+              filterSel.innerHTML += `<option value="${c.category_id}">${esc(
+                c.category_name
+              )}</option>`;
+              formSel.innerHTML += `<option value="${c.category_id}">${esc(
+                c.category_name
+              )}</option>`;
+            });
+          }
+        } catch (e) {
+          console.error("Failed to load categories:", e);
+        }
+      }
+
+      // ===== LOAD SERVICES =====
+      async function loadServices() {
+        document.getElementById("servicesTableBody").innerHTML = `
+            <tr class="loading-row">
+                <td colspan="8"><span class="spinner-inline"></span> Loading services...</td>
+            </tr>`;
+        document.getElementById("tableCount").textContent = "Loading...";
+
+        try {
+          const res = await fetch(API_ENDPOINTS.servicesList, {
+            headers: authHeaders(),
+          });
+
+          if (res.status === 401) {
+            redirectToLogin();
+            return;
+          }
+
+          const data = await res.json();
+          if (data.success) {
+            allServices = data.data.services;
+            updateStats();
+            renderTable(allServices);
+          } else {
+            showToast(data.message || "Failed to load services", "error");
+            document.getElementById("servicesTableBody").innerHTML = "";
+            document.getElementById("emptyState").style.display = "block";
+          }
+        } catch (e) {
+          console.error("Load services error:", e);
+          showToast(
+            "Network error — please check your connection or contact admin.",
+            "error"
+          );
+          document.getElementById("servicesTableBody").innerHTML = "";
+        }
+      }
+
+      // ===== STATS =====
+      function updateStats() {
+        document.getElementById("statTotal").textContent = allServices.length;
+        document.getElementById("statActive").textContent = allServices.filter(
+          (s) => s.is_active
+        ).length;
+        document.getElementById("statInactive").textContent =
+          allServices.filter((s) => !s.is_active).length;
+        document.getElementById("statFeatured").textContent =
+          allServices.filter((s) => s.is_featured).length;
+      }
+
+      // ===== RENDER TABLE =====
+      function renderTable(services) {
+        const tbody = document.getElementById("servicesTableBody");
+        const empty = document.getElementById("emptyState");
+        document.getElementById("tableCount").textContent = `${
+          services.length
+        } service${services.length !== 1 ? "s" : ""}`;
+
+        if (!services || services.length === 0) {
+          tbody.innerHTML = "";
+          empty.style.display = "block";
+          return;
+        }
+        empty.style.display = "none";
+
+        tbody.innerHTML = services
+          .map(
+            (s) => `
+            <tr>
+                <td>
+                    <div class="service-info">
+                        <div class="service-icon-cell">
+                            <i class="${esc(s.icon) || "fas fa-tshirt"}"></i>
+                        </div>
+                        <div>
+                            <div class="service-name">${esc(
+                              s.service_name
+                            )}</div>
+                            <div class="service-desc">${esc(
+                              s.description || "—"
+                            )}</div>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="category-badge">${esc(
+                  s.category_name || "—"
+                )}</span></td>
+                <td class="price-cell">₹${parseFloat(s.base_price || 0).toFixed(
+                  2
+                )}</td>
+                <td style="color:#64748b;font-size:13px;">${esc(
+                  s.price_unit || "—"
+                )}</td>
+                <td>
+                    ${
+                      s.is_featured
+                        ? '<span class="featured-badge"><i class="fas fa-star"></i> Featured</span>'
+                        : '<span style="color:#475569;font-size:12px;">—</span>'
+                    }
+                </td>
+                <td>
+                    <span class="status-badge ${
+                      s.is_active ? "status-active" : "status-inactive"
+                    }">
+                        <i class="fas fa-circle" style="font-size:8px;"></i>
+                        ${s.is_active ? "Active" : "Inactive"}
+                    </span>
+                </td>
+                <td style="color:#64748b;font-size:13px;">${
+                  s.display_order
+                }</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="${
+                          s.is_active
+                            ? "btn-icon btn-toggle-active"
+                            : "btn-icon btn-toggle-inactive"
+                        }"
+                            onclick="toggleStatus(${s.service_id})"
+                            title="${s.is_active ? "Deactivate" : "Activate"}">
+                            <i class="fas ${
+                              s.is_active ? "fa-eye-slash" : "fa-eye"
+                            }"></i>
+                        </button>
+                        <button class="btn-icon btn-edit" onclick="openEditModal(${
+                          s.service_id
+                        })" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon btn-delete" onclick="openDeleteConfirm(${
+                          s.service_id
+                        }, '${esc(s.service_name)}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `
+          )
+          .join("");
+      }
+
+      // ===== FILTERS =====
+      function applyFilters() {
+        const search = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const catId = document.getElementById("categoryFilter").value;
+        const status = document.getElementById("statusFilter").value;
+        const featured = document.getElementById("featuredFilter").value;
+
+        const filtered = allServices.filter((s) => {
+          const matchSearch =
+            !search ||
+            (s.service_name || "").toLowerCase().includes(search) ||
+            (s.description || "").toLowerCase().includes(search) ||
+            (s.category_name || "").toLowerCase().includes(search);
+          const matchCat = !catId || String(s.category_id) === catId;
+          const matchStatus =
+            !status ||
+            (status === "active" && s.is_active) ||
+            (status === "inactive" && !s.is_active);
+          const matchFeatured =
+            !featured || (featured === "featured" && s.is_featured);
+          return matchSearch && matchCat && matchStatus && matchFeatured;
+        });
+        renderTable(filtered);
+      }
+
+      // ===== TOGGLE STATUS =====
+      async function toggleStatus(serviceId) {
+        try {
+          const res = await fetch(
+            `${API_ENDPOINTS.servicesBase}/${serviceId}/toggle-status`,
+            {
+              method: "PUT",
+              headers: authHeaders(),
+            }
+          );
+          if (res.status === 401) {
+            redirectToLogin();
+            return;
+          }
+          const data = await res.json();
+          if (data.success) {
+            showToast(data.message, "success");
+            await loadServices();
+            applyFilters();
+          } else {
+            showToast(data.message || "Failed to update status", "error");
+          }
+        } catch (e) {
+          showToast("Network error", "error");
+        }
+      }
+
+      // ===== MODALS =====
+      function openAddModal() {
+        editingServiceId = null;
+        resetForm();
+        document.getElementById("modalTitle").innerHTML =
+          '<i class="fas fa-plus-circle"></i> Add New Service';
+        document.getElementById("serviceModal").classList.add("open");
+      }
+
+      function openEditModal(serviceId) {
+        const s = allServices.find((x) => x.service_id === serviceId);
+        if (!s) return;
+        editingServiceId = serviceId;
+
+        document.getElementById("modalTitle").innerHTML =
+          '<i class="fas fa-edit"></i> Edit Service';
+        document.getElementById("serviceName").value = s.service_name || "";
+        document.getElementById("serviceCategory").value = s.category_id || "";
+        document.getElementById("serviceDescription").value =
+          s.description || "";
+        document.getElementById("servicePrice").value = s.base_price || "";
+        document.getElementById("servicePriceUnit").value = s.price_unit || "";
+        document.getElementById("serviceIcon").value = s.icon || "";
+        document.getElementById("serviceImagePath").value = s.image_path || "";
+        document.getElementById("serviceOrder").value = s.display_order || 0;
+        formState.isActive = !!s.is_active;
+        formState.isFeatured = !!s.is_featured;
+        updateToggles();
+
+        document.getElementById("serviceModal").classList.add("open");
+      }
+
+      async function saveService() {
+        const name = document.getElementById("serviceName").value.trim();
+        const categoryId = document.getElementById("serviceCategory").value;
+        const price = document.getElementById("servicePrice").value;
+
+        if (!name) {
+          showToast("Service name is required", "error");
+          return;
+        }
+        if (!categoryId) {
+          showToast("Please select a category", "error");
+          return;
+        }
+        if (price === "" || price === null) {
+          showToast("Price is required", "error");
+          return;
+        }
+
+        const payload = {
+          service_name: name,
+          category_id: parseInt(categoryId),
+          description: document
+            .getElementById("serviceDescription")
+            .value.trim(),
+          base_price: parseFloat(price),
+          price_unit:
+            document.getElementById("servicePriceUnit").value.trim() || "piece",
+          icon:
+            document.getElementById("serviceIcon").value.trim() ||
+            "fas fa-tshirt",
+          image_path: document.getElementById("serviceImagePath").value.trim(),
+          display_order:
+            parseInt(document.getElementById("serviceOrder").value) || 0,
+          is_active: formState.isActive,
+          is_featured: formState.isFeatured,
+        };
+
+        const saveBtn = document.getElementById("saveBtn");
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        try {
+          const url = editingServiceId
+            ? `${API_ENDPOINTS.servicesBase}/${editingServiceId}/update`
+            : `${API_ENDPOINTS.servicesBase}/create`;
+          const method = editingServiceId ? "PUT" : "POST";
+
+          const res = await fetch(url, {
+            method,
+            headers: authHeaders(),
+            body: JSON.stringify(payload),
+          });
+          if (res.status === 401) {
+            redirectToLogin();
+            return;
+          }
+          const data = await res.json();
+
+          if (data.success) {
+            showToast(data.message, "success");
+            closeModal();
+            await loadServices();
+            applyFilters();
+          } else {
+            showToast(data.message || "Failed to save service", "error");
+          }
+        } catch (e) {
+          showToast("Network error", "error");
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Service';
+        }
+      }
+
+      function openDeleteConfirm(serviceId, serviceName) {
+        deletingServiceId = serviceId;
+        document.getElementById("deleteServiceName").textContent = serviceName;
+        document.getElementById("confirmModal").classList.add("open");
+      }
+
+      async function confirmDelete() {
+        if (!deletingServiceId) return;
+        const btn = document.getElementById("confirmDeleteBtn");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+        try {
+          const res = await fetch(
+            `${API_ENDPOINTS.servicesBase}/${deletingServiceId}/delete`,
+            {
+              method: "DELETE",
+              headers: authHeaders(),
+            }
+          );
+          if (res.status === 401) {
+            redirectToLogin();
+            return;
+          }
+          const data = await res.json();
+
+          if (data.success) {
+            showToast(data.message, "success");
+            closeConfirmModal();
+            await loadServices();
+            applyFilters();
+          } else {
+            showToast(data.message || "Cannot delete this service", "error");
+          }
+        } catch (e) {
+          showToast("Network error", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-trash"></i> Yes, Delete';
+        }
+      }
+
+      // ===== TOGGLE HELPERS =====
+      function toggleField(field) {
+        formState[field] = !formState[field];
+        updateToggles();
+      }
+      function updateToggles() {
+        document.getElementById("toggleIsActive").className =
+          "toggle-switch" + (formState.isActive ? " on" : "");
+        document.getElementById("toggleIsFeatured").className =
+          "toggle-switch" + (formState.isFeatured ? " on" : "");
+      }
+
+      // ===== MODAL HELPERS =====
+      function closeModal() {
+        document.getElementById("serviceModal").classList.remove("open");
+        resetForm();
+      }
+      function closeConfirmModal() {
+        document.getElementById("confirmModal").classList.remove("open");
+        deletingServiceId = null;
+      }
+      function resetForm() {
+        [
+          "serviceName",
+          "serviceDescription",
+          "servicePrice",
+          "servicePriceUnit",
+          "serviceIcon",
+          "serviceImagePath",
+        ].forEach((id) => (document.getElementById(id).value = ""));
+        document.getElementById("serviceCategory").value = "";
+        document.getElementById("serviceOrder").value = "0";
+        formState = { isActive: true, isFeatured: false };
+        updateToggles();
+        editingServiceId = null;
+      }
+
+      // Close modal on overlay click
+      document.getElementById("serviceModal").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) closeModal();
+      });
+      document.getElementById("confirmModal").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) closeConfirmModal();
+      });
+
+      // ===== LOGOUT — exact same as admin-users.html =====
+      async function handleLogout() {
+        const token = getToken();
+        try {
+          await fetch(API_ENDPOINTS.logout, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        } catch (e) {
+          console.error("Logout error:", e);
+        } finally {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("admin_token");
+          localStorage.removeItem("adminData");
+          window.location.href = API_ENDPOINTS.login;
+        }
+      }
+      window.handleLogout = handleLogout;
+
+      // ===== TOAST =====
+      function showToast(message, type = "success") {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<i class="fas ${
+          type === "success" ? "fa-check-circle" : "fa-exclamation-circle"
+        }"></i> ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+      }
+
+      // ===== ESCAPE HTML =====
+      function esc(str) {
+        if (str === null || str === undefined) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+    </script>
+  </body>
+</html>

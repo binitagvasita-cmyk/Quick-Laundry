@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google OAuth Test - Quick Laundry</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .test-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status.pending {
+            background: #ffc107;
+        }
+
+        .status.success {
+            background: #10b981;
+        }
+
+        .status.error {
+            background: #ef4444;
+        }
+
+        .test-result {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .google-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .google-btn:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .success-msg {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔵 Google OAuth Test</h1>
+        <p class="subtitle">Test your Google OAuth integration</p>
+
+        <!-- Test 1: Server Connection -->
+        <div class="test-section">
+            <div class="test-title">
+                <span class="status pending" id="status1"></span>
+                Test 1: Flask Server Connection
+            </div>
+            <button onclick="testServerConnection()">Run Test</button>
+            <div class="test-result" id="result1" style="display:none;"></div>
+        </div>
+
+        <!-- Test 2: Google OAuth Status -->
+        <div class="test-section">
+            <div class="test-title">
+                <span class="status pending" id="status2"></span>
+                Test 2: Google OAuth Configuration
+            </div>
+            <button onclick="testGoogleOAuthStatus()">Run Test</button>
+            <div class="test-result" id="result2" style="display:none;"></div>
+        </div>
+
+        <!-- Test 3: Google Login Flow -->
+        <div class="test-section">
+            <div class="test-title">
+                <span class="status pending" id="status3"></span>
+                Test 3: Google Login Flow
+            </div>
+            <button class="google-btn" onclick="initiateGoogleLogin()">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Start Google Login
+            </button>
+            <div class="test-result" id="result3" style="display:none;"></div>
+        </div>
+
+        <div class="info">
+            <strong>ℹ️ Instructions:</strong><br>
+            1. Run Test 1 to verify Flask server is running<br>
+            2. Run Test 2 to check Google OAuth configuration<br>
+            3. Click "Start Google Login" to test the full flow<br>
+            4. You'll be redirected to Google for authentication
+        </div>
+
+        <!-- Callback Handler -->
+        <div class="test-section" id="callbackSection" style="display:none;">
+            <div class="test-title">
+                <span class="status success"></span>
+                ✅ Google Login Callback Received
+            </div>
+            <div class="test-result" id="callbackResult"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // Test 1: Server Connection
+        async function testServerConnection() {
+            const status = document.getElementById('status1');
+            const result = document.getElementById('result1');
+            
+            status.className = 'status pending';
+            result.style.display = 'block';
+            result.innerHTML = '<div class="spinner"></div> Testing connection...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    status.className = 'status success';
+                    result.innerHTML = `<span class="success-msg">✅ Server Connected!</span>\n\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    status.className = 'status error';
+                    result.innerHTML = `<span class="error-msg">❌ Server Error</span>\n\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                status.className = 'status error';
+                result.innerHTML = `<span class="error-msg">❌ Connection Failed</span>\n\n${error.message}`;
+            }
+        }
+
+        // Test 2: Google OAuth Status
+        async function testGoogleOAuthStatus() {
+            const status = document.getElementById('status2');
+            const result = document.getElementById('result2');
+            
+            status.className = 'status pending';
+            result.style.display = 'block';
+            result.innerHTML = '<div class="spinner"></div> Checking Google OAuth...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/google/status`);
+                const data = await response.json();
+                
+                if (response.ok && data.data.available) {
+                    status.className = 'status success';
+                    result.innerHTML = `<span class="success-msg">✅ Google OAuth is Configured!</span>\n\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    status.className = 'status error';
+                    result.innerHTML = `<span class="error-msg">❌ Google OAuth Not Available</span>\n\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                status.className = 'status error';
+                result.innerHTML = `<span class="error-msg">❌ Request Failed</span>\n\n${error.message}`;
+            }
+        }
+
+        // Test 3: Initiate Google Login
+        function initiateGoogleLogin() {
+            const status = document.getElementById('status3');
+            const result = document.getElementById('result3');
+            
+            status.className = 'status pending';
+            result.style.display = 'block';
+            result.innerHTML = '<div class="spinner"></div> Redirecting to Google...';
+            
+            // Redirect to Google OAuth
+            window.location.href = `${API_BASE_URL}/auth/google/login?return_url=${encodeURIComponent(window.location.pathname)}`;
+        }
+
+        // Handle Callback
+        function handleGoogleCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            const token = urlParams.get('token');
+            const userName = urlParams.get('user_name');
+            const userEmail = urlParams.get('user_email');
+            const isGoogleLogin = urlParams.get('google_login');
+            
+            if (token && isGoogleLogin === 'true') {
+                const section = document.getElementById('callbackSection');
+                const result = document.getElementById('callbackResult');
+                
+                section.style.display = 'block';
+                result.innerHTML = `<span class="success-msg">✅ Login Successful!</span>\n\nUser: ${userName}\nEmail: ${userEmail}\nToken: ${token.substring(0, 50)}...\n\n<strong>You can now use this token to make authenticated requests!</strong>`;
+                
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                return;
+            }
+            
+            // Check for errors
+            const error = urlParams.get('error');
+            const reason = urlParams.get('reason');
+            
+            if (error) {
+                const section = document.getElementById('callbackSection');
+                const result = document.getElementById('callbackResult');
+                const status3 = document.getElementById('status3');
+                
+                section.style.display = 'block';
+                status3.className = 'status error';
+                result.innerHTML = `<span class="error-msg">❌ Login Failed</span>\n\nError: ${error}\nReason: ${reason || 'Unknown'}`;
+                
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        // Check for callback on page load
+        window.addEventListener('DOMContentLoaded', handleGoogleCallback);
+    </script>
+</body>
+</html>

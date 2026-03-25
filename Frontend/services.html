@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services - Quick Laundry</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/services.css">
+    <link rel="stylesheet" href="css/auth-modal.css">
+</head>
+<body>
+
+    <!-- =============================================
+         FLOATING BUBBLE BACKGROUND (Pure CSS)
+         ============================================= -->
+    <div class="services-bg-scene">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <!-- Auth Modal Overlay -->
+    <div class="auth-modal-overlay" id="authModalOverlay">
+        <div class="auth-modal-container" id="authModalContainer">
+            <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+            <iframe id="authIframe" src="about:blank" style="width: 100%; height: 100%; border: none"></iframe>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <!-- Header Container -->
+        <div id="header-container"></div>
+        
+        <!-- Sidebar Container -->
+        <div id="sidebar-container"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- =============================================
+                 PAGE HEADER — Immersive Laundry Hero
+                 ============================================= -->
+            <section class="page-header">
+                <!-- Sparkle dots -->
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+                <div class="sparkle"></div>
+
+                <!-- Decorative washer emoji art -->
+                <div class="washer-art"></div>
+
+                <div class="header-content">
+                    <div class="breadcrumb">
+                        <a href="home-content.html"><i class="fas fa-home"></i> Home</a>
+                        <i class="fas fa-chevron-right"></i>
+                        <span>Services</span>
+                    </div>
+
+                    <h1 class="page-title">
+                        Premium Laundry<br>
+                        <span class="gradient-text">Services in Ahmedabad</span>
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Fresh, clean &amp; delivered to your door — covering Satellite &amp; nearby areas within 10 km.
+                    </p>
+
+                    <!-- Stats bar -->
+                    <div class="header-stats">
+                        <div class="header-stat">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Satellite Area, Ahmedabad</span>
+                        </div>
+                        <div class="header-stat">
+                            <i class="fas fa-shipping-fast"></i>
+                            <span>Free Pickup &amp; Drop</span>
+                        </div>
+                        <div class="header-stat">
+                            <i class="fas fa-star"></i>
+                            <span>4.8★ Rated Service</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wave bottom divider -->
+                <div class="header-wave">
+                    <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                        <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="var(--primary-bg)"/>
+                    </svg>
+                </div>
+            </section>
+
+            <!-- =============================================
+                 CATEGORY FILTER
+                 ============================================= -->
+            <section class="category-filter-section">
+                <p class="section-label">Browse by category</p>
+                <div class="container">
+                    <div class="category-filters" id="categoryFilters">
+                        <button class="category-filter-btn active" data-category="all">
+                            <i class="fas fa-th-large"></i>
+                            <span>All Services</span>
+                        </button>
+                        <!-- Categories loaded dynamically by services.js -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- =============================================
+                 SERVICES GRID
+                 ============================================= -->
+            <section class="services-section">
+                <div class="container">
+
+                    <!-- View Toggle Bar -->
+                    <div class="view-toggle-bar">
+                        <p class="view-toggle-count" id="serviceCount">Loading services...</p>
+                        <div class="view-toggle-btns">
+                            <button class="view-toggle-btn active" id="gridViewBtn" title="Grid View" onclick="setView('grid')">
+                                <i class="fas fa-th-large"></i>
+                                <span>Grid</span>
+                            </button>
+                            <button class="view-toggle-btn" id="listViewBtn" title="List View" onclick="setView('list')">
+                                <i class="fas fa-list"></i>
+                                <span>List</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="loading-container" id="loadingContainer">
+                        <div class="loading-spinner"></div>
+                        <p>Loading services...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div class="error-container" id="errorContainer" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Failed to Load Services</h3>
+                        <p id="errorMessage">Could not connect to the server. Please try again.</p>
+                        <button class="retry-btn" onclick="window.loadServices()">
+                            <i class="fas fa-redo"></i> Retry
+                        </button>
+                    </div>
+
+                    <!-- Services Grid (populated by services.js) -->
+                    <div class="services-grid" id="servicesGrid"></div>
+
+                    <!-- Empty State -->
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No Services Found</h3>
+                        <p>No services available in this category.</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- =============================================
+                 TRUST STRIP
+                 ============================================= -->
+            <div class="trust-strip">
+                <div class="trust-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <strong>100% Safe</strong>
+                        <span>Clothes treated with care</span>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <strong>24–48 Hr Turnaround</strong>
+                        <span>Express options available</span>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <i class="fas fa-map-pin"></i>
+                    <div>
+                        <strong>10 km Coverage</strong>
+                        <span>Satellite &amp; nearby areas</span>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <i class="fas fa-leaf"></i>
+                    <div>
+                        <strong>Eco Friendly</strong>
+                        <span>Green washing products</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================================
+                 FEATURES HIGHLIGHT SECTION
+                 ============================================= -->
+            <section class="features-highlight-section">
+                <div class="container">
+                    <h2 class="section-title">Why Choose <span class="gradient-text-blue">Quick Laundry?</span></h2>
+                    <p class="section-subtitle">Trusted by hundreds of families across Satellite, Ahmedabad for spotless clothes every time.</p>
+                    <div class="features-highlight-grid">
+                        <div class="feature-highlight-card">
+                            <div class="feature-highlight-icon">
+                                <i class="fas fa-shield-check"></i>
+                            </div>
+                            <h3>Quality Guaranteed</h3>
+                            <p>We use premium detergents and advanced cleaning techniques to keep your clothes looking brand new.</p>
+                        </div>
+                        <div class="feature-highlight-card">
+                            <div class="feature-highlight-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>Fast Turnaround</h3>
+                            <p>Quick 24–48 hr service with express same-day options available on request.</p>
+                        </div>
+                        <div class="feature-highlight-card">
+                            <div class="feature-highlight-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <h3>Free Pickup &amp; Delivery</h3>
+                            <p>Convenient doorstep service at no extra cost within 10 km of Satellite area.</p>
+                        </div>
+                        <div class="feature-highlight-card">
+                            <div class="feature-highlight-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <h3>Affordable Pricing</h3>
+                            <p>Transparent, competitive rates with absolutely no hidden charges — ever.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- =============================================
+         SERVICE DETAILS MODAL (untouched — JS dependent)
+         ============================================= -->
+    <div class="service-modal" id="serviceModal">
+        <div class="service-modal-content" id="modalContent">
+            <!-- Populated by services.js -->
+        </div>
+    </div>
+
+    <!-- =============================================
+         COMPONENT LOADER SCRIPTS (unchanged)
+         ============================================= -->
+    <script>
+        // Load Header Component
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+                const headerScript = document.createElement('script');
+                headerScript.src = 'js/header.js';
+                document.body.appendChild(headerScript);
+            })
+            .catch(error => console.error('Error loading header:', error));
+
+        // Load Sidebar Component
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const sidebarScript = document.createElement('script');
+                sidebarScript.src = 'js/sidebar.js';
+                document.body.appendChild(sidebarScript);
+            })
+            .catch(error => console.error('Error loading sidebar:', error));
+    </script>
+
+    <!-- Auth + Services Scripts (unchanged) -->
+    <script src="js/home-content.js"></script>
+    <script src="js/services.js"></script>
+
+    <!-- View Toggle Script -->
+    <script>
+        // Default view
+        let currentView = localStorage.getItem('serviceView') || 'grid';
+
+        function setView(view) {
+            currentView = view;
+            localStorage.setItem('serviceView', view);
+            const grid = document.getElementById('servicesGrid');
+            const gridBtn = document.getElementById('gridViewBtn');
+            const listBtn = document.getElementById('listViewBtn');
+
+            if (view === 'list') {
+                grid.classList.add('list-view');
+                grid.classList.remove('grid-view');
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+            } else {
+                grid.classList.remove('list-view');
+                grid.classList.add('grid-view');
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+            }
+        }
+
+        // Update service count label whenever grid changes
+        function updateServiceCount() {
+            const grid = document.getElementById('servicesGrid');
+            const count = grid ? grid.querySelectorAll('.service-card').length : 0;
+            const el = document.getElementById('serviceCount');
+            if (el && count > 0) el.textContent = count + ' service' + (count !== 1 ? 's' : '') + ' found';
+        }
+
+        // Watch for services being rendered
+        document.addEventListener('DOMContentLoaded', () => {
+            setView(currentView);
+            const observer = new MutationObserver(() => {
+                updateServiceCount();
+                setView(currentView); // re-apply view after re-render
+            });
+            const grid = document.getElementById('servicesGrid');
+            if (grid) observer.observe(grid, { childList: true });
+        });
+    </script>
+
+</body>
+</html>

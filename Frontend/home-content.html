@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Laundry - Satellite, Ahmedabad</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/home-content.css" />
+    <link rel="stylesheet" href="css/delivery-zone.css" />
+    <link rel="stylesheet" href="css/auth-modal.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+  </head>
+  <body>
+    <!-- Auth Modal Overlay (Like Old Project) -->
+    <div class="auth-modal-overlay" id="authModalOverlay">
+      <div class="auth-modal-container" id="authModalContainer">
+        <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+        <iframe
+          id="authIframe"
+          src="about:blank"
+          style="width: 100%; height: 100%; border: none"
+        ></iframe>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <div id="header-container"></div>
+      <div id="sidebar-container"></div>
+
+      <main class="main-content">
+        <!-- Hero Section with Video Background -->
+        <section class="hero-section" id="home">
+          <!-- Video Background -->
+          <div class="hero-video-bg">
+            <video autoplay muted loop playsinline class="hero-bg-video">
+              <source src="../Frontend/images/services/background.mp4" type="video/mp4">
+            </video>
+            <div class="hero-video-overlay"></div>
+          </div>
+          <div class="hero-content">
+            <div class="hero-text">
+              <h1 class="hero-title">
+                Your Laundry,
+                <span class="gradient-text">Our Priority</span>
+              </h1>
+              <p class="hero-description">
+                Ahmedabad's trusted laundry — serving <strong>Satellite, Bodakdev, Vastrapur, 
+                Prahlad Nagar, Thaltej &amp; nearby areas</strong> within 10 km.
+                Doorstep pickup &amp; delivery, same-day service available!
+              </p>
+              <div class="hero-buttons">
+                <button class="btn-primary" onclick="window.location.href='services.html'">
+                  <i class="fas fa-calendar-plus"></i>
+                  Book Now
+                </button>
+                <button class="btn-secondary" onclick="openHowItWorksVideo()">
+                  <i class="fas fa-play-circle"></i>
+                  How It Works
+                </button>
+              </div>
+              <div class="hero-stats">
+                <div class="stat-item">
+                  <i class="fas fa-users"></i>
+                  <div class="stat-info">
+                    <h3>10,000+</h3>
+                    <p>Happy Customers</p>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <i class="fas fa-tshirt"></i>
+                  <div class="stat-info">
+                    <h3>50,000+</h3>
+                    <p>Clothes Cleaned</p>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <i class="fas fa-star"></i>
+                  <div class="stat-info">
+                    <h3>4.9/5</h3>
+                    <p>Average Rating</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="hero-image">
+              <div class="hero-image-wrapper">
+                <i class="fas fa-tshirt hero-icon"></i>
+              </div>
+              <div class="floating-element element-1">
+                <i class="fas fa-soap"></i>
+              </div>
+              <div class="floating-element element-2">
+                <i class="fas fa-iron"></i>
+              </div>
+              <div class="floating-element element-3">
+                <i class="fas fa-sparkles"></i>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+          <div class="section-header">
+            <h2 class="section-title">Why Choose Us?</h2>
+            <p class="section-subtitle">
+              We provide the best laundry services with unmatched quality and
+              convenience
+            </p>
+          </div>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-truck"></i>
+              </div>
+              <h3 class="feature-title">Free Pickup & Delivery</h3>
+              <p class="feature-description">
+                We come to your doorstep to pick up and deliver your laundry at
+                no extra cost.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <h3 class="feature-title">24 Hour Service</h3>
+              <p class="feature-description">
+                Get your clothes cleaned and delivered within 24 hours with our
+                express service.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3 class="feature-title">100% Safe & Secure</h3>
+              <p class="feature-description">
+                We use eco-friendly detergents and advanced techniques to care
+                for your clothes.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-tag"></i>
+              </div>
+              <h3 class="feature-title">Affordable Pricing</h3>
+              <p class="feature-description">
+                Premium quality at competitive prices. No hidden charges,
+                transparent billing.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services-section" id="services">
+          <div class="section-header">
+            <h2 class="section-title">Our Services</h2>
+            <p class="section-subtitle">
+              Professional laundry solutions tailored to your needs
+            </p>
+          </div>
+          <div class="services-grid">
+            <div class="service-card">
+              <div class="service-icon">
+                <img src="../Frontend/images/services/iron2.jpg" alt="Iron Only"
+                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                onerror="this.style.display='none'">
+              </div>
+              <h3 class="service-title">Iron Only</h3>
+              <p class="service-description">
+                Professional ironing service for your already washed clothes
+              </p>
+              <div class="service-price">Starting at ₹10/piece</div>
+              
+            </div>
+            <div class="service-card featured">
+              <div class="featured-badge">Most Popular</div>
+              <div class="service-icon">
+                <img src="../Frontend/images/services/wash-iron.jpg" alt="Iron Only"
+                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                onerror="this.style.display='none'">
+              </div>
+              <h3 class="service-title">Wash & Iron</h3>
+              <p class="service-description">
+                Complete wash and iron service with premium detergents
+              </p>
+              <div class="service-price">Starting at ₹100/piece</div>
+              
+            </div>
+            <div class="service-card">
+              <div class="service-icon">
+                <img src="../Frontend/images/services/steam-press.jpg" alt="Iron Only"
+                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                onerror="this.style.display='none'">
+              </div>
+              <h3 class="service-title">Steam Press</h3>
+              <p class="service-description">
+                Professional steam pressing for a crisp, fresh look
+              </p>
+              <div class="service-price">Starting at ₹25/piece</div>
+              
+            </div>
+            <div class="service-card">
+              <div class="service-icon">
+                <img src="../Frontend/images/services/dry-clean.jpg" alt="Iron Only"
+                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
+                onerror="this.style.display='none'">
+              </div>
+              <h3 class="service-title">Dry Clean</h3>
+              <p class="service-description">
+                Specialized dry cleaning for delicate fabrics
+              </p>
+              <div class="service-price">Starting at ₹80/piece</div>
+              
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══ SERVICE AREA SECTION ═══ -->
+        <section class="delivery-zone-section" id="service-area">
+          <div class="delivery-zone-inner">
+
+            <!-- Left: Info + Pincode checker -->
+            <div class="dz-left">
+              <div class="dz-badge">
+                <i class="fas fa-location-dot"></i>
+                Satellite, Ahmedabad
+              </div>
+              <h2 class="dz-title">We Deliver <span class="dz-title-accent">To You</span></h2>
+              <p class="dz-subtitle">
+                Serving within <strong>10 km of Satellite</strong> — free doorstep pickup &amp; delivery across Ahmedabad's western suburbs.
+              </p>
+
+              <!-- Pincode Checker -->
+              <div class="dz-checker">
+                <p class="dz-checker-label">
+                  <i class="fas fa-search-location"></i>
+                  Check if we deliver to your area
+                </p>
+                <div class="dz-checker-row">
+                  <input
+                    type="text"
+                    id="pincodeCheckInput"
+                    class="dz-input"
+                    maxlength="6"
+                    placeholder="Enter 6-digit pincode"
+                    oninput="this.value=this.value.replace(/\D/g,'')"
+                  />
+                  <button class="dz-check-btn" onclick="checkPincodeArea()">
+                    <i class="fas fa-search"></i> Check
+                  </button>
+                </div>
+                <div id="pincodeCheckResult" class="dz-result"></div>
+              </div>
+
+              <!-- Stats row -->
+              <div class="dz-stats">
+                <div class="dz-stat">
+                  <span class="dz-stat-num">10 km</span>
+                  <span class="dz-stat-label">Delivery Radius</span>
+                </div>
+                <div class="dz-stat-divider"></div>
+                <div class="dz-stat">
+                  <span class="dz-stat-num">11+</span>
+                  <span class="dz-stat-label">Areas Covered</span>
+                </div>
+                <div class="dz-stat-divider"></div>
+                <div class="dz-stat">
+                  <span class="dz-stat-num">Free</span>
+                  <span class="dz-stat-label">Pickup & Delivery</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Area chips grid -->
+            <div class="dz-right">
+              <h3 class="dz-areas-title">Covered Areas</h3>
+              <div class="dz-areas-grid">
+                <div class="dz-area-chip dz-area-hq">
+                  <i class="fas fa-store"></i>
+                  <div>
+                    <span class="dz-area-name">Satellite</span>
+                    <span class="dz-area-pin">380015 · HQ</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Bodakdev</span>
+                    <span class="dz-area-pin">380054</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Vastrapur</span>
+                    <span class="dz-area-pin">380051</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Prahlad Nagar</span>
+                    <span class="dz-area-pin">380015</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Thaltej</span>
+                    <span class="dz-area-pin">380059</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Navrangpura</span>
+                    <span class="dz-area-pin">380009</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Ambawadi</span>
+                    <span class="dz-area-pin">380006</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Shyamal / Paldi</span>
+                    <span class="dz-area-pin">380013</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Anandnagar</span>
+                    <span class="dz-area-pin">380061</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Maninagar</span>
+                    <span class="dz-area-pin">380007</span>
+                  </div>
+                </div>
+                <div class="dz-area-chip">
+                  <i class="fas fa-map-pin"></i>
+                  <div>
+                    <span class="dz-area-name">Science City Rd</span>
+                    <span class="dz-area-pin">380058</span>
+                  </div>
+                </div>
+              </div>
+              <p class="dz-note">
+                <i class="fas fa-phone-volume"></i>
+                Don't see your area?
+                <a href="tel:+919876543210">Call us</a> — we may still help!
+              </p>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-it-works-section">
+          <div class="section-header">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">
+              Simple, fast, and hassle-free laundry service in 4 easy steps
+            </p>
+          </div>
+          <div class="steps-container">
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div class="step-icon">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+              <h3 class="step-title">Schedule Pickup</h3>
+              <p class="step-description">
+                Choose a convenient time for pickup through our app or website
+              </p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div class="step-icon">
+                <i class="fas fa-truck-pickup"></i>
+              </div>
+              <h3 class="step-title">We Collect</h3>
+              <p class="step-description">
+                Our team picks up your laundry from your doorstep
+              </p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div class="step-icon">
+                <i class="fas fa-magic"></i>
+              </div>
+              <h3 class="step-title">We Clean</h3>
+              <p class="step-description">
+                Professional cleaning with premium care and attention
+              </p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item">
+              <div class="step-number">4</div>
+              <div class="step-icon">
+                <i class="fas fa-home"></i>
+              </div>
+              <h3 class="step-title">We Deliver</h3>
+              <p class="step-description">
+                Fresh, clean clothes delivered back to your door
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+          <div class="cta-content">
+            <h2 class="cta-title">
+              Ready for Fresh Clothes, Delivered to Your Door?
+            </h2>
+            <p class="cta-description">
+              Serving Satellite, Bodakdev, Vastrapur &amp; nearby Ahmedabad areas. Book now — we pick up from your doorstep!
+            </p>
+            <button class="cta-button" onclick="window.location.href='services.html'">
+              <i class="fas fa-calendar-plus"></i>
+              Schedule Pickup Now
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer Container -->
+      <div id="footer-container"></div>
+    </div>
+
+    <script>
+      // Load Header Component
+      fetch("header.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header-container").innerHTML = data;
+          const headerScript = document.createElement("script");
+          headerScript.src = "js/header.js";
+          document.body.appendChild(headerScript);
+        })
+        .catch((error) => console.error("Error loading header:", error));
+
+      // Load Sidebar Component
+      fetch("sidebar.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("sidebar-container").innerHTML = data;
+          const sidebarScript = document.createElement("script");
+          sidebarScript.src = "js/sidebar.js";
+          document.body.appendChild(sidebarScript);
+        })
+        .catch((error) => console.error("Error loading sidebar:", error));
+
+      // Load Footer Component
+      fetch("footer.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("footer-container").innerHTML = data;
+          const footerScript = document.createElement("script");
+          footerScript.src = "js/footer.js";
+          document.body.appendChild(footerScript);
+        })
+        .catch((error) => console.error("Error loading footer:", error));
+    </script>
+
+    <script src="js/home-content.js"></script>
+    <script src="js/delivery-zone.js"></script>
+  </body>
+</html>

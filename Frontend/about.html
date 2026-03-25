@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Quick Laundry</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/about.css">
+</head>
+<body>
+    <div class="page-background"></div>
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Header Container -->
+        <div id="header-container"></div>
+        
+        <!-- Sidebar Container -->
+        <div id="sidebar-container"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Hero Section with Video Background -->
+            <section class="about-hero">
+                <!-- Video Background -->
+                <video autoplay muted loop playsinline class="hero-video-bg" id="heroVideo">
+                    <source src="../Frontend/images/about.mp4" type="video/mp4">
+                    <source src="videos/laundry-hero.webm" type="video/webm">
+                    <!-- Fallback: If video doesn't load, gradient shows -->
+                </video>
+                
+                <!-- Dark Overlay for text readability -->
+                <div class="hero-overlay"></div>
+                
+                <!-- Hero Content -->
+                <div class="hero-content">
+                    <h1 class="hero-title">About <span class="gradient-text">Quick Laundry</span></h1>
+                    <p class="hero-subtitle">Delivering freshness, one garment at a time since 2018</p>
+                    <div class="hero-scroll">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Story Section -->
+            <section class="story-section">
+                <div class="container">
+                    <div class="story-grid">
+                        <div class="story-image">
+                            <img src="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=800" alt="Our Story">
+                            <div class="image-overlay"></div>
+                        </div>
+                        <div class="story-content">
+                            <div class="section-badge">Our Story</div>
+                            <h2 class="section-title">How It All Started</h2>
+                            <p class="story-text">
+                                Founded in 2018, Quick Laundry began with a simple mission: to revolutionize the way people experience laundry services. What started as a small operation with just two dedicated team members has grown into a thriving business serving over 10,000 happy customers.
+                            </p>
+                            <p class="story-text">
+                                We noticed that busy professionals and families struggled to find time for laundry. We created a solution that brings professional laundry care right to your doorstep, saving you time and ensuring your clothes receive the care they deserve.
+                            </p>
+                            <div class="story-stats">
+                                <div class="stat-box">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <h3>6+</h3>
+                                    <p>Years of Excellence</p>
+                                </div>
+                                <div class="stat-box">
+                                    <i class="fas fa-users"></i>
+                                    <h3>10,000+</h3>
+                                    <p>Happy Customers</p>
+                                </div>
+                                <div class="stat-box">
+                                    <i class="fas fa-tshirt"></i>
+                                    <h3>50,000+</h3>
+                                    <p>Items Cleaned</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mission & Vision Section -->
+            <section class="mission-vision-section">
+                <div class="container">
+                    <div class="mv-grid">
+                        <div class="mv-card">
+                            <div class="mv-icon">
+                                <i class="fas fa-bullseye"></i>
+                            </div>
+                            <h3>Our Mission</h3>
+                            <p>To provide exceptional laundry services that save time, deliver quality, and exceed customer expectations through innovation and dedication.</p>
+                        </div>
+                        <div class="mv-card">
+                            <div class="mv-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <h3>Our Vision</h3>
+                            <p>To become the most trusted and preferred laundry service provider, setting industry standards for quality, convenience, and customer satisfaction.</p>
+                        </div>
+                        <div class="mv-card">
+                            <div class="mv-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <h3>Our Values</h3>
+                            <p>Quality, integrity, customer focus, and environmental responsibility guide every decision we make and every service we provide.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Core Values Section -->
+            <section class="values-section">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-badge">What We Stand For</div>
+                        <h2 class="section-title">Our Core Values</h2>
+                        <p class="section-subtitle">The principles that guide everything we do</p>
+                    </div>
+                    <div class="values-grid">
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <h3>Quality First</h3>
+                            <p>We never compromise on quality. Every garment receives professional care and attention.</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <h3>Eco-Friendly</h3>
+                            <p>We use environmentally safe detergents and sustainable practices to protect our planet.</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h3>Punctuality</h3>
+                            <p>We value your time. Timely pickup and delivery are our commitments to you.</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Trust & Security</h3>
+                            <p>Your clothes are safe with us. We handle every item with care and responsibility.</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i class="fas fa-smile"></i>
+                            </div>
+                            <h3>Customer Satisfaction</h3>
+                            <p>Your happiness is our success. We go the extra mile to ensure you're delighted.</p>
+                        </div>
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <h3>Innovation</h3>
+                            <p>We continuously improve our services with the latest technology and techniques.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Team Section -->
+            <section class="team-section">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-badge">Meet Our Team</div>
+                        <h2 class="section-title">The People Behind Quick Laundry</h2>
+                        <p class="section-subtitle">Dedicated professionals committed to your satisfaction</p>
+                    </div>
+                    <center>
+                    <div class="team-grid">
+                        <div class="team-card">
+                            <div class="team-image">
+                                <img src="../Frontend/images/services/Binita.jpeg" alt="Rajesh Kumar">
+                                <div class="team-overlay">
+                                    <div class="team-social">
+                                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                                        <a href="#"><i class="fab fa-twitter"></i></a>
+                                        <a href="#"><i class="fas fa-envelope"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="team-info">
+                                <h3>Binita Vasita</h3>
+                            </div>
+                        </div>
+                        <div class="team-card">
+                            <div class="team-image">
+                                <img src="../Frontend/images/services/DHRUVI.jpeg">
+                            </div>
+                            <div class="team-info">
+                                <h3>Dhruvi Khandhar</h3>
+                            </div>
+                        </div>
+                        <div class="team-card">
+                            <div class="team-image">
+                                <img src="../Frontend/images/services/Twisha .jpeg">
+                            </div>
+                            <div class="team-info">
+                                <h3>Twisha Chauhan</h3>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    </center>
+                </div>
+            </section>
+
+            <!-- Process Section -->
+            <section class="process-section">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-badge">Our Process</div>
+                        <h2 class="section-title">How We Care For Your Clothes</h2>
+                        <p class="section-subtitle">Professional care at every step</p>
+                    </div>
+                    <div class="process-timeline">
+                        <div class="process-item">
+                            <div class="process-number">01</div>
+                            <div class="process-content">
+                                <div class="process-icon">
+                                    <i class="fas fa-clipboard-check"></i>
+                                </div>
+                                <h3>Inspection</h3>
+                                <p>Each garment is carefully inspected for stains, damage, and special care requirements.</p>
+                            </div>
+                        </div>
+                        <div class="process-item">
+                            <div class="process-number">02</div>
+                            <div class="process-content">
+                                <div class="process-icon">
+                                    <i class="fas fa-sort-amount-up"></i>
+                                </div>
+                                <h3>Sorting</h3>
+                                <p>Clothes are sorted by color, fabric type, and care instructions for optimal cleaning.</p>
+                            </div>
+                        </div>
+                        <div class="process-item">
+                            <div class="process-number">03</div>
+                            <div class="process-content">
+                                <div class="process-icon">
+                                    <i class="fas fa-spray-can"></i>
+                                </div>
+                                <h3>Pre-Treatment</h3>
+                                <p>Stains receive special treatment with professional-grade, eco-friendly solutions.</p>
+                            </div>
+                        </div>
+                        <div class="process-item">
+                            <div class="process-number">04</div>
+                            <div class="process-content">
+                                <div class="process-icon">
+                                    <i class="fas fa-sync-alt"></i>
+                                </div>
+                                <h3>Washing</h3>
+                                <p>Garments are washed using premium detergents in state-of-the-art machines.</p>
+                            </div>
+                        </div>
+                        <div class="process-item">
+                            <div class="process-number">05</div>
+                            <div class="process-content">
+                                <div class="process-icon">
+                                    <i class="fas fa-wind"></i>
+                                </div>
+                                <h3>Drying</h3>
+                                <p>Proper drying techniques preserve fabric quality and prevent shrinkage.</p>
+                            </div>
+                        </div>
+                        <div class="process-item">
+                            <div class="process-number">06</div>
+                            <div class="process-content">
+                                <div class="process-icon">
+                                    <i class="fas fa-iron"></i>
+                                </div>
+                                <h3>Ironing</h3>
+                                <p>Professional pressing ensures your clothes look crisp and fresh.</p>
+                            </div>
+                        </div>
+                        <div class="process-item">
+                            <div class="process-number">07</div>
+                            <div class="process-content">
+                                <div class="process-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <h3>Packaging</h3>
+                                <p>Clean clothes are carefully folded and packaged for safe delivery.</p>
+                            </div>
+                        </div>
+                        <div class="process-item">
+                            <div class="process-number">08</div>
+                            <div class="process-content">
+                                <div class="process-icon">
+                                    <i class="fas fa-truck"></i>
+                                </div>
+                                <h3>Delivery</h3>
+                                <p>Your fresh, clean laundry is delivered right to your doorstep on time.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Achievements Section -->
+            <section class="achievements-section">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-badge">Our Achievements</div>
+                        <h2 class="section-title">Milestones & Recognition</h2>
+                    </div>
+                    <div class="achievements-grid">
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h3>Best Service Award 2023</h3>
+                            <p>Recognized for outstanding customer service excellence</p>
+                        </div>
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <h3>Eco-Friendly Certified</h3>
+                            <p>Green certification for sustainable practices</p>
+                        </div>
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <h3>4.9/5 Rating</h3>
+                            <p>Average customer satisfaction rating</p>
+                        </div>
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-medal"></i>
+                            </div>
+                            <h3>Industry Leader</h3>
+                            <p>Top-rated laundry service in the region</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <section class="cta-section">
+                <div class="cta-overlay"></div>
+                <div class="container">
+                    <div class="cta-content">
+                        <h2>Experience The Quick Laundry Difference</h2>
+                        <p>Join thousands of satisfied customers who trust us with their laundry needs</p>
+                        <button class="cta-button">
+                            <i class="fas fa-calendar-plus"></i>
+                            Schedule Pickup Now
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Load Header and Sidebar Components -->
+    <script>
+        // Load Header
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+                const headerScript = document.createElement('script');
+                headerScript.src = 'js/header.js';
+                document.body.appendChild(headerScript);
+            })
+            .catch(error => console.error('Error loading header:', error));
+
+        // Load Sidebar
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                const sidebarScript = document.createElement('script');
+                sidebarScript.src = 'js/sidebar.js';
+                document.body.appendChild(sidebarScript);
+            })
+            .catch(error => console.error('Error loading sidebar:', error));
+    </script>
+
+    <!-- Smooth Scroll Animation -->
+    <script>
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.team-card, .value-card, .process-item, .achievement-card');
+            animatedElements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+
+        // Hero scroll button
+        document.querySelector('.hero-scroll')?.addEventListener('click', () => {
+            document.querySelector('.story-section').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

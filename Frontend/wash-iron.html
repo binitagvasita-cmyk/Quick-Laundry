@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wash & Iron - Quick Laundry</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/auth-modal.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="css/wash-iron.css" />
+    <style>
+      /* ── 5-Day Booking Window Banner ── */
+      .date-limit-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        border: 1.5px solid #f59e0b;
+        border-radius: 12px;
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.83rem;
+        color: #78350f;
+      }
+      [data-theme="dark"] .date-limit-banner {
+        background: rgba(245,158,11,0.08);
+        border-color: rgba(245,158,11,0.4);
+        color: #fcd34d;
+      }
+      .date-limit-banner > i {
+        color: #d97706;
+        font-size: 1.1rem;
+        margin-top: 1px;
+        flex-shrink: 0;
+      }
+      [data-theme="dark"] .date-limit-banner > i { color: #f59e0b; }
+      .date-limit-banner strong {
+        display: block;
+        margin-bottom: 0.2rem;
+        font-size: 0.88rem;
+        color: #92400e;
+      }
+      [data-theme="dark"] .date-limit-banner strong { color: #fde68a; }
+
+      /* ── Date field invalid state ── */
+      #pickupDate:invalid,
+      #pickupDate.date-error {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239,68,68,0.12) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Auth Modal Overlay -->
+    <div class="auth-modal-overlay" id="authModalOverlay">
+      <div class="auth-modal-container" id="authModalContainer">
+        <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+        <iframe
+          id="authIframe"
+          src="about:blank"
+          style="width: 100%; height: 100%; border: none"
+        ></iframe>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <div id="header-container"></div>
+      <div id="sidebar-container"></div>
+
+      <main class="main-content">
+        <!-- Page Header -->
+        <section class="page-header">
+          <div class="header-content">
+            <div class="header-text">
+              <h1>
+                <i class="fas fa-soap"></i>
+                Wash & Iron Service
+              </h1>
+              <p>Professional washing and ironing for your clothes</p>
+            </div>
+            <div class="header-badge">
+              <span class="badge-popular">Most Popular</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Order Form Section -->
+        <section class="order-section">
+          <div class="order-container">
+            
+            <!-- Service Selection Card -->
+            <div class="order-card">
+              <div class="card-header">
+                <i class="fas fa-tshirt"></i>
+                <h2>Select Service & Quantity</h2>
+              </div>
+              
+              <div class="card-body">
+                <form id="orderForm">
+                  
+                  <!-- Service Selection -->
+                  <div class="form-group">
+                    <label for="serviceSelect">
+                      <i class="fas fa-list"></i>
+                      Select Item Type
+                    </label>
+                    <select id="serviceSelect" class="form-control" required>
+                      <option value="">-- Choose Item --</option>
+                    </select>
+                  </div>
+
+                  <!-- Price Display -->
+                  <div class="form-group">
+                    <label for="priceDisplay">
+                      <i class="fas fa-tag"></i>
+                      Price per Item
+                    </label>
+                    <div class="price-display-wrapper">
+                      <input 
+                        type="text" 
+                        id="priceDisplay" 
+                        class="form-control price-display" 
+                        readonly 
+                        placeholder="₹0.00"
+                      />
+                      <span class="price-unit" id="priceUnit">/ piece</span>
+                    </div>
+                  </div>
+
+                  <!-- Quantity -->
+                  <div class="form-group">
+                    <label for="quantity">
+                      <i class="fas fa-plus-minus"></i>
+                      Quantity
+                    </label>
+                    <div class="quantity-control">
+                      <button type="button" class="qty-btn" id="decreaseQty">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                      <input 
+                        type="number" 
+                        id="quantity" 
+                        class="form-control qty-input" 
+                        value="1" 
+                        min="1" 
+                        max="100"
+                        required
+                      />
+                      <button type="button" class="qty-btn" id="increaseQty">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Total Price -->
+                  <div class="total-price-section">
+                    <div class="total-label">Total Price:</div>
+                    <div class="total-amount" id="totalAmount">₹0.00</div>
+                  </div>
+
+                  <!-- Pickup Details -->
+                  <div class="section-divider">
+                    <i class="fas fa-truck"></i>
+                    Pickup Details
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="pickupDate">
+                        <i class="fas fa-calendar"></i>
+                        Pickup Date
+                      </label>
+
+                      <!-- ✅ 5-Day Booking Window Banner -->
+                      <div class="date-limit-banner">
+                        <i class="fas fa-calendar-alt"></i>
+                        <div>
+                          <strong>📅 5-Day Booking Window</strong>
+                          You can schedule pickup up to 5 days ahead only. This helps us manage orders efficiently and serve you better!
+                        </div>
+                      </div>
+
+                      <input 
+                        type="date" 
+                        id="pickupDate" 
+                        class="form-control" 
+                        required
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="pickupTime">
+                        <i class="fas fa-clock"></i>
+                        Pickup Time
+                      </label>
+                      <select id="pickupTime" class="form-control" required>
+                        <option value="">-- Select Time --</option>
+                        <option value="09:00-11:00">9:00 AM - 11:00 AM</option>
+                        <option value="11:00-13:00">11:00 AM - 1:00 PM</option>
+                        <option value="13:00-15:00">1:00 PM - 3:00 PM</option>
+                        <option value="15:00-17:00">3:00 PM - 5:00 PM</option>
+                        <option value="17:00-19:00">5:00 PM - 7:00 PM</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- ✅ UPDATED: Pickup Address - auto-filled from profile -->
+                  <div class="form-group">
+                    <label for="pickupAddress">
+                      <i class="fas fa-map-marker-alt"></i>
+                      Pickup Address
+                      <span class="address-autofill-hint" id="addressAutofillHint" style="display:none;">
+                        <i class="fas fa-magic"></i> Auto-filled from your profile
+                      </span>
+                    </label>
+                    <textarea 
+                      id="pickupAddress" 
+                      class="form-control" 
+                      rows="3" 
+                      placeholder="Enter your complete address"
+                      required
+                    ></textarea>
+                  </div>
+
+                  <!-- Special Instructions -->
+                  <div class="form-group">
+                    <label for="specialInstructions">
+                      <i class="fas fa-comment-alt"></i>
+                      Special Instructions (Optional)
+                    </label>
+                    <textarea 
+                      id="specialInstructions" 
+                      class="form-control" 
+                      rows="2" 
+                      placeholder="Any special care instructions for your clothes"
+                    ></textarea>
+                  </div>
+
+                  <!-- Order Summary (live, matches iron page) -->
+                  <div class="order-summary">
+                    <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                    <div class="summary-row"><span>Item Type:</span><span id="summaryServiceType">-</span></div>
+                    <div class="summary-row"><span>Quantity:</span><span id="summaryQuantity">-</span></div>
+                    <div class="summary-row"><span>Price per piece:</span><span id="summaryPricePerPiece">-</span></div>
+                    <div class="summary-row"><span>Delivery:</span><span id="summaryDelivery">Free</span></div>
+                    <div class="summary-row total"><span>Total Amount:</span><span id="summaryTotal">₹0</span></div>
+                  </div>
+
+                  <!-- Two action buttons -->
+                  <div class="btn-group-actions">
+                    <button type="button" class="btn-add-to-cart" id="addToCartBtn">
+                      <i class="fas fa-shopping-cart"></i>
+                      <span>Add to Cart</span>
+                    </button>
+                    <button type="button" class="btn-place-order" id="placeOrderBtn">
+                      <i class="fas fa-bolt"></i>
+                      <span>Place Order</span>
+                    </button>
+                  </div>
+
+                  <!-- Hint text below buttons -->
+                  <p class="btn-hint-text">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Add to Cart</strong> saves for later &nbsp;|&nbsp;
+                    <strong>Place Order</strong> confirms immediately
+                  </p>
+
+                </form>
+              </div>
+            </div>
+
+            <!-- Features Sidebar -->
+            <div class="features-sidebar">
+              <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>100% Safe</h3>
+                <p>Eco-friendly detergents and gentle care</p>
+              </div>
+
+              <div class="feature-card">
+                <i class="fas fa-truck"></i>
+                <h3>Free Pickup & Delivery</h3>
+                <p>We come to your doorstep</p>
+              </div>
+
+              <div class="feature-card">
+                <i class="fas fa-clock"></i>
+                <h3>Quick Turnaround</h3>
+                <p>Get your clothes back in 24-48 hours</p>
+              </div>
+
+              <div class="feature-card">
+                <i class="fas fa-star"></i>
+                <h3>Quality Guaranteed</h3>
+                <p>Professional cleaning standards</p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+      <div id="footer-container"></div>
+    </div>
+
+    <!-- Load Components -->
+    <script>
+      fetch("header.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header-container").innerHTML = data;
+          const headerScript = document.createElement("script");
+          headerScript.src = "js/header.js";
+          headerScript.onload = () => {
+            console.log("✅ Header script loaded");
+            loadSidebar();
+          };
+          document.body.appendChild(headerScript);
+        })
+        .catch((error) => console.error("Error loading header:", error));
+
+      function loadSidebar() {
+        fetch("sidebar.html")
+          .then((response) => response.text())
+          .then((data) => {
+            document.getElementById("sidebar-container").innerHTML = data;
+            setTimeout(() => {
+              const sidebarScript = document.createElement("script");
+              sidebarScript.src = "js/sidebar.js";
+              sidebarScript.onload = () => console.log("✅ Sidebar script loaded");
+              sidebarScript.onerror = () => console.error("❌ Failed to load sidebar script");
+              document.body.appendChild(sidebarScript);
+            }, 100);
+          })
+          .catch((error) => console.error("Error loading sidebar:", error));
+      }
+
+      fetch("footer.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("footer-container").innerHTML = data;
+          const footerScript = document.createElement("script");
+          footerScript.src = "js/footer.js";
+          document.body.appendChild(footerScript);
+        })
+        .catch((error) => console.error("Error loading footer:", error));
+    </script>
+
+    <script src="js/home-content.js"></script>
+    <script src="js/wash-iron.js"></script>
+  </body>
+</html>

@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Refund Policy - Quick Laundry</title>
+
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/refund.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+  </head>
+  <body>
+    <!-- Optional Video Background - Uncomment to enable -->
+    <!-- 
+    <div class="video-background">
+      <video autoplay muted loop playsinline>
+        <source src="path/to/your/video.mp4" type="video/mp4">
+        <source src="path/to/your/video.webm" type="video/webm">
+      </video>
+    </div>
+    -->
+
+    <!-- Auth Modal Overlay -->
+    <div class="auth-modal-overlay" id="authModalOverlay">
+      <div class="auth-modal-container" id="authModalContainer">
+        <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+        <iframe
+          id="authIframe"
+          src="about:blank"
+          style="width: 100%; height: 100%; border: none"
+        ></iframe>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <!-- Header Container -->
+      <div id="header-container"></div>
+
+      <!-- Sidebar Container -->
+      <div id="sidebar-container"></div>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Breadcrumb Navigation -->
+        <div class="breadcrumb-container">
+          <div class="breadcrumb">
+            <a href="home-content.html" class="breadcrumb-link">
+              <i class="fas fa-home"></i>
+              <span>Home</span>
+            </a>
+            <i class="fas fa-chevron-right breadcrumb-separator"></i>
+            <span class="breadcrumb-current">Refund Policy</span>
+          </div>
+        </div>
+
+        <!-- Page Header -->
+        <section class="page-header">
+          <div class="page-header-content">
+            <div class="page-header-icon">
+              <i class="fas fa-undo-alt"></i>
+            </div>
+            <h1 class="page-title">Refund & Cancellation Policy</h1>
+            <p class="page-subtitle">
+              Your satisfaction is our priority. Please read our refund and
+              cancellation terms carefully.
+            </p>
+            <div class="page-meta">
+              <div class="meta-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Last Updated: February 1, 2026</span>
+              </div>
+              <div class="meta-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Customer Protection Guaranteed</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Quick Summary Cards -->
+        <section class="quick-summary">
+          <div class="summary-cards">
+            <div class="summary-card">
+              <div class="summary-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <h3>Cancellation Window</h3>
+              <p>Free cancellation up to 2 hours before pickup</p>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon">
+                <i class="fas fa-rupee-sign"></i>
+              </div>
+              <h3>Refund Processing</h3>
+              <p>Refunds processed within 5-7 business days</p>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3>Money-Back Guarantee</h3>
+              <p>100% refund for service quality issues</p>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon">
+                <i class="fas fa-headset"></i>
+              </div>
+              <h3>Support Available</h3>
+              <p>24/7 customer support for refund queries</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Policy Content -->
+        <section class="policy-content">
+          <div class="policy-container">
+            
+            <!-- Table of Contents -->
+            <div class="table-of-contents">
+              <h3 class="toc-title">
+                <i class="fas fa-list"></i>
+                Quick Navigation
+              </h3>
+              <ul class="toc-list">
+                <li><a href="#cancellation-policy">Cancellation Policy</a></li>
+                <li><a href="#refund-policy">Refund Policy</a></li>
+                <li><a href="#service-issues">Service Quality Issues</a></li>
+                <li><a href="#damaged-items">Damaged or Lost Items</a></li>
+                <li><a href="#payment-methods">Payment & Refund Methods</a></li>
+                <li><a href="#processing-time">Processing Timeline</a></li>
+                <li><a href="#exceptions">Exceptions & Special Cases</a></li>
+                <li><a href="#contact">Contact for Refunds</a></li>
+              </ul>
+            </div>
+
+            <!-- Policy Sections -->
+            <div class="policy-sections">
+              
+              <!-- Cancellation Policy -->
+              <div class="policy-section" id="cancellation-policy">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fas fa-times-circle"></i>
+                  </div>
+                  <h2>Cancellation Policy</h2>
+                </div>
+                <div class="section-content">
+                  <p class="section-intro">
+                    We understand that plans change. Here's our flexible cancellation policy:
+                  </p>
+
+                  <div class="info-box info-box-success">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                      <h4>Free Cancellation Window</h4>
+                      <p>
+                        Cancel your order free of charge up to 2 hours before the scheduled pickup time. Full refund will be issued to your original payment method.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="timeline">
+                    <div class="timeline-item">
+                      <div class="timeline-marker success"></div>
+                      <div class="timeline-content">
+                        <h4>More than 2 hours before pickup</h4>
+                        <p>100% refund - No cancellation fee</p>
+                      </div>
+                    </div>
+
+                    <div class="timeline-item">
+                      <div class="timeline-marker warning"></div>
+                      <div class="timeline-content">
+                        <h4>1-2 hours before pickup</h4>
+                        <p>50% cancellation fee applied</p>
+                      </div>
+                    </div>
+
+                    <div class="timeline-item">
+                      <div class="timeline-marker danger"></div>
+                      <div class="timeline-content">
+                        <h4>Less than 1 hour or after pickup</h4>
+                        <p>No refund available (service charges apply)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <h3>How to Cancel Your Order</h3>
+                  <ol class="numbered-list">
+                    <li>
+                      <strong>Through Your Account:</strong> Log in to your account, go to "My Orders," and click the "Cancel Order" button.
+                    </li>
+                    <li>
+                      <strong>Via Customer Support:</strong> Call us at <a href="tel:+919876543210">+91 98765 43210</a> or email <a href="mailto:support@quicklaundry.com">support@quicklaundry.com</a>
+                    </li>
+                    <li>
+                      <strong>Mobile App:</strong> Open the app, navigate to your active orders, and select "Cancel Order."
+                    </li>
+                  </ol>
+                </div>
+              </div>
+
+              <!-- Refund Policy -->
+              <div class="policy-section" id="refund-policy">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                  </div>
+                  <h2>Refund Policy</h2>
+                </div>
+                <div class="section-content">
+                  <p class="section-intro">
+                    We process refunds fairly and promptly. Here are the scenarios where refunds apply:
+                  </p>
+
+                  <div class="refund-scenarios">
+                    <div class="scenario-card">
+                      <div class="scenario-icon">
+                        <i class="fas fa-calendar-times"></i>
+                      </div>
+                      <h4>Order Cancellation</h4>
+                      <p>
+                        If you cancel within the free cancellation window, you'll receive a full refund within 5-7 business days.
+                      </p>
+                    </div>
+
+                    <div class="scenario-card">
+                      <div class="scenario-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                      </div>
+                      <h4>Service Not Delivered</h4>
+                      <p>
+                        If we fail to pick up or deliver your laundry as scheduled, you'll receive a 100% refund plus a 10% credit for future orders.
+                      </p>
+                    </div>
+
+                    <div class="scenario-card">
+                      <div class="scenario-icon">
+                        <i class="fas fa-star-half-alt"></i>
+                      </div>
+                      <h4>Poor Service Quality</h4>
+                      <p>
+                        If you're not satisfied with the cleaning quality, we'll re-clean at no charge or issue a partial/full refund based on the issue.
+                      </p>
+                    </div>
+
+                    <div class="scenario-card">
+                      <div class="scenario-icon">
+                        <i class="fas fa-user-times"></i>
+                      </div>
+                      <h4>Service Unavailable</h4>
+                      <p>
+                        If we're unable to provide service due to operational issues, you'll receive an immediate full refund.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="info-box info-box-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                      <h4>Refund Amount Calculation</h4>
+                      <p>
+                        Refunds are calculated based on the service stage at cancellation time and the reason for refund. Any applicable taxes will also be refunded.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Service Quality Issues -->
+              <div class="policy-section" id="service-issues">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fas fa-thumbs-down"></i>
+                  </div>
+                  <h2>Service Quality Issues</h2>
+                </div>
+                <div class="section-content">
+                  <p class="section-intro">
+                    Your satisfaction is our priority. If you're not happy with our service, here's what we do:
+                  </p>
+
+                  <div class="quality-guarantees">
+                    <div class="guarantee-item">
+                      <i class="fas fa-check"></i>
+                      <span><strong>Stains not removed:</strong> Free re-cleaning or 50% refund</span>
+                    </div>
+                    <div class="guarantee-item">
+                      <i class="fas fa-check"></i>
+                      <span><strong>Improper ironing:</strong> Free re-pressing or 30% refund</span>
+                    </div>
+                    <div class="guarantee-item">
+                      <i class="fas fa-check"></i>
+                      <span><strong>Unpleasant odor:</strong> Free re-wash or 40% refund</span>
+                    </div>
+                    <div class="guarantee-item">
+                      <i class="fas fa-check"></i>
+                      <span><strong>Color bleeding:</strong> 100% refund + compensation for damage</span>
+                    </div>
+                    <div class="guarantee-item">
+                      <i class="fas fa-check"></i>
+                      <span><strong>Delayed delivery:</strong> 10-20% discount on current order</span>
+                    </div>
+                  </div>
+
+                  <div class="info-box info-box-warning">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                      <h4>Claim Reporting Timeline</h4>
+                      <p>
+                        Service quality issues must be reported within 24 hours of delivery. Please contact our customer support with photos or videos of the issue for faster resolution.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Damaged or Lost Items -->
+              <div class="policy-section" id="damaged-items">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                  </div>
+                  <h2>Damaged or Lost Items</h2>
+                </div>
+                <div class="section-content">
+                  <p class="section-intro">
+                    While we take utmost care of your garments, in rare cases of damage or loss:
+                  </p>
+
+                  <table class="compensation-table">
+                    <thead>
+                      <tr>
+                        <th>Issue Type</th>
+                        <th>Compensation</th>
+                        <th>Claim Process</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <i class="fas fa-tshirt"></i>
+                          <strong>Minor Damage</strong>
+                        </td>
+                        <td>Up to ₹500 compensation</td>
+                        <td>Submit photo + purchase receipt</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <i class="fas fa-vest"></i>
+                          <strong>Major Damage</strong>
+                        </td>
+                        <td>Up to ₹2,000 compensation</td>
+                        <td>Assessment by our team required</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <i class="fas fa-search"></i>
+                          <strong>Lost Item</strong>
+                        </td>
+                        <td>Up to ₹3,000 compensation</td>
+                        <td>Investigation + proof of ownership</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <i class="fas fa-ring"></i>
+                          <strong>Valuables/Accessories</strong>
+                        </td>
+                        <td>Not covered (unless insured)</td>
+                        <td>Pre-declare high-value items</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="info-box info-box-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                      <h4>Important: Item Declaration</h4>
+                      <p>
+                        Items valued above ₹2,000 must be declared at the time of pickup. We offer optional insurance coverage for high-value garments (additional fee applies).
+                      </p>
+                    </div>
+                  </div>
+
+                  <h3>Filing a Damage/Loss Claim</h3>
+                  <ol class="numbered-list">
+                    <li>Report the issue within 24 hours of delivery</li>
+                    <li>Provide clear photos of the damaged item</li>
+                    <li>Submit proof of purchase (if available)</li>
+                    <li>Our team will assess and respond within 48 hours</li>
+                    <li>Compensation processed within 7-10 business days</li>
+                  </ol>
+                </div>
+              </div>
+
+              <!-- Payment & Refund Methods -->
+              <div class="policy-section" id="payment-methods">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fas fa-credit-card"></i>
+                  </div>
+                  <h2>Payment & Refund Methods</h2>
+                </div>
+                <div class="section-content">
+                  <p class="section-intro">
+                    Refunds are issued to your original payment method:
+                  </p>
+
+                  <div class="payment-methods-grid">
+                    <div class="payment-method">
+                      <div class="method-icon">
+                        <i class="fas fa-credit-card"></i>
+                      </div>
+                      <h4>Credit/Debit Cards</h4>
+                      <p>Refund in 5-7 business days</p>
+                      <span class="method-badge">Most Common</span>
+                    </div>
+
+                    <div class="payment-method">
+                      <div class="method-icon">
+                        <i class="fas fa-university"></i>
+                      </div>
+                      <h4>Net Banking</h4>
+                      <p>Refund in 3-5 business days</p>
+                      <span class="method-badge">Fast</span>
+                    </div>
+
+                    <div class="payment-method">
+                      <div class="method-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                      </div>
+                      <h4>UPI / Digital Wallets</h4>
+                      <p>Instant to 3 business days</p>
+                      <span class="method-badge">Fastest</span>
+                    </div>
+
+                    <div class="payment-method">
+                      <div class="method-icon">
+                        <i class="fas fa-money-bill"></i>
+                      </div>
+                      <h4>Cash on Delivery</h4>
+                      <p>Bank transfer in 7-10 days</p>
+                      <span class="method-badge">Bank Details Required</span>
+                    </div>
+                  </div>
+
+                  <div class="info-box info-box-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                      <h4>Refund Processing Note</h4>
+                      <p>
+                        While we initiate refunds immediately, the actual credit to your account depends on your bank/payment provider. You'll receive an email confirmation once the refund is processed.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Processing Timeline -->
+              <div class="policy-section" id="processing-time">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fas fa-hourglass-half"></i>
+                  </div>
+                  <h2>Refund Processing Timeline</h2>
+                </div>
+                <div class="section-content">
+                  <p class="section-intro">
+                    Here's what to expect after requesting a refund:
+                  </p>
+
+                  <div class="process-timeline">
+                    <div class="process-step">
+                      <div class="step-number">1</div>
+                      <div class="step-content">
+                        <h4>Refund Request</h4>
+                        <p>You submit a refund request</p>
+                        <span class="step-time">Immediate</span>
+                      </div>
+                    </div>
+
+                    <div class="process-step">
+                      <div class="step-number">2</div>
+                      <div class="step-content">
+                        <h4>Review & Approval</h4>
+                        <p>Our team reviews your request</p>
+                        <span class="step-time">24-48 hours</span>
+                      </div>
+                    </div>
+
+                    <div class="process-step">
+                      <div class="step-number">3</div>
+                      <div class="step-content">
+                        <h4>Refund Initiated</h4>
+                        <p>Refund processed to payment method</p>
+                        <span class="step-time">1-2 business days</span>
+                      </div>
+                    </div>
+
+                    <div class="process-step">
+                      <div class="step-number">4</div>
+                      <div class="step-content">
+                        <h4>Amount Credited</h4>
+                        <p>Funds appear in your account</p>
+                        <span class="step-time">3-7 business days</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="info-box info-box-warning">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                      <h4>Bank Processing Time</h4>
+                      <p>
+                        The total time for refunds includes our processing time plus your bank's processing time. During peak seasons or holidays, this may take slightly longer.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Exceptions & Special Cases -->
+              <div class="policy-section" id="exceptions">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fas fa-ban"></i>
+                  </div>
+                  <h2>Exceptions & Special Cases</h2>
+                </div>
+                <div class="section-content">
+                  <p class="section-intro">
+                    Please note these important exceptions to our refund policy:
+                  </p>
+
+                  <div class="exceptions-list">
+                    <div class="exception-item">
+                      <i class="fas fa-times-circle"></i>
+                      <div>
+                        <h4>No Refund for Completed Services</h4>
+                        <p>
+                          Once laundry has been cleaned and delivered in good condition, refunds cannot be issued except for valid quality issues reported within 24 hours.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="exception-item">
+                      <i class="fas fa-times-circle"></i>
+                      <div>
+                        <h4>Pre-existing Damage</h4>
+                        <p>
+                          Items with pre-existing damage, stains, or wear-and-tear are not eligible for damage compensation. Please inform us about such items during pickup.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="exception-item">
+                      <i class="fas fa-times-circle"></i>
+                      <div>
+                        <h4>Promotional Discounts</h4>
+                        <p>
+                          Services availed under promotional offers or discount codes may have different refund terms. Check the specific terms of the promotion.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="exception-item">
+                      <i class="fas fa-times-circle"></i>
+                      <div>
+                        <h4>Third-Party Payments</h4>
+                        <p>
+                          For payments made through third-party platforms, refund processing may take longer and is subject to their policies.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <h3>Force Majeure</h3>
+                  <p>
+                    In cases of natural disasters, pandemics, government restrictions, or other unforeseen circumstances beyond our control, we reserve the right to modify our refund policy. Customers will be notified of any such changes.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Contact for Refunds -->
+              <div class="policy-section" id="contact">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fas fa-headset"></i>
+                  </div>
+                  <h2>Need Help with a Refund?</h2>
+                </div>
+                <div class="section-content">
+                  <p class="section-intro">
+                    Our customer support team is here to help you with refund requests:
+                  </p>
+
+                  <div class="contact-methods">
+                    <div class="contact-method">
+                      <div class="contact-method-icon">
+                        <i class="fas fa-phone-alt"></i>
+                      </div>
+                      <div class="contact-method-info">
+                        <h4>Phone Support</h4>
+                        <p>Call us for immediate assistance</p>
+                        <a href="tel:+919876543210" class="contact-link">+91 98765 43210</a>
+                        <span class="availability">Available 24/7</span>
+                      </div>
+                    </div>
+
+                    <div class="contact-method">
+                      <div class="contact-method-icon">
+                        <i class="fas fa-envelope"></i>
+                      </div>
+                      <div class="contact-method-info">
+                        <h4>Email Support</h4>
+                        <p>Send us your refund request</p>
+                        <a href="mailto:refunds@quicklaundry.com" class="contact-link">refunds@quicklaundry.com</a>
+                        <span class="availability">Response within 24 hours</span>
+                      </div>
+                    </div>
+
+                    <div class="contact-method">
+                      <div class="contact-method-icon">
+                        <i class="fas fa-comments"></i>
+                      </div>
+                      <div class="contact-method-info">
+                        <h4>Live Chat</h4>
+                        <p>Chat with our support team</p>
+                        <a href="#" class="contact-link">Start Live Chat</a>
+                        <span class="availability">Mon-Sat, 9 AM - 9 PM</span>
+                      </div>
+                    </div>
+
+                    <div class="contact-method">
+                      <div class="contact-method-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                      </div>
+                      <div class="contact-method-info">
+                        <h4>Mobile App</h4>
+                        <p>Manage refunds on the go</p>
+                        <a href="#" class="contact-link">Download App</a>
+                        <span class="availability">Available on iOS & Android</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="info-box info-box-success">
+                    <i class="fas fa-lightbulb"></i>
+                    <div>
+                      <h4>Pro Tip: Track Your Refund</h4>
+                      <p>
+                        Log in to your account and visit "My Orders" to track the status of your refund request in real-time. You'll receive email and SMS updates at each stage.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+          <div class="cta-content">
+            <div class="cta-icon">
+              <i class="fas fa-question-circle"></i>
+            </div>
+            <h2>Still Have Questions About Our Refund Policy?</h2>
+            <p>
+              Our customer support team is ready to help you understand our refund terms and process your requests
+            </p>
+            <div class="cta-buttons">
+              <a href="contact.html" class="cta-button primary">
+                <i class="fas fa-envelope"></i>
+                Contact Support
+              </a>
+              <a href="home-content.html" class="cta-button secondary">
+                <i class="fas fa-home"></i>
+                Back to Home
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer Container -->
+      <div id="footer-container"></div>
+    </div>
+
+    <!-- Component Loading Scripts -->
+    <script>
+      // Load Header Component
+      fetch("header.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header-container").innerHTML = data;
+          const headerScript = document.createElement("script");
+          headerScript.src = "js/header.js";
+          document.body.appendChild(headerScript);
+        })
+        .catch((error) => console.error("Error loading header:", error));
+
+      // Load Sidebar Component
+      fetch("sidebar.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("sidebar-container").innerHTML = data;
+          const sidebarScript = document.createElement("script");
+          sidebarScript.src = "js/sidebar.js";
+          document.body.appendChild(sidebarScript);
+        })
+        .catch((error) => console.error("Error loading sidebar:", error));
+
+      // Load Footer Component
+      fetch("footer.html")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("footer-container").innerHTML = data;
+          const footerScript = document.createElement("script");
+          footerScript.src = "js/footer.js";
+          document.body.appendChild(footerScript);
+        })
+        .catch((error) => console.error("Error loading footer:", error));
+    </script>
+
+    <!-- Page-specific JavaScript -->
+    <script src="js/refund.js"></script>
+  </body>
+</html>

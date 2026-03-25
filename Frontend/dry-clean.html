@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Laundry - Dry Clean Service</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="css/dry-clean.css" />
+    <link rel="stylesheet" href="css/auth-modal.css" />
+  </head>
+  <body>
+
+    <!-- Auth Modal Overlay (same pattern as home-content.html) -->
+    <div class="auth-modal-overlay" id="authModalOverlay">
+      <div class="auth-modal-container" id="authModalContainer">
+        <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+        <iframe id="authIframe" src="about:blank" style="width:100%;height:100%;border:none"></iframe>
+      </div>
+    </div>
+
+    <!-- Congratulations Popup (legacy - kept for reference, hidden; iron-style confirmation used instead) -->
+    <div class="congrats-overlay" id="congratsOverlay" style="display:none!important;">
+      <div class="congrats-popup" id="congratsPopup">
+        <div class="congrats-confetti" id="confettiContainer"></div>
+        <div class="congrats-icon">
+          <div class="congrats-circle">
+            <i class="fas fa-check"></i>
+          </div>
+        </div>
+        <h2 class="congrats-title">Order Placed! 🎉</h2>
+        <p class="congrats-subtitle">Your Dry Clean order has been placed successfully.</p>
+        <div class="congrats-details" id="congratsDetails"></div>
+        <div class="congrats-actions">
+          <a href="orders.html" class="congrats-btn congrats-btn-primary">
+            <i class="fas fa-shopping-bag"></i> View My Orders
+          </a>
+          <button class="congrats-btn congrats-btn-secondary" id="congratsClose">
+            <i class="fas fa-plus"></i> Add More
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <div id="header-container"></div>
+      <div id="sidebar-container"></div>
+
+      <main class="main-content">
+
+        <!-- Hero Section -->
+        <section class="dc-hero">
+          <div class="dc-hero-bg">
+            <div class="dc-bubble" style="--x:8%;--y:15%;--s:1.4;--d:7s"></div>
+            <div class="dc-bubble" style="--x:75%;--y:25%;--s:0.9;--d:5s"></div>
+            <div class="dc-bubble" style="--x:45%;--y:65%;--s:1.1;--d:9s"></div>
+            <div class="dc-bubble" style="--x:20%;--y:75%;--s:0.7;--d:6s"></div>
+            <div class="dc-bubble" style="--x:88%;--y:60%;--s:1.3;--d:8s"></div>
+          </div>
+
+          <div class="dc-hero-inner">
+            <div class="dc-hero-content">
+              <div class="dc-hero-tag">
+                <i class="fas fa-award"></i> Specialist Service
+              </div>
+              <h1 class="dc-hero-title">
+                Expert
+                <span class="dc-hero-highlight">Dry Clean</span>
+                at Your Door
+              </h1>
+              <p class="dc-hero-desc">
+                Professional solvent-based cleaning for your delicate garments — suits, ethnic wear,
+                heavy dresses, and more. No water, no shrinkage, just perfect results.
+              </p>
+
+              <div class="dc-badges">
+                <div class="dc-badge">
+                  <i class="fas fa-shield-alt"></i>
+                  <span>No Shrinkage</span>
+                </div>
+                <div class="dc-badge">
+                  <i class="fas fa-tint-slash"></i>
+                  <span>Water-Free</span>
+                </div>
+                <div class="dc-badge">
+                  <i class="fas fa-gem"></i>
+                  <span>Fabric-Safe</span>
+                </div>
+              </div>
+
+              <div class="dc-hero-stats">
+                <div class="dc-stat">
+                  <span class="dc-stat-num">8K+</span>
+                  <span class="dc-stat-label">Garments Cleaned</span>
+                </div>
+                <div class="dc-stat-sep"></div>
+                <div class="dc-stat">
+                  <span class="dc-stat-num">4.9★</span>
+                  <span class="dc-stat-label">Customer Rating</span>
+                </div>
+                <div class="dc-stat-sep"></div>
+                <div class="dc-stat">
+                  <span class="dc-stat-num">48hr</span>
+                  <span class="dc-stat-label">Turnaround</span>
+                </div>
+              </div>
+
+              <a href="#order-form" class="dc-hero-btn">
+                <i class="fas fa-calendar-plus"></i>
+                Book Dry Clean
+              </a>
+            </div>
+
+            <div class="dc-hero-visual">
+              <div class="dc-visual-glow"></div>
+              <div class="dc-visual-card dc-vc-1">
+                <i class="fas fa-user-tie"></i>
+                <span>Men Suits</span>
+                <strong>₹200</strong>
+              </div>
+              <div class="dc-visual-card dc-vc-2">
+                <i class="fas fa-female"></i>
+                <span>Heavy Dress</span>
+                <strong>₹200</strong>
+              </div>
+              <div class="dc-visual-card dc-vc-3">
+                <i class="fas fa-gem"></i>
+                <span>Saree & Blouse</span>
+                <strong>₹250</strong>
+              </div>
+              <div class="dc-visual-center">
+                <i class="fas fa-vest dc-center-icon"></i>
+                <span>Dry Clean</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Scrolling Info Banner -->
+        <div class="dc-info-banner">
+          <div class="dc-info-inner">
+            <span><i class="fas fa-truck"></i> Free Pickup & Delivery</span>
+            <span class="dc-dot">•</span>
+            <span><i class="fas fa-leaf"></i> Eco-Friendly Solvents</span>
+            <span class="dc-dot">•</span>
+            <span><i class="fas fa-clock"></i> 48hr Express Available</span>
+            <span class="dc-dot">•</span>
+            <span><i class="fas fa-star"></i> Trusted by 5000+ Customers</span>
+            <span class="dc-dot">•</span>
+            <span><i class="fas fa-shield-alt"></i> Garment Insurance Included</span>
+            <span class="dc-dot">•</span>
+            <span><i class="fas fa-tag"></i> Transparent Pricing</span>
+          </div>
+        </div>
+
+        <!-- ORDER FORM SECTION -->
+        <section class="dc-order-section" id="order-form">
+          <div class="dc-order-wrapper">
+
+            <!-- Left Column: Form -->
+            <div class="dc-form-card">
+              <div class="dc-form-top">
+                <div class="dc-form-icon-wrap">
+                  <i class="fas fa-vest"></i>
+                </div>
+                <div class="dc-form-heading">
+                  <h2>Book Your Dry Clean</h2>
+                  <p>Choose your garment type and schedule a convenient pickup</p>
+                </div>
+              </div>
+
+              <!-- Loading -->
+              <div class="dc-loader" id="dcLoader">
+                <div class="dc-spin"></div>
+                <span>Loading services from backend...</span>
+              </div>
+
+              <!-- Error -->
+              <div class="dc-form-error" id="dcError" style="display:none">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Could not load services. Please try again.</p>
+                <button onclick="loadDryCleanServices()">
+                  <i class="fas fa-redo"></i> Retry
+                </button>
+              </div>
+
+              <form class="dc-form" id="dryCleanForm" style="display:none">
+
+                <!-- Service Dropdown -->
+                <div class="dc-field">
+                  <label class="dc-label">
+                    <i class="fas fa-concierge-bell"></i>
+                    Garment / Service Type
+                    <span class="dc-req">*</span>
+                  </label>
+                  <div class="dc-sel-wrap">
+                    <select class="dc-select" id="serviceSelect" required>
+                      <option value="">-- Select Garment Type --</option>
+                    </select>
+                    <i class="fas fa-chevron-down dc-sel-arrow"></i>
+                  </div>
+                  <p class="dc-hint" id="serviceHint">Select a garment to view pricing</p>
+                </div>
+
+                <!-- Price Box (shown after selection) -->
+                <div class="dc-price-box" id="priceBox" style="display:none">
+                  <div class="dc-price-row">
+                    <div class="dc-price-col">
+                      <span class="dc-plabel">Price per item</span>
+                      <span class="dc-pval" id="unitPriceDisplay">₹0</span>
+                      <span class="dc-punit" id="unitDisplay">per piece</span>
+                    </div>
+                    <div class="dc-price-sep"></div>
+                    <div class="dc-price-col">
+                      <span class="dc-plabel">Total</span>
+                      <span class="dc-ptotal" id="totalDisplay">₹0</span>
+                    </div>
+                  </div>
+                  <p class="dc-service-desc" id="serviceDescText"></p>
+                </div>
+
+                <!-- Quantity -->
+                <div class="dc-field">
+                  <label class="dc-label">
+                    <i class="fas fa-sort-numeric-up-alt"></i>
+                    Number of Items
+                    <span class="dc-req">*</span>
+                  </label>
+                  <div class="dc-qty-row">
+                    <button type="button" class="dc-qty-btn" id="qtyMinus">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" class="dc-qty-in" id="quantityInput"
+                           value="1" min="1" max="100" required />
+                    <button type="button" class="dc-qty-btn" id="qtyPlus">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                    <span class="dc-qty-label" id="qtyLabel">1 item selected</span>
+                  </div>
+                </div>
+
+                <!-- Date & Time Row -->
+                <div class="dc-field-row">
+                  <div class="dc-field">
+                    <label class="dc-label">
+                      <i class="fas fa-calendar-day"></i>
+                      Pickup Date
+                      <span class="dc-req">*</span>
+                    </label>
+                    <!-- 5-Day Booking Window Badge -->
+                    <div class="dc-booking-badge">
+                      <div class="dc-bb-icons">
+                        <div class="dc-bb-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="dc-bb-line"></div>
+                        <div class="dc-bb-icon small"><i class="fas fa-calendar-times"></i></div>
+                      </div>
+                      <div class="dc-bb-body">
+                        <div class="dc-bb-title-row">
+                          <span class="dc-bb-title">5-Day Booking Window</span>
+                          <span class="dc-bb-chip">POLICY</span>
+                        </div>
+                        <p class="dc-bb-desc">You can schedule pickup up to 5 days ahead only. This helps us manage orders efficiently!</p>
+                      </div>
+                    </div>
+                    <div class="dc-input-wrap">
+                      <i class="fas fa-calendar-day dc-in-icon"></i>
+                      <input type="date" class="dc-input" id="pickupDate" required />
+                    </div>
+                  </div>
+                  <div class="dc-field">
+                    <label class="dc-label">
+                      <i class="fas fa-clock"></i>
+                      Pickup Time Slot
+                      <span class="dc-req">*</span>
+                    </label>
+                    <div class="dc-sel-wrap">
+                      <select class="dc-select" id="pickupTime" required>
+                        <option value="">Select Slot</option>
+                        <option value="09:00-11:00">9:00 AM – 11:00 AM</option>
+                        <option value="11:00-13:00">11:00 AM – 1:00 PM</option>
+                        <option value="13:00-15:00">1:00 PM – 3:00 PM</option>
+                        <option value="15:00-17:00">3:00 PM – 5:00 PM</option>
+                        <option value="17:00-19:00">5:00 PM – 7:00 PM</option>
+                      </select>
+                      <i class="fas fa-chevron-down dc-sel-arrow"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Address -->
+                <div class="dc-field">
+                  <label class="dc-label">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Pickup Address
+                    <span class="dc-req">*</span>
+                  </label>
+                  <div class="dc-input-wrap">
+                    <i class="fas fa-map-marker-alt dc-in-icon"></i>
+                    <input type="text" class="dc-input" id="pickupAddress"
+                           placeholder="Your full pickup address" required />
+                  </div>
+                  <!-- Autofill hint -->
+                  <span id="dcAddressAutofillHint" style="display:none;align-items:center;gap:6px;font-size:.78rem;color:#6b46c1;font-weight:600;margin-top:4px;">
+                    <i class="fas fa-magic"></i> Auto-filled from your profile · you can edit
+                  </span>
+                </div>
+
+                <!-- Special Instructions -->
+                <div class="dc-field">
+                  <label class="dc-label">
+                    <i class="fas fa-sticky-note"></i>
+                    Special Instructions
+                    <span class="dc-opt">(Optional)</span>
+                  </label>
+                  <textarea class="dc-textarea" id="specialInstructions"
+                    placeholder="E.g. handle with care, specific stain on collar..."></textarea>
+                </div>
+
+                <!-- Actions -->
+                <div class="dc-form-actions">
+                  <button type="button" class="dc-btn dc-btn-outline" id="addToCartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    Add to Cart
+                  </button>
+                  <button type="submit" class="dc-btn dc-btn-primary" id="placeOrderBtn">
+                    <i class="fas fa-bolt"></i>
+                    Place Order
+                  </button>
+                </div>
+
+                <!-- Login Notice -->
+                <div class="dc-login-note" id="loginNotice" style="display:none">
+                  <i class="fas fa-lock"></i>
+                  Please <a href="#" id="loginLink">login</a> to book a service or add to cart.
+                </div>
+
+              </form>
+            </div>
+
+            <!-- Right Column: Summary + Info -->
+            <div class="dc-right-panel">
+
+              <!-- Order Summary -->
+              <div class="dc-summary-card" id="summaryCard">
+                <div class="dc-summary-top">
+                  <i class="fas fa-receipt"></i>
+                  <h3>Order Summary</h3>
+                </div>
+                <div class="dc-summary-body" id="summaryBody">
+                  <div class="dc-summary-empty">
+                    <i class="fas fa-clipboard-list"></i>
+                    <p>Select a service to preview your order</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- What We Clean -->
+              <div class="dc-clean-card">
+                <h3 class="dc-clean-title">
+                  <i class="fas fa-vest"></i> What We Dry Clean
+                </h3>
+                <div class="dc-clean-grid">
+                  <div class="dc-clean-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Suits & Blazers</span>
+                  </div>
+                  <div class="dc-clean-item">
+                    <i class="fas fa-female"></i>
+                    <span>Heavy Dresses</span>
+                  </div>
+                  <div class="dc-clean-item">
+                    <i class="fas fa-gem"></i>
+                    <span>Sarees</span>
+                  </div>
+                  <div class="dc-clean-item">
+                    <i class="fas fa-tshirt"></i>
+                    <span>Ethnic Wear</span>
+                  </div>
+                  <div class="dc-clean-item">
+                    <i class="fas fa-vest"></i>
+                    <span>Coats & Jackets</span>
+                  </div>
+                  <div class="dc-clean-item">
+                    <i class="fas fa-star"></i>
+                    <span>Chaniya Choli</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Process Card -->
+              <div class="dc-process-card">
+                <h3 class="dc-process-title">
+                  <i class="fas fa-flask"></i> Our Dry Clean Process
+                </h3>
+                <div class="dc-process-steps">
+                  <div class="dc-proc-step">
+                    <div class="dc-proc-dot"></div>
+                    <div>
+                      <strong>Inspection</strong>
+                      <span>Each garment is checked for stains & damage</span>
+                    </div>
+                  </div>
+                  <div class="dc-proc-step">
+                    <div class="dc-proc-dot"></div>
+                    <div>
+                      <strong>Pre-Treatment</strong>
+                      <span>Stains treated with professional spotting agents</span>
+                    </div>
+                  </div>
+                  <div class="dc-proc-step">
+                    <div class="dc-proc-dot"></div>
+                    <div>
+                      <strong>Solvent Cleaning</strong>
+                      <span>Cleaned using eco-safe dry cleaning solvents</span>
+                    </div>
+                  </div>
+                  <div class="dc-proc-step">
+                    <div class="dc-proc-dot"></div>
+                    <div>
+                      <strong>Finishing & Press</strong>
+                      <span>Steam-pressed for a crisp, wrinkle-free finish</span>
+                    </div>
+                  </div>
+                  <div class="dc-proc-step">
+                    <div class="dc-proc-dot active"></div>
+                    <div>
+                      <strong>Delivery</strong>
+                      <span>Packaged & delivered back to your door</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Services Grid Section -->
+        <section class="dc-services-section">
+          <div class="dc-services-inner">
+            <div class="dc-sec-header">
+              <h2>Our Dry Clean Services</h2>
+              <p>Professional cleaning for every type of garment</p>
+            </div>
+            <div class="dc-services-grid" id="servicesGrid">
+              <!-- Populated by JS -->
+              <div class="dc-sg-loading">
+                <div class="dc-spin"></div>
+                <span>Loading services...</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Why Dry Clean Section -->
+        <section class="dc-why-section">
+          <div class="dc-why-inner">
+            <div class="dc-why-text">
+              <div class="dc-why-badge">
+                <i class="fas fa-info-circle"></i> Why Dry Clean?
+              </div>
+              <h2>When Should You Choose Dry Cleaning?</h2>
+              <p>
+                Dry cleaning is essential for garments that cannot tolerate water —
+                such as suits, silk sarees, heavy embroidered outfits, and wool coats.
+                Our professional process removes stains and odours without harming the fabric.
+              </p>
+              <div class="dc-why-points">
+                <div class="dc-why-point">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Silk, wool, velvet and delicate fabrics</span>
+                </div>
+                <div class="dc-why-point">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Heavy embroidered or embellished garments</span>
+                </div>
+                <div class="dc-why-point">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Garments with "Dry Clean Only" label</span>
+                </div>
+                <div class="dc-why-point">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Stubborn stains that won't wash out</span>
+                </div>
+                <div class="dc-why-point">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Items that wrinkle or shrink in water</span>
+                </div>
+              </div>
+            </div>
+            <div class="dc-why-visual">
+              <div class="dc-why-card">
+                <div class="dc-why-icon-box">
+                  <i class="fas fa-tint-slash"></i>
+                </div>
+                <h4>Water-Free</h4>
+                <p>Safe for delicate fabrics that shrink or bleed in water</p>
+              </div>
+              <div class="dc-why-card">
+                <div class="dc-why-icon-box">
+                  <i class="fas fa-leaf"></i>
+                </div>
+                <h4>Eco Solvents</h4>
+                <p>We use environmentally responsible cleaning agents</p>
+              </div>
+              <div class="dc-why-card">
+                <div class="dc-why-icon-box">
+                  <i class="fas fa-star"></i>
+                </div>
+                <h4>Expert Care</h4>
+                <p>Trained professionals handle your garments with expertise</p>
+              </div>
+              <div class="dc-why-card">
+                <div class="dc-why-icon-box">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <h4>Fully Insured</h4>
+                <p>All garments are insured during cleaning & transit</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="dc-cta">
+          <div class="dc-cta-inner">
+            <h2>Get Your Clothes Professionally Dry Cleaned</h2>
+            <p>Quick pickup, expert cleaning, fresh delivery — all at affordable prices</p>
+            <a href="#order-form" class="dc-cta-btn">
+              <i class="fas fa-calendar-plus"></i>
+              Schedule Pickup Now
+            </a>
+          </div>
+        </section>
+
+      </main>
+
+      <div id="footer-container"></div>
+    </div>
+
+    <!-- Load Header, Sidebar, Footer via JS -->
+    <script>
+      fetch("header.html")
+        .then(r => r.text())
+        .then(data => {
+          document.getElementById("header-container").innerHTML = data;
+          const s = document.createElement("script");
+          s.src = "js/header.js";
+          document.body.appendChild(s);
+        })
+        .catch(e => console.error("Header:", e));
+
+      fetch("sidebar.html")
+        .then(r => r.text())
+        .then(data => {
+          document.getElementById("sidebar-container").innerHTML = data;
+          const s = document.createElement("script");
+          s.src = "js/sidebar.js";
+          document.body.appendChild(s);
+        })
+        .catch(e => console.error("Sidebar:", e));
+
+      fetch("footer.html")
+        .then(r => r.text())
+        .then(data => {
+          document.getElementById("footer-container").innerHTML = data;
+          const s = document.createElement("script");
+          s.src = "js/footer.js";
+          document.body.appendChild(s);
+        })
+        .catch(e => console.error("Footer:", e));
+    </script>
+
+    <script src="js/storage-utils.js"></script>
+    <script src="js/dry-clean.js"></script>
+  </body>
+</html>

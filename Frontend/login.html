@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Laundry - Login</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/login.css" />
+
+    <style>
+      /* Override for iframe - Remove floating elements */
+      .floating-shirt {
+        display: none;
+      }
+      /* ===== IFRAME SAFE OVERRIDES ===== */
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: auto; /* IMPORTANT */
+      }
+
+      .login-wrapper {
+        width: 100%;
+        min-height: 100%;
+        height: auto;
+        display: flex;
+      }
+
+      .login-container {
+        width: 100%;
+        height: auto;
+        max-height: none;
+        border-radius: 0;
+      }
+
+      /* Theme Toggle Button */
+      .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background: var(--secondary-bg);
+        border: 2px solid var(--border-color);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        box-shadow: 0 4px 15px var(--shadow-color);
+      }
+
+      .theme-toggle:hover {
+        transform: scale(1.1);
+        background: var(--accent-color);
+        color: white;
+        box-shadow: 0 6px 20px var(--shadow-hover);
+      }
+
+      [data-theme="dark"] .theme-toggle {
+        background: rgba(167, 139, 250, 0.1);
+      }
+
+      /* Error Message Enhancements */
+      .error-message {
+        display: none;
+        color: #ef4444;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+        padding-left: 0.5rem;
+      }
+
+      .error-message.show {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        animation: shake 0.3s ease;
+      }
+
+      .error-message i {
+        font-size: 0.9rem;
+      }
+
+      /* Success Message */
+      .success-message {
+        display: none;
+        color: #10b981;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+        padding-left: 0.5rem;
+      }
+
+      .success-message.show {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .success-message i {
+        font-size: 0.9rem;
+      }
+
+      /* Info Message for Not Registered Users */
+      .info-banner {
+        display: none;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        align-items: center;
+        gap: 1rem;
+        animation: slideDown 0.3s ease;
+      }
+
+      .info-banner.show {
+        display: flex;
+      }
+
+      .info-banner i {
+        font-size: 1.5rem;
+      }
+
+      .info-banner-content {
+        flex: 1;
+      }
+
+      .info-banner-title {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .info-banner-text {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Login Container -->
+    <div class="login-wrapper">
+      <div class="login-container">
+        <!-- Left Side - Image Section -->
+        <div class="login-image-section">
+          <div class="image-overlay">
+            <div class="brand-section">
+              <div class="brand-logo">
+                <i class="fas fa-tshirt"></i>
+              </div>
+              <h2 class="brand-title">Quick Laundry</h2>
+              <p class="brand-tagline">Your Laundry, Our Priority</p>
+            </div>
+
+            <div class="features-list">
+              <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Free Pickup & Delivery</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>24 Hour Service</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>100% Safe & Secure</span>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Affordable Pricing</span>
+              </div>
+            </div>
+
+            <div class="testimonial">
+              <i class="fas fa-quote-left quote-icon"></i>
+              <p class="testimonial-text">
+                "Best laundry service ever! Quick, reliable, and affordable."
+              </p>
+              <div class="testimonial-author">
+                <strong>- Sarah Johnson</strong>
+                <div class="rating">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side - Login Form Section -->
+        <div class="login-form-section">
+          <div class="form-content">
+            <!-- Form Header -->
+            <div class="form-header">
+              <div class="welcome-icon">
+                <i class="fas fa-user-circle"></i>
+              </div>
+              <h2 class="form-title">Welcome Back!</h2>
+              <p class="form-subtitle">Login to continue to Quick Laundry</p>
+            </div>
+
+            <!-- Info Banner for Not Registered Users -->
+            <div class="info-banner" id="notRegisteredBanner">
+              <i class="fas fa-info-circle"></i>
+              <div class="info-banner-content">
+                <div class="info-banner-title">Account Not Found</div>
+                <div class="info-banner-text">
+                  Don't have an account? Sign up below to get started!
+                </div>
+              </div>
+            </div>
+
+            <!-- Login Form -->
+            <form class="login-form" id="loginForm">
+              <!-- Email Input -->
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <i class="fas fa-envelope"></i>
+                  Email Address
+                </label>
+                <div class="input-wrapper">
+                  <i class="fas fa-envelope input-icon"></i>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-input"
+                    placeholder="Enter your email"
+                    required
+                    autocomplete="email"
+                  />
+                </div>
+                <span class="error-message" id="emailError">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span class="error-text"></span>
+                </span>
+                <span class="success-message" id="emailSuccess">
+                  <i class="fas fa-check-circle"></i>
+                  <span class="success-text">Email looks good!</span>
+                </span>
+              </div>
+
+              <!-- Password Input -->
+              <div class="form-group">
+                <label for="password" class="form-label">
+                  <i class="fas fa-lock"></i>
+                  Password
+                </label>
+                <div class="input-wrapper">
+                  <i class="fas fa-lock input-icon"></i>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-input"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    id="passwordToggle"
+                    aria-label="Toggle password visibility"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+                <span class="error-message" id="passwordError">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <span class="error-text"></span>
+                </span>
+                <span class="success-message" id="passwordSuccess">
+                  <i class="fas fa-check-circle"></i>
+                  <span class="success-text">Password looks good!</span>
+                </span>
+              </div>
+
+              <!-- Remember Me & Forgot Password -->
+              <div class="form-options">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="rememberMe" name="rememberMe" />
+                  <span class="checkbox-custom"></span>
+                  <span class="checkbox-text">Remember me</span>
+                </label>
+                <a href="#" class="forgot-password" id="forgotPassword">
+                  Forgot Password?
+                </a>
+              </div>
+
+              <!-- Login Button -->
+              <button type="submit" class="btn-login" id="loginBtn">
+                <span class="btn-text">Login</span>
+                <i class="fas fa-arrow-right btn-icon"></i>
+              </button>
+
+              
+              <!-- Sign Up Link -->
+              <div class="signup-link">
+                <p>
+                  Don't have an account?
+                  <a href="registration.html" class="link-text" id="signupLink"
+                    >Sign Up</a
+                  >
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/login.js"></script>
+
+    <!-- Theme Toggle Logic -->
+    <script>
+      // Update theme toggle icon based on current theme
+      function updateThemeIcon() {
+        const themeToggle = document.getElementById("themeToggle");
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const icon = themeToggle.querySelector("i");
+
+        if (currentTheme === "dark") {
+          icon.classList.remove("fa-moon");
+          icon.classList.add("fa-sun");
+        } else {
+          icon.classList.remove("fa-sun");
+          icon.classList.add("fa-moon");
+        }
+      }
+
+      // Initialize theme icon
+      updateThemeIcon();
+
+      // Listen for theme changes
+      const observer = new MutationObserver(updateThemeIcon);
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
+    </script>
+
+    <!-- Iframe Communication Script -->
+    <script>
+      // Override close button to send message to parent (only if it exists)
+      const loginCloseBtn = document.getElementById("loginClose");
+      if (loginCloseBtn) {
+        loginCloseBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+          // Send message to parent window to close modal
+          window.parent.postMessage({ type: "CLOSE_MODAL" }, "*");
+        });
+      }
+
+      // Override signup link to switch to registration
+      const signupLink = document.getElementById("signupLink");
+      if (signupLink) {
+        signupLink.addEventListener("click", function (e) {
+          e.preventDefault();
+          // Send message to parent window to switch to registration
+          window.parent.postMessage({ type: "SWITCH_TO_REGISTRATION" }, "*");
+        });
+      }
+
+      // Listen for successful login from login.js
+      window.addEventListener("loginSuccess", function (event) {
+        // Send login success message to parent with user data
+        window.parent.postMessage(
+          {
+            type: "AUTH_SUCCESS",
+            data: {
+              userName: event.detail.userName,
+              userEmail: event.detail.userEmail,
+              token: event.detail.token,
+            },
+          },
+          "*"
+        );
+      });
+    </script>
+  </body>
+</html>

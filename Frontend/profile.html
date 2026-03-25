@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile - Quick Laundry</title>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Profile CSS -->
+    <link rel="stylesheet" href="css/profile.css" />
+  </head>
+  <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+      <p>Loading profile...</p>
+    </div>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+      <!-- Close Button -->
+
+      <!-- Profile Header -->
+      <div class="profile-header">
+        <div class="profile-header-bg"></div>
+        <div class="profile-header-content">
+          <!-- Profile Picture Upload -->
+          <div class="profile-picture-container">
+            <div class="profile-picture" id="profilePicture">
+              <img
+                src=""
+                alt="Profile"
+                id="profilePictureImg"
+                style="display: none"
+              />
+              <div
+                class="profile-picture-placeholder"
+                id="profilePicturePlaceholder"
+              >
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <button class="profile-picture-upload-btn" id="uploadPictureBtn">
+              <i class="fas fa-camera"></i>
+            </button>
+            <input
+              type="file"
+              id="profilePictureInput"
+              accept="image/*"
+              style="display: none"
+            />
+          </div>
+
+          <!-- Profile Info -->
+          <div class="profile-info">
+            <h2 class="profile-name" id="profileName">Loading...</h2>
+            <p class="profile-email" id="profileEmail">Loading...</p>
+            <div class="profile-badges">
+              <span
+                class="badge badge-verified"
+                id="verifiedBadge"
+                style="display: none"
+              >
+                <i class="fas fa-check-circle"></i> Verified
+              </span>
+              <span class="badge badge-member" id="memberBadge">
+                <i class="fas fa-calendar-alt"></i> Member since
+                <span id="memberSince">2024</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Tabs -->
+      <div class="profile-tabs">
+        <button class="profile-tab active" data-tab="personal">
+          <i class="fas fa-user"></i>
+          <span>Personal Info</span>
+        </button>
+        <button class="profile-tab" data-tab="orders">
+          <i class="fas fa-shopping-bag"></i>
+          <span>Orders</span>
+        </button>
+        <button class="profile-tab" data-tab="addresses">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Addresses</span>
+        </button>
+        <button class="profile-tab" data-tab="preferences">
+          <i class="fas fa-cog"></i>
+          <span>Preferences</span>
+        </button>
+      </div>
+
+      <!-- Profile Content -->
+      <div class="profile-content">
+        <!-- Personal Info Tab -->
+        <div class="profile-tab-content active" id="personalTab">
+          <div class="profile-section">
+            <div class="profile-section-header">
+              <h3><i class="fas fa-info-circle"></i> Personal Information</h3>
+              <button class="btn-edit" id="editPersonalBtn">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+            </div>
+
+            <form class="profile-form" id="personalInfoForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="fullName">
+                    <i class="fas fa-user"></i> Full Name
+                  </label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Enter your full name"
+                    disabled
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="phone">
+                    <i class="fas fa-phone"></i> Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Enter your phone number"
+                    disabled
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="dateOfBirth">
+                    <i class="fas fa-birthday-cake"></i> Date of Birth
+                  </label>
+                  <input
+                    type="date"
+                    id="dateOfBirth"
+                    name="dateOfBirth"
+                    placeholder="Select date of birth"
+                    disabled
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="gender">
+                    <i class="fas fa-venus-mars"></i> Gender
+                  </label>
+                  <select id="gender" name="gender" disabled>
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="address">
+                    <i class="fas fa-home"></i> Address
+                  </label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    placeholder="Enter your address"
+                    disabled
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="city"> <i class="fas fa-city"></i> City </label>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    placeholder="Enter your city"
+                    disabled
+                    required
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="pincode">
+                    <i class="fas fa-map-pin"></i> Pincode
+                  </label>
+                  <input
+                    type="text"
+                    id="pincode"
+                    name="pincode"
+                    placeholder="Enter pincode"
+                    maxlength="10"
+                    disabled
+                    required
+                  />
+                </div>
+              </div>
+
+              <div
+                class="form-actions"
+                id="personalFormActions"
+                style="display: none"
+              >
+                <button type="submit" class="btn-save">
+                  <i class="fas fa-save"></i> Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div class="profile-tab-content" id="ordersTab">
+          <div class="profile-section">
+            <div class="profile-section-header">
+              <h3><i class="fas fa-shopping-bag"></i> Order History</h3>
+              <div class="order-filters">
+                <select id="orderStatusFilter" class="filter-select">
+                  <option value="all">All Orders</option>
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="orders-container" id="ordersContainer">
+              <div class="empty-state">
+                <i class="fas fa-shopping-bag"></i>
+                <p>No orders found</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Addresses Tab -->
+        <div class="profile-tab-content" id="addressesTab">
+          <div class="profile-section">
+            <div class="profile-section-header">
+              <h3><i class="fas fa-map-marker-alt"></i> Saved Addresses</h3>
+              <button class="btn-add" id="addAddressBtn">
+                <i class="fas fa-plus"></i> Add New Address
+              </button>
+            </div>
+
+            <div class="addresses-container" id="addressesContainer">
+              <div class="empty-state">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>No saved addresses</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preferences Tab -->
+        <div class="profile-tab-content" id="preferencesTab">
+          <div class="profile-section">
+            <div class="profile-section-header">
+              <h3><i class="fas fa-cog"></i> Preferences & Settings</h3>
+            </div>
+
+            <form class="profile-form" id="preferencesForm">
+              <div class="preferences-group">
+                <h4><i class="fas fa-bell"></i> Notifications</h4>
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <label for="emailNotif">Email Notifications</label>
+                    <p>Receive updates via email</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="emailNotif" name="emailNotif" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <label for="smsNotif">SMS Notifications</label>
+                    <p>Receive updates via SMS</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="smsNotif" name="smsNotif" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="preference-item">
+                  <div class="preference-info">
+                    <label for="promoNotif">Promotional Updates</label>
+                    <p>Get notified about offers and promotions</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="promoNotif" name="promoNotif" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn-save">
+                  <i class="fas fa-save"></i> Save Preferences
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Address Modal -->
+    <div class="modal" id="addAddressModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3><i class="fas fa-map-marker-alt"></i> Add New Address</h3>
+          <button class="modal-close" id="closeAddressModal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <form id="addAddressForm">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="addressType">Address Type</label>
+              <select id="addressType" name="type" required>
+                <option value="home">Home</option>
+                <option value="work">Work</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="addressName">Full Name</label>
+              <input type="text" id="addressName" name="name" required />
+            </div>
+
+            <div class="form-group">
+              <label for="addressPhone">Phone Number</label>
+              <input type="tel" id="addressPhone" name="phone" required />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="addressStreet">Street Address</label>
+              <input type="text" id="addressStreet" name="street" required />
+            </div>
+
+            <div class="form-group">
+              <label for="addressCity">City</label>
+              <input type="text" id="addressCity" name="city" required />
+            </div>
+
+            <div class="form-group">
+              <label for="addressState">State</label>
+              <input type="text" id="addressState" name="state" required />
+            </div>
+
+            <div class="form-group">
+              <label for="addressZip">ZIP Code</label>
+              <input
+                type="text"
+                id="addressZip"
+                name="zip"
+                maxlength="10"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="addressLandmark">Landmark (Optional)</label>
+              <input type="text" id="addressLandmark" name="landmark" />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="checkbox-label">
+                <input type="checkbox" id="isDefault" name="isDefault" />
+                <span>Set as default address</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-save">
+              <i class="fas fa-save"></i> Save Address
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Profile JavaScript -->
+    <script src="js/profile.js"></script>
+  </body>
+</html>

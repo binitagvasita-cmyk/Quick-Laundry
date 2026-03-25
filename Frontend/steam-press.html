@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Laundry - Steam Press Services</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/steam-press.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="css/auth-modal.css" />
+  </head>
+  <body>
+
+    <!-- ============================================
+         AUTH MODAL (Login/Register via iframe)
+         ============================================ -->
+    <div class="auth-modal-overlay" id="authModalOverlay" style="display: none;">
+      <div class="auth-modal-container" id="authModalContainer">
+        <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+        <iframe id="authIframe" src="" style="width: 100%; height: 100%; border: none"></iframe>
+      </div>
+    </div>
+
+    <!-- Order confirmation injected dynamically by steam-press.js (iron-style) -->
+    <!-- ============================================
+         MAIN PAGE STRUCTURE - was: ORDER SUCCESS POPUP
+         ============================================ -->
+    <div class="order-modal-overlay" id="orderSuccessModal" style="display:none!important;">
+      <div class="order-modal-container">
+        <button class="order-modal-close" id="orderModalClose">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div class="order-success-content">
+          <!-- Animated Checkmark -->
+          <div class="success-animation">
+            <div class="success-ring"></div>
+            <div class="success-checkmark">
+              <i class="fas fa-check"></i>
+            </div>
+            <!-- Confetti Dots -->
+            <div class="confetti-dot dot-1"></div>
+            <div class="confetti-dot dot-2"></div>
+            <div class="confetti-dot dot-3"></div>
+            <div class="confetti-dot dot-4"></div>
+            <div class="confetti-dot dot-5"></div>
+            <div class="confetti-dot dot-6"></div>
+          </div>
+
+          <h2 class="order-success-title">🎉 Congratulations!</h2>
+          <p class="order-success-message">Your steam press order has been placed successfully!</p>
+
+          <!-- Order Summary -->
+          <div class="order-summary">
+            <h3 class="summary-title">
+              <i class="fas fa-receipt"></i>
+              Order Summary
+            </h3>
+            <div class="summary-details">
+              <div class="summary-row">
+                <span class="summary-label"><i class="fas fa-tag"></i> Service</span>
+                <span class="summary-value" id="summaryService">-</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label"><i class="fas fa-layer-group"></i> Quantity</span>
+                <span class="summary-value" id="summaryQuantity">-</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label"><i class="fas fa-rupee-sign"></i> Unit Price</span>
+                <span class="summary-value" id="summaryUnitPrice">-</span>
+              </div>
+              <div class="summary-row summary-total">
+                <span class="summary-label"><i class="fas fa-money-bill-wave"></i> Total Amount</span>
+                <span class="summary-value" id="summaryTotal">-</span>
+              </div>
+              <div class="summary-divider"></div>
+              <div class="summary-row">
+                <span class="summary-label"><i class="fas fa-calendar-alt"></i> Pickup Date</span>
+                <span class="summary-value" id="summaryPickupDate">-</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label"><i class="fas fa-clock"></i> Pickup Time</span>
+                <span class="summary-value" id="summaryPickupTime">-</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label"><i class="fas fa-map-marker-alt"></i> Address</span>
+                <span class="summary-value" id="summaryAddress">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="order-actions">
+            <button class="btn-track-order" id="btnTrackOrder">
+              <i class="fas fa-map-marked-alt"></i>
+              Track Order
+            </button>
+            <button class="btn-continue-shopping" id="btnContinueShopping">
+              <i class="fas fa-shopping-bag"></i>
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         MAIN PAGE STRUCTURE
+         ============================================ -->
+    <div class="main-wrapper">
+      <!-- Header & Sidebar loaded by JS -->
+      <div id="header-container"></div>
+      <div id="sidebar-container"></div>
+
+      <main class="main-content">
+
+        <!-- ========== HERO SECTION ========== -->
+        <section class="steam-hero">
+          <div class="hero-content">
+            <div class="hero-text">
+              <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                Professional Steam Pressing
+              </div>
+              <h1 class="hero-title">
+                <span class="icon-wrapper">
+                  <i class="fas fa-wind"></i>
+                </span>
+                Steam Press Services
+              </h1>
+              <p class="hero-description">
+                Experience professional steam pressing for perfectly crisp and wrinkle-free clothes.
+                Our advanced steam technology ensures gentle care for all fabric types while delivering
+                impeccable results.
+              </p>
+              <div class="hero-features">
+                <div class="hero-feature">
+                  <i class="fas fa-check-circle"></i>
+                  <span>No Fabric Damage</span>
+                </div>
+                <div class="hero-feature">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Professional Finish</span>
+                </div>
+                <div class="hero-feature">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Quick 24hr Service</span>
+                </div>
+                <div class="hero-feature">
+                  <i class="fas fa-check-circle"></i>
+                  <span>Free Pickup & Delivery</span>
+                </div>
+              </div>
+              <div class="hero-cta">
+                <a href="#booking" class="btn-hero-primary">
+                  <i class="fas fa-calendar-check"></i>
+                  Book Now
+                </a>
+                <a href="#faq" class="btn-hero-secondary">
+                  <i class="fas fa-question-circle"></i>
+                  Learn More
+                </a>
+              </div>
+            </div>
+            <div class="hero-image">
+              <div class="hero-icon-wrapper">
+                <i class="fas fa-wind hero-main-icon"></i>
+                <div class="steam-particle p1"></div>
+                <div class="steam-particle p2"></div>
+                <div class="steam-particle p3"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Decorative wave -->
+          <div class="hero-wave">
+            <svg viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0,40 C300,80 900,0 1200,40 L1200,80 L0,80 Z" fill="var(--primary-bg)"/>
+            </svg>
+          </div>
+        </section>
+
+        <!-- ========== STATS BAR ========== -->
+        <section class="stats-bar">
+          <div class="stats-container">
+            <div class="stat-item">
+              <i class="fas fa-users"></i>
+              <div class="stat-info">
+                <strong>5000+</strong>
+                <span>Happy Customers</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-tshirt"></i>
+              <div class="stat-info">
+                <strong>50,000+</strong>
+                <span>Items Pressed</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-star"></i>
+              <div class="stat-info">
+                <strong>4.9/5</strong>
+                <span>Customer Rating</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-clock"></i>
+              <div class="stat-info">
+                <strong>24 Hours</strong>
+                <span>Turnaround Time</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== VIDEO MARQUEE SECTION ========== -->
+        <section class="video-showcase">
+          <div class="section-header">
+            <h2 class="section-title">
+              <i class="fas fa-play-circle"></i>
+              See Our Steam Press in Action
+            </h2>
+            <p class="section-subtitle">Watch how we transform your clothes with professional steam pressing</p>
+          </div>
+          <div class="video-marquee-wrapper">
+            <div class="video-marquee" id="videoMarquee">
+              <!-- Cards are repeated for seamless infinite loop -->
+              <div class="video-card">
+                <div class="video-wrapper">
+                  <video autoplay loop muted playsinline>
+                    <source src="images/about.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-overlay">
+                    <div class="video-tag">Professional Pressing</div>
+                  </div>
+                </div>
+                <div class="video-info">
+                  <h3>Expert Steam Pressing</h3>
+                  <p>Watch our professionals at work</p>
+                </div>
+              </div>
+              <div class="video-card">
+                <div class="video-wrapper">
+                  <video autoplay loop muted playsinline>
+                    <source src="images/about.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-overlay">
+                    <div class="video-tag">Delicate Fabrics</div>
+                  </div>
+                </div>
+                <div class="video-info">
+                  <h3>Delicate Fabric Care</h3>
+                  <p>Gentle on all materials</p>
+                </div>
+              </div>
+              <div class="video-card">
+                <div class="video-wrapper">
+                  <video autoplay loop muted playsinline>
+                    <source src="images/about.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-overlay">
+                    <div class="video-tag">Perfect Results</div>
+                  </div>
+                </div>
+                <div class="video-info">
+                  <h3>Wrinkle-Free Guarantee</h3>
+                  <p>Crisp, hotel-quality finish</p>
+                </div>
+              </div>
+              <div class="video-card">
+                <div class="video-wrapper">
+                  <video autoplay loop muted playsinline>
+                    <source src="images/about.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-overlay">
+                    <div class="video-tag">Quick Turnaround</div>
+                  </div>
+                </div>
+                <div class="video-info">
+                  <h3>24-Hour Express Service</h3>
+                  <p>Ready when you need it</p>
+                </div>
+              </div>
+              <!-- Duplicates for seamless loop -->
+              <div class="video-card">
+                <div class="video-wrapper">
+                  <video autoplay loop muted playsinline>
+                    <source src="images/about.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-overlay"><div class="video-tag">Professional Pressing</div></div>
+                </div>
+                <div class="video-info"><h3>Expert Steam Pressing</h3><p>Watch our professionals at work</p></div>
+              </div>
+              <div class="video-card">
+                <div class="video-wrapper">
+                  <video autoplay loop muted playsinline>
+                    <source src="images/about.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-overlay"><div class="video-tag">Delicate Fabrics</div></div>
+                </div>
+                <div class="video-info"><h3>Delicate Fabric Care</h3><p>Gentle on all materials</p></div>
+              </div>
+              <div class="video-card">
+                <div class="video-wrapper">
+                  <video autoplay loop muted playsinline>
+                    <source src="images/about.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-overlay"><div class="video-tag">Perfect Results</div></div>
+                </div>
+                <div class="video-info"><h3>Wrinkle-Free Guarantee</h3><p>Crisp, hotel-quality finish</p></div>
+              </div>
+              <div class="video-card">
+                <div class="video-wrapper">
+                  <video autoplay loop muted playsinline>
+                    <source src="images/about.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-overlay"><div class="video-tag">Quick Turnaround</div></div>
+                </div>
+                <div class="video-info"><h3>24-Hour Express Service</h3><p>Ready when you need it</p></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== BOOKING FORM SECTION ========== -->
+        <section class="booking-section" id="booking">
+          <div class="section-header">
+            <h2 class="section-title">
+              <i class="fas fa-calendar-check"></i>
+              Book Your Steam Press Service
+            </h2>
+            <p class="section-subtitle">Fill in the details below to schedule your pickup</p>
+          </div>
+
+          <div class="booking-container">
+
+            <!-- BOOKING FORM -->
+            <form class="booking-form" id="steamPressBookingForm" novalidate>
+
+              <!-- Service Selection -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="serviceSelect" class="form-label">
+                    <i class="fas fa-list"></i>
+                    Select Service
+                  </label>
+                  <div class="select-wrapper">
+                    <select id="serviceSelect" class="form-select" required>
+                      <option value="">-- Choose a Service --</option>
+                    </select>
+                    <i class="fas fa-chevron-down select-icon"></i>
+                  </div>
+                  <div class="form-error" id="serviceError">Please select a service.</div>
+                  <!-- Service Loading State -->
+                  <div class="service-loading" id="serviceLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Loading services...
+                  </div>
+                </div>
+
+                <!-- Quantity -->
+                <div class="form-group">
+                  <label for="quantityInput" class="form-label">
+                    <i class="fas fa-layer-group"></i>
+                    Quantity
+                  </label>
+                  <div class="quantity-control">
+                    <button type="button" class="quantity-btn" id="decreaseQty" aria-label="Decrease">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <input
+                      type="number"
+                      id="quantityInput"
+                      class="form-input quantity-input"
+                      value="1"
+                      min="1"
+                      max="100"
+                      required
+                    />
+                    <button type="button" class="quantity-btn" id="increaseQty" aria-label="Increase">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </div>
+                  <div class="form-error" id="quantityError">Quantity must be between 1-100.</div>
+                </div>
+              </div>
+
+              <!-- Price Display (auto-updates) -->
+              <div class="price-display" id="priceDisplay">
+                <div class="price-row">
+                  <span class="price-label"><i class="fas fa-tag"></i> Unit Price</span>
+                  <span class="price-value" id="unitPrice">₹0.00</span>
+                </div>
+                <div class="price-row">
+                  <span class="price-label"><i class="fas fa-cube"></i> Unit Type</span>
+                  <span class="price-value" id="unitType">-</span>
+                </div>
+                <div class="price-row price-total">
+                  <span class="price-label"><i class="fas fa-money-bill-wave"></i> Total Amount</span>
+                  <span class="price-value total-amount" id="totalAmount">₹0.00</span>
+                </div>
+              </div>
+
+              <!-- Pickup Date & Time -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="pickupDate" class="form-label">
+                    <i class="fas fa-calendar-alt"></i>
+                    Pickup Date
+                  </label>
+                  <!-- 5-Day Booking Window Badge -->
+                  <div class="booking-window-badge">
+                    <div class="badge-icon-col">
+                      <div class="badge-icon-box">
+                        <i class="fas fa-calendar-check"></i>
+                      </div>
+                      <div class="badge-line"></div>
+                      <div class="badge-icon-box small">
+                        <i class="fas fa-calendar-times"></i>
+                      </div>
+                    </div>
+                    <div class="badge-body">
+                      <div class="badge-title-row">
+                        <span class="badge-main-title">5-Day Booking Window</span>
+                        <span class="badge-chip">POLICY</span>
+                      </div>
+                      <p class="badge-description">You can schedule pickup up to 5 days ahead only. This helps us manage orders efficiently and serve you better!</p>
+                    </div>
+                  </div>
+                  <div class="date-input-wrapper">
+                    <span class="date-input-icon"><i class="fas fa-calendar-alt"></i></span>
+                    <input type="date" id="pickupDate" class="form-input date-styled" required />
+                  </div>
+                  <div class="form-error" id="dateError">Please select a valid pickup date (within 5 days).</div>
+                </div>
+
+                <div class="form-group">
+                  <label for="pickupTime" class="form-label">
+                    <i class="fas fa-clock"></i>
+                    Pickup Time Slot
+                  </label>
+                  <div class="select-wrapper">
+                    <select id="pickupTime" class="form-select" required>
+                      <option value="">-- Select Time --</option>
+                      <option value="09:00-11:00">09:00 AM – 11:00 AM</option>
+                      <option value="11:00-13:00">11:00 AM – 01:00 PM</option>
+                      <option value="13:00-15:00">01:00 PM – 03:00 PM</option>
+                      <option value="15:00-17:00">03:00 PM – 05:00 PM</option>
+                      <option value="17:00-19:00">05:00 PM – 07:00 PM</option>
+                    </select>
+                    <i class="fas fa-chevron-down select-icon"></i>
+                  </div>
+                  <div class="form-error" id="timeError">Please select a time slot.</div>
+                </div>
+              </div>
+
+              <!-- Pickup Address -->
+              <div class="form-group">
+                <label for="pickupAddress" class="form-label">
+                  <i class="fas fa-map-marker-alt"></i>
+                  Pickup Address
+                </label>
+                <textarea
+                  id="pickupAddress"
+                  class="form-textarea"
+                  rows="3"
+                  placeholder="Enter your complete pickup address..."
+                  required
+                ></textarea>
+                <!-- Autofill hint (shown when address is pre-filled from profile) -->
+                <span id="spAddressAutofillHint" style="display:none;align-items:center;gap:6px;font-size:.78rem;color:#6b46c1;font-weight:600;margin-top:4px;">
+                  <i class="fas fa-magic"></i> Auto-filled from your profile · you can edit
+                </span>
+                <div class="form-error" id="addressError">Please enter your pickup address.</div>
+              </div>
+
+              <!-- Special Instructions -->
+              <div class="form-group">
+                <label for="specialInstructions" class="form-label">
+                  <i class="fas fa-comment-dots"></i>
+                  Special Instructions <span class="optional-tag">(Optional)</span>
+                </label>
+                <textarea
+                  id="specialInstructions"
+                  class="form-textarea"
+                  rows="2"
+                  placeholder="Any special care instructions or preferences..."
+                ></textarea>
+              </div>
+
+              <!-- Form Action Buttons -->
+              <div class="form-actions">
+                <!-- Add to Cart Button -->
+                <button type="button" class="btn-add-cart" id="addToCartBtn">
+                  <i class="fas fa-shopping-cart"></i>
+                  <span>Add to Cart</span>
+                </button>
+
+                <!-- Place Order Button -->
+                <button type="submit" class="btn-submit" id="submitBooking">
+                  <span class="btn-text">
+                    <i class="fas fa-check-circle"></i>
+                    Place Order
+                  </span>
+                  <div class="btn-loader" style="display: none">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Processing...
+                  </div>
+                </button>
+              </div>
+            </form>
+
+            <!-- WHY CHOOSE US SIDEBAR -->
+            <div class="benefits-sidebar">
+              <h3 class="benefits-title">
+                <i class="fas fa-star"></i>
+                Why Choose Steam Press?
+              </h3>
+
+              <div class="benefit-item">
+                <div class="benefit-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="benefit-content">
+                  <h4>Gentle on Fabrics</h4>
+                  <p>Steam pressing is safer than traditional ironing, protecting delicate materials.</p>
+                </div>
+              </div>
+
+              <div class="benefit-item">
+                <div class="benefit-icon">
+                  <i class="fas fa-certificate"></i>
+                </div>
+                <div class="benefit-content">
+                  <h4>Professional Quality</h4>
+                  <p>Hotel-quality finish that makes your clothes look brand new.</p>
+                </div>
+              </div>
+
+              <div class="benefit-item">
+                <div class="benefit-icon">
+                  <i class="fas fa-bolt"></i>
+                </div>
+                <div class="benefit-content">
+                  <h4>Quick Turnaround</h4>
+                  <p>Get your clothes back within 24 hours with our express service.</p>
+                </div>
+              </div>
+
+              <div class="benefit-item">
+                <div class="benefit-icon">
+                  <i class="fas fa-leaf"></i>
+                </div>
+                <div class="benefit-content">
+                  <h4>Eco-Friendly</h4>
+                  <p>Our steam process uses less energy and no harmful chemicals.</p>
+                </div>
+              </div>
+
+              <div class="benefit-item">
+                <div class="benefit-icon">
+                  <i class="fas fa-truck"></i>
+                </div>
+                <div class="benefit-content">
+                  <h4>Free Pickup & Delivery</h4>
+                  <p>We come to your doorstep – no travel needed from your end.</p>
+                </div>
+              </div>
+
+              <div class="trust-badge">
+                <i class="fas fa-users"></i>
+                <div class="trust-text">
+                  <strong>5000+</strong>
+                  <span>Happy Customers</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== FAQ SECTION ========== -->
+        <section class="faq-section" id="faq">
+          <div class="section-header">
+            <h2 class="section-title">
+              <i class="fas fa-question-circle"></i>
+              Frequently Asked Questions
+            </h2>
+            <p class="section-subtitle">Everything you need to know about our steam press service</p>
+          </div>
+
+          <div class="faq-container">
+            <div class="faq-item">
+              <div class="faq-question">
+                <h4><i class="fas fa-wind faq-icon"></i> What is steam pressing?</h4>
+                <i class="fas fa-chevron-down faq-chevron"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Steam pressing uses high-temperature steam to remove wrinkles and freshen clothes without direct heat contact, making it ideal for delicate fabrics like silk, wool, and synthetic blends.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <h4><i class="fas fa-clock faq-icon"></i> How long does the service take?</h4>
+                <i class="fas fa-chevron-down faq-chevron"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Standard service is completed within 24 hours. We also offer express 12-hour service for urgent requirements at a small additional charge.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <h4><i class="fas fa-tshirt faq-icon"></i> Is steam pressing safe for all fabrics?</h4>
+                <i class="fas fa-chevron-down faq-chevron"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Yes! Steam pressing is gentle and safe for most fabrics including silk, wool, cotton, linen, and synthetic materials. Our experts identify each fabric type before pressing.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <h4><i class="fas fa-truck faq-icon"></i> Do you provide pickup and delivery?</h4>
+                <i class="fas fa-chevron-down faq-chevron"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Absolutely! We offer free pickup and delivery at your doorstep. Just schedule a convenient time slot and our team will be there.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <h4><i class="fas fa-rupee-sign faq-icon"></i> How is pricing calculated?</h4>
+                <i class="fas fa-chevron-down faq-chevron"></i>
+              </div>
+              <div class="faq-answer">
+                <p>Pricing is per piece and varies by garment type. Select your service from the dropdown and you'll see the exact price before confirming your order.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Footer loaded by JS -->
+      <div id="footer-container"></div>
+    </div>
+
+    <!-- ============================================
+         AUTH MODAL STYLES (inline for portability)
+         ============================================ -->
+    <style>
+      .auth-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(8px);
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+      .auth-modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+      .auth-modal-overlay[style*="display: none"] {
+        display: none !important;
+      }
+      .auth-modal-container {
+        background: var(--primary-bg, #fff);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 480px;
+        height: 600px;
+        position: relative;
+        box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+        overflow: hidden;
+      }
+      .auth-modal-close {
+        position: absolute;
+        top: 12px; right: 12px;
+        width: 36px; height: 36px;
+        background: rgba(239,68,68,0.15);
+        border: none; border-radius: 50%;
+        color: #ef4444;
+        font-size: 1rem;
+        cursor: pointer;
+        z-index: 10;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.3s ease;
+      }
+      .auth-modal-close:hover {
+        background: #ef4444;
+        color: white;
+        transform: rotate(90deg);
+      }
+    </style>
+
+    <!-- ============================================
+         SCRIPTS - Load in correct order
+         ============================================ -->
+
+    <!-- 1. Auth Modal Handler (must be first) -->
+    <script>
+      // ============================================
+      // AUTH MODAL HANDLER
+      // ============================================
+      window.openAuthModal = function(mode = "login") {
+        const overlay = document.getElementById("authModalOverlay");
+        const iframe = document.getElementById("authIframe");
+        if (!overlay || !iframe) return;
+        iframe.src = mode === "login" ? "login.html" : "registration.html";
+        overlay.style.display = "flex";
+        setTimeout(() => overlay.classList.add("active"), 10);
+        document.body.style.overflow = "hidden";
+      };
+
+      window.closeAuthModal = function() {
+        const overlay = document.getElementById("authModalOverlay");
+        const iframe = document.getElementById("authIframe");
+        if (!overlay) return;
+        overlay.classList.remove("active");
+        setTimeout(() => {
+          overlay.style.display = "none";
+          if (iframe) iframe.src = "";
+          document.body.style.overflow = "";
+        }, 300);
+      };
+
+      // Close button
+      document.getElementById("authModalClose").addEventListener("click", window.closeAuthModal);
+
+      // Close on overlay click
+      document.getElementById("authModalOverlay").addEventListener("click", function(e) {
+        if (e.target === this) window.closeAuthModal();
+      });
+
+      // Close on Escape
+      document.addEventListener("keydown", function(e) {
+        const overlay = document.getElementById("authModalOverlay");
+        if (e.key === "Escape" && overlay && overlay.classList.contains("active")) {
+          window.closeAuthModal();
+        }
+      });
+
+      // Listen for messages from login iframe
+      window.addEventListener("message", function(event) {
+        if (event.data.type === "CLOSE_MODAL") window.closeAuthModal();
+        else if (event.data.type === "SWITCH_TO_REGISTRATION") {
+          document.getElementById("authIframe").src = "registration.html";
+        }
+        else if (event.data.type === "SWITCH_TO_LOGIN") {
+          document.getElementById("authIframe").src = "login.html";
+        }
+        else if (event.data.type === "AUTH_SUCCESS") {
+          if (event.data.data) {
+            localStorage.setItem("authToken", event.data.data.token || "");
+            localStorage.setItem("jwtToken", event.data.data.token || "");
+            localStorage.setItem("userData", JSON.stringify({
+              name: event.data.data.userName,
+              email: event.data.data.userEmail
+            }));
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("userName", event.data.data.userName);
+            localStorage.setItem("userEmail", event.data.data.userEmail);
+          }
+          window.closeAuthModal();
+          setTimeout(() => {
+            if (typeof checkAuthState === "function") checkAuthState();
+            else window.location.reload();
+          }, 300);
+        }
+      });
+    </script>
+
+    <!-- 2. Load Header, Sidebar, Footer via JS (as per your existing pattern) -->
+    <script>
+      // ============================================
+      // COMPONENT LOADER
+      // Loads header, sidebar, footer from HTML files
+      // and injects their scripts
+      // ============================================
+
+      function loadComponent(containerId, htmlFile, scriptFile, callback) {
+        fetch(htmlFile)
+          .then(res => {
+            if (!res.ok) throw new Error(`Failed to load ${htmlFile}: ${res.status}`);
+            return res.text();
+          })
+          .then(html => {
+            document.getElementById(containerId).innerHTML = html;
+            if (scriptFile) {
+              const script = document.createElement("script");
+              script.src = scriptFile;
+              script.onload = () => {
+                if (callback) callback();
+              };
+              script.onerror = () => console.error(`Failed to load script: ${scriptFile}`);
+              document.body.appendChild(script);
+            } else if (callback) {
+              callback();
+            }
+          })
+          .catch(err => console.error(`Error loading component ${htmlFile}:`, err));
+      }
+
+      // Load all components
+      loadComponent("header-container", "header.html", "js/header.js", function() {
+        console.log("✅ Header loaded");
+        // Apply saved theme after header loads
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      });
+
+      loadComponent("sidebar-container", "sidebar.html", "js/sidebar.js", function() {
+        console.log("✅ Sidebar loaded");
+      });
+
+      loadComponent("footer-container", "footer.html", "js/footer.js", function() {
+        console.log("✅ Footer loaded");
+      });
+
+      // ============================================
+      // THEME INITIALIZATION
+      // ============================================
+      (function() {
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      })();
+    </script>
+
+    <!-- 3. Steam Press Main Script -->
+    <script src="js/storage-utils.js"></script>
+    <script src="js/steam-press.js"></script>
+
+  </body>
+</html>

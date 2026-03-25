@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Reviews - Quick Laundry</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/review.css">
+</head>
+<body>
+    
+    <!-- Header Container -->
+    <div id="header-container"></div>
+    
+    <!-- Sidebar Container -->
+    <div id="sidebar-container"></div>
+    
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <div class="main-content">
+            
+            <!-- Hero Section with Animated Background -->
+            <section class="review-hero">
+                <div class="hero-background">
+                    <div class="floating-shapes">
+                        <div class="shape shape-1"></div>
+                        <div class="shape shape-2"></div>
+                        <div class="shape shape-3"></div>
+                        <div class="shape shape-4"></div>
+                    </div>
+                </div>
+                <div class="hero-content-wrapper">
+                    <div class="hero-icon-large">
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <h1 class="hero-title">
+                        What Our <span class="gradient-text">Happy Customers</span> Say
+                    </h1>
+                    <p class="hero-subtitle">
+                        Real experiences from real people who love our laundry service
+                    </p>
+                    
+                    <!-- Stats Cards -->
+                    <div class="hero-stats-cards">
+                        <div class="stat-card" data-aos="fade-up">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="heroAverageRating">0.0</h3>
+                                <p>Average Rating</p>
+                            </div>
+                        </div>
+                        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                            <div class="stat-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="heroTotalReviews">0</h3>
+                                <p>Total Reviews</p>
+                            </div>
+                        </div>
+                        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                            <div class="stat-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>98%</h3>
+                                <p>Satisfaction Rate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Rating Distribution Section -->
+            <section class="rating-overview-section">
+                <div class="container-fluid">
+                    <div class="rating-overview-card">
+                        <div class="rating-left-panel">
+                            <div class="overall-rating">
+                                <div class="rating-number" id="mainAverageRating">0.0</div>
+                                <div class="rating-stars-large" id="mainAverageStars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <p class="rating-count" id="mainTotalReviews">Based on 0 reviews</p>
+                            </div>
+                            <button class="btn-write-review-primary" id="writeReviewBtnHero">
+                                <i class="fas fa-edit"></i>
+                                <span>Share Your Experience</span>
+                            </button>
+                        </div>
+                        
+                        <div class="rating-right-panel">
+                            <h3 class="panel-title">Rating Breakdown</h3>
+                            <div class="rating-bars-container">
+                                <div class="rating-bar-row">
+                                    <div class="bar-label">
+                                        <span class="star-count">5</span>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="bar-wrapper">
+                                        <div class="bar-background">
+                                            <div class="bar-fill bar-5" id="bar5" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <span class="bar-count" id="count5">0</span>
+                                </div>
+                                
+                                <div class="rating-bar-row">
+                                    <div class="bar-label">
+                                        <span class="star-count">4</span>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="bar-wrapper">
+                                        <div class="bar-background">
+                                            <div class="bar-fill bar-4" id="bar4" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <span class="bar-count" id="count4">0</span>
+                                </div>
+                                
+                                <div class="rating-bar-row">
+                                    <div class="bar-label">
+                                        <span class="star-count">3</span>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="bar-wrapper">
+                                        <div class="bar-background">
+                                            <div class="bar-fill bar-3" id="bar3" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <span class="bar-count" id="count3">0</span>
+                                </div>
+                                
+                                <div class="rating-bar-row">
+                                    <div class="bar-label">
+                                        <span class="star-count">2</span>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="bar-wrapper">
+                                        <div class="bar-background">
+                                            <div class="bar-fill bar-2" id="bar2" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <span class="bar-count" id="count2">0</span>
+                                </div>
+                                
+                                <div class="rating-bar-row">
+                                    <div class="bar-label">
+                                        <span class="star-count">1</span>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="bar-wrapper">
+                                        <div class="bar-background">
+                                            <div class="bar-fill bar-1" id="bar1" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <span class="bar-count" id="count1">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Filter Section -->
+            <section class="filter-section">
+                <div class="container-fluid">
+                    <div class="filter-container">
+                        <div class="filter-left">
+                            <h2 class="section-heading">
+                                <i class="fas fa-filter"></i>
+                                Customer Reviews
+                            </h2>
+                        </div>
+                        <div class="filter-right">
+                            <div class="filter-group">
+                                <label for="filterRating" class="filter-label">
+                                    <i class="fas fa-star"></i>
+                                    Filter by Rating
+                                </label>
+                                <select id="filterRating" class="filter-select">
+                                    <option value="all">All Ratings</option>
+                                    <option value="5">5 Stars</option>
+                                    <option value="4">4 Stars</option>
+                                    <option value="3">3 Stars</option>
+                                    <option value="2">2 Stars</option>
+                                    <option value="1">1 Star</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="filterService" class="filter-label">
+                                    <i class="fas fa-concierge-bell"></i>
+                                    Service Type
+                                </label>
+                                <select id="filterService" class="filter-select">
+                                    <option value="all">All Services</option>
+                                    <option value="Wash & Iron">Wash & Iron</option>
+                                    <option value="Dry Clean">Dry Clean</option>
+                                    <option value="Iron Only">Iron Only</option>
+                                    <option value="Steam Press">Steam Press</option>
+                                    <option value="Roll Press">Roll Press</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="sortBy" class="filter-label">
+                                    <i class="fas fa-sort"></i>
+                                    Sort By
+                                </label>
+                                <select id="sortBy" class="filter-select">
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                    <option value="highest">Highest Rating</option>
+                                    <option value="lowest">Lowest Rating</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Reviews Grid Section -->
+            <section class="reviews-grid-section">
+                <div class="container-fluid">
+                    
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loadingState">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                        </div>
+                        <p class="loading-text">Loading amazing reviews...</p>
+                    </div>
+                    
+                    <!-- Empty State -->
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <div class="empty-icon">
+                            <i class="fas fa-comment-slash"></i>
+                        </div>
+                        <h3 class="empty-title">No Reviews Yet</h3>
+                        <p class="empty-description">Be the first one to share your experience with Quick Laundry!</p>
+                        <button class="btn-empty-action" id="firstReviewBtn">
+                            <i class="fas fa-pen-fancy"></i>
+                            Write First Review
+                        </button>
+                    </div>
+                    
+                    <!-- Reviews Masonry Grid -->
+                    <div class="reviews-masonry-grid" id="reviewsGrid">
+                        <!-- Reviews will be loaded dynamically here -->
+                    </div>
+                    
+                    <!-- Load More Button -->
+                    <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+                        <button class="btn-load-more" id="loadMoreBtn">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>Load More Reviews</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- CTA Section -->
+            <section class="cta-review-section">
+                <div class="cta-background">
+                    <div class="cta-pattern"></div>
+                </div>
+                <div class="cta-content">
+                    <div class="cta-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h2 class="cta-title">Have an Experience to Share?</h2>
+                    <p class="cta-description">
+                        Your feedback helps us improve and helps others make informed decisions
+                    </p>
+                    <button class="btn-cta-action" id="writeReviewBtnCTA">
+                        <i class="fas fa-star"></i>
+                        <span>Write Your Review Now</span>
+                    </button>
+                </div>
+            </section>
+            
+        </div>
+    </div>
+    
+    <!-- Review Modal -->
+    <div class="review-modal" id="reviewModal">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <div class="modal-icon">
+                        <i class="fas fa-pen-to-square"></i>
+                    </div>
+                    <div class="modal-title-group">
+                        <h2 class="modal-title">Share Your Experience</h2>
+                        <p class="modal-subtitle">Help others by sharing your honest review</p>
+                    </div>
+                </div>
+                <button class="modal-close" id="modalClose" aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form class="review-form" id="reviewForm">
+                <div class="form-scroll-content">
+                    
+                    <!-- Rating Selection -->
+                    <div class="form-section">
+                        <label class="form-section-label">
+                            <i class="fas fa-star"></i>
+                            How would you rate our service? *
+                        </label>
+                        <div class="star-rating-interactive" id="starRating">
+                            <button type="button" class="star-btn" data-rating="1">
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button type="button" class="star-btn" data-rating="2">
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button type="button" class="star-btn" data-rating="3">
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button type="button" class="star-btn" data-rating="4">
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button type="button" class="star-btn" data-rating="5">
+                                <i class="far fa-star"></i>
+                            </button>
+                        </div>
+                        <div class="rating-description" id="ratingDescription">Tap to rate</div>
+                        <input type="hidden" id="ratingInput" name="rating" required>
+                    </div>
+                    
+                    <!-- Service Type -->
+                    <div class="form-section">
+                        <label for="serviceType" class="form-section-label">
+                            <i class="fas fa-concierge-bell"></i>
+                            Which service did you use?
+                        </label>
+                        <select id="serviceType" name="serviceType" class="form-select">
+                            <option value="">Select service (optional)</option>
+                            <option value="Wash & Iron">Wash & Iron</option>
+                            <option value="Dry Clean">Dry Clean</option>
+                            <option value="Iron Only">Iron Only</option>
+                            <option value="Steam Press">Steam Press</option>
+                            <option value="Roll Press">Roll Press</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Review Text -->
+                    <div class="form-section">
+                        <label for="reviewText" class="form-section-label">
+                            <i class="fas fa-comment-dots"></i>
+                            Tell us about your experience *
+                        </label>
+                        <textarea 
+                            id="reviewText" 
+                            name="reviewText" 
+                            class="form-textarea" 
+                            rows="6" 
+                            placeholder="Share your thoughts about our service, quality, delivery time, customer support, etc. Your detailed review helps other customers..."
+                            required
+                            minlength="20"
+                            maxlength="1000"
+                        ></textarea>
+                        <div class="textarea-footer">
+                            <span class="char-count">0 / 1000 characters</span>
+                            <span class="char-hint">Minimum 20 characters required</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Upload Section -->
+                    <div class="form-section">
+                        <label class="form-section-label">
+                            <i class="fas fa-images"></i>
+                            Add photos (optional)
+                            <span class="label-badge">New</span>
+                        </label>
+                        <p class="form-help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Upload photos of your cleaned items to help others (Max 5 images, 5MB each)
+                        </p>
+                        
+                        <div class="image-upload-container">
+                            <input 
+                                type="file" 
+                                id="imageUpload" 
+                                name="images" 
+                                accept="image/jpeg,image/jpg,image/png,image/webp" 
+                                multiple 
+                                class="file-input-hidden"
+                            >
+                            
+                            <div class="image-upload-area" id="imageUploadArea">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">
+                                    <p class="upload-primary">Click to upload or drag and drop</p>
+                                    <p class="upload-secondary">PNG, JPG or WEBP (MAX. 5MB each)</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Image Preview Container -->
+                            <div class="image-preview-container" id="imagePreviewContainer" style="display: none;">
+                                <div class="preview-grid" id="previewGrid">
+                                    <!-- Preview items will be added here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms Checkbox -->
+                    <div class="form-section form-section-checkbox">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="termsAccept" required>
+                            <span class="checkmark"></span>
+                            <span class="checkbox-label">
+                                I agree that my review and photos may be published on the website and social media
+                            </span>
+                        </label>
+                    </div>
+                    
+                </div>
+                
+                <!-- Form Footer -->
+                <div class="form-footer">
+                    <button type="button" class="btn-cancel" id="btnCancel">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-submit" id="btnSubmit">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Submit Review</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Footer Container -->
+    <div id="footer-container"></div>
+    
+    <!-- JavaScript Files -->
+    <script>
+        // Load Header Component
+        fetch('header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+                
+                // Load header script after HTML is inserted
+                const headerScript = document.createElement('script');
+                headerScript.src = 'js/header.js';
+                document.body.appendChild(headerScript);
+            })
+            .catch(error => console.error('Error loading header:', error));
+        
+        // Load Sidebar Component
+        fetch('sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sidebar-container').innerHTML = data;
+                
+                // Load sidebar script after HTML is inserted
+                const sidebarScript = document.createElement('script');
+                sidebarScript.src = 'js/sidebar.js';
+                document.body.appendChild(sidebarScript);
+            })
+            .catch(error => console.error('Error loading sidebar:', error));
+        
+        // Load Footer Component
+        fetch('footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+                
+                // Load footer script after HTML is inserted
+                const footerScript = document.createElement('script');
+                footerScript.src = 'js/footer.js';
+                document.body.appendChild(footerScript);
+            })
+            .catch(error => console.error('Error loading footer:', error));
+    </script>
+    
+    <script src="js/review.js"></script>
+</body>
+</html>

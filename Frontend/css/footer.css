@@ -1,0 +1,649 @@
+/* ============================================
+   FOOTER STYLES - MODERN & ATTRACTIVE
+   ============================================ */
+
+/* ============================================
+   FOOTER MAIN STRUCTURE
+   ============================================ */
+.app-footer {
+  background: linear-gradient(180deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+  color: var(--text-color);
+  margin-top: 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dark theme gradient */
+[data-theme="dark"] .app-footer {
+  background: linear-gradient(180deg, #0f0820 0%, #1a0f2e 100%);
+  border-top: 2px solid rgba(167, 139, 250, 0.2);
+}
+
+/* Decorative background elements */
+.app-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: radial-gradient(circle at 30% 50%, rgba(107, 70, 193, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+[data-theme="dark"] .app-footer::before {
+  background: radial-gradient(circle at 30% 50%, rgba(167, 139, 250, 0.15) 0%, transparent 50%);
+}
+
+.footer-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   FOOTER CONTAINER
+   ============================================ */
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem 2rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 3rem;
+}
+
+/* ============================================
+   FOOTER BRAND SECTION
+   ============================================ */
+.footer-brand {
+  animation: fadeInUp 0.6s ease;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-logo-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.footer-logo h3 {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-tagline {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   SOCIAL MEDIA LINKS
+   ============================================ */
+.footer-social {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.social-link {
+  width: 45px;
+  height: 45px;
+  background: var(--secondary-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .social-link {
+  background: rgba(167, 139, 250, 0.05);
+  border-color: rgba(167, 139, 250, 0.2);
+}
+
+.social-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.social-link i {
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(107, 70, 193, 0.3);
+}
+
+.social-link:hover::before {
+  transform: translateY(0);
+}
+
+.social-link:hover i {
+  color: white;
+  transform: scale(1.1);
+}
+
+/* ============================================
+   FOOTER SECTIONS
+   ============================================ */
+.footer-section {
+  animation: fadeInUp 0.6s ease;
+}
+
+.footer-section:nth-child(2) { animation-delay: 0.1s; }
+.footer-section:nth-child(3) { animation-delay: 0.2s; }
+.footer-section:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer-heading {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-heading i {
+  color: var(--accent-color);
+  font-size: 1rem;
+}
+
+/* ============================================
+   FOOTER LINKS
+   ============================================ */
+.footer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-list li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-list a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  padding: 0.25rem 0;
+}
+
+.footer-list a i {
+  font-size: 0.7rem;
+  color: var(--accent-color);
+  transition: all 0.3s ease;
+}
+
+.footer-list a:hover {
+  color: var(--accent-color);
+  padding-left: 0.5rem;
+}
+
+.footer-list a:hover i {
+  transform: translateX(3px);
+}
+
+/* ============================================
+   CONTACT SECTION
+   ============================================ */
+.footer-contact .contact-info {
+  margin-bottom: 2rem;
+}
+
+.contact-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem;
+  background: var(--secondary-bg);
+  border-radius: 10px;
+  border-left: 3px solid var(--accent-color);
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .contact-item {
+  background: rgba(167, 139, 250, 0.05);
+}
+
+.contact-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(107, 70, 193, 0.2);
+}
+
+.contact-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.contact-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.contact-details a,
+.contact-details span {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.contact-details a:hover {
+  color: var(--accent-color);
+}
+
+/* ============================================
+   NEWSLETTER SECTION
+   ============================================ */
+.footer-newsletter {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(107, 70, 193, 0.1), rgba(147, 51, 234, 0.05));
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+}
+
+[data-theme="dark"] .footer-newsletter {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.1), rgba(196, 181, 253, 0.05));
+  border-color: rgba(167, 139, 250, 0.2);
+}
+
+.footer-newsletter h5 {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.newsletter-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .newsletter-input {
+  background: rgba(167, 139, 250, 0.05);
+  border-color: rgba(167, 139, 250, 0.2);
+}
+
+.newsletter-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+}
+
+.newsletter-btn {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
+}
+
+.newsletter-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(107, 70, 193, 0.4);
+}
+
+.newsletter-btn:active {
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   FOOTER BOTTOM
+   ============================================ */
+.footer-bottom {
+  border-top: 2px solid var(--border-color);
+  padding: 1.5rem 2rem;
+  margin-top: 2rem;
+}
+
+[data-theme="dark"] .footer-bottom {
+  border-top-color: rgba(167, 139, 250, 0.2);
+}
+
+.footer-bottom-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.copyright {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.copyright i {
+  color: var(--accent-color);
+}
+
+.footer-bottom-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-bottom-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.footer-bottom-links a:hover {
+  color: var(--accent-color);
+}
+
+.footer-bottom-links .separator {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+/* ============================================
+   BACK TO TOP BUTTON
+   ============================================ */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 55px;
+  height: 55px;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(107, 70, 193, 0.4);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(107, 70, 193, 0.5);
+}
+
+.back-to-top:active {
+  transform: translateY(-3px);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 992px) {
+  .footer-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    padding: 3rem 1.5rem 1.5rem;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2.5rem 1.5rem 1.5rem;
+  }
+
+  .footer-brand {
+    grid-column: 1;
+    text-align: center;
+  }
+
+  .footer-logo {
+    justify-content: center;
+  }
+
+  .footer-social {
+    justify-content: center;
+  }
+
+  .footer-bottom-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .footer-bottom-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .back-to-top {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.1rem;
+  }
+
+  .contact-item {
+    flex-direction: row;
+  }
+
+  .newsletter-form {
+    flex-direction: column;
+  }
+
+  .newsletter-btn {
+    width: 100%;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .app-footer {
+    margin-top: 3rem;
+  }
+
+  .footer-container {
+    padding: 2rem 1rem 1rem;
+  }
+
+  .footer-logo h3 {
+    font-size: 1.3rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.85rem;
+  }
+
+  .social-link {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .footer-heading {
+    font-size: 1rem;
+  }
+
+  .footer-list a {
+    font-size: 0.85rem;
+  }
+
+  .contact-item {
+    padding: 0.65rem;
+  }
+
+  .contact-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+
+  .contact-details a,
+  .contact-details span {
+    font-size: 0.85rem;
+  }
+
+  .footer-newsletter {
+    padding: 1.25rem;
+  }
+
+  .footer-bottom {
+    padding: 1.25rem 1rem;
+  }
+
+  .copyright,
+  .footer-bottom-links a {
+    font-size: 0.8rem;
+  }
+}
+
+/* ============================================
+   SMOOTH ANIMATIONS
+   ============================================ */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-footer {
+  animation: slideInFromBottom 0.8s ease;
+}
+
+/* Hover effects for interactive elements */
+.footer-list a,
+.social-link,
+.contact-item,
+.newsletter-btn,
+.footer-bottom-links a {
+  position: relative;
+}
+
+/* Add subtle glow effect on hover */
+.social-link:hover,
+.newsletter-btn:hover {
+  filter: brightness(1.1);
+}

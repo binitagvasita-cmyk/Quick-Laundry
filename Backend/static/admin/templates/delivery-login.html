@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delivery Portal – Quick Laundry</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --blue: #4f8ef7;
+        --indigo: #6c63ff;
+        --green: #22c55e;
+        --red: #ef4444;
+      }
+
+      /* ── DARK THEME (default) ── */
+      [data-theme="dark"] {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --border: #334155;
+        --muted: #94a3b8;
+        --text: #f8fafc;
+        --input-bg: rgba(255, 255, 255, 0.05);
+        --shadow: rgba(0, 0, 0, 0.5);
+      }
+
+      /* ── LIGHT THEME ── */
+      [data-theme="light"] {
+        --bg: #f1f5f9;
+        --card: #ffffff;
+        --border: #cbd5e1;
+        --muted: #64748b;
+        --text: #0f172a;
+        --input-bg: rgba(0, 0, 0, 0.03);
+        --shadow: rgba(0, 0, 0, 0.12);
+      }
+
+      body {
+        min-height: 100vh;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        overflow: hidden;
+        position: relative;
+        transition: background 0.3s, color 0.3s;
+        color: var(--text);
+      }
+
+      /* Animated background blobs */
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        animation: blob 8s ease-in-out infinite alternate;
+        pointer-events: none;
+      }
+      [data-theme="dark"] body::before,
+      body::before {
+        opacity: 0.35;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, #4f8ef7, transparent);
+        top: -120px;
+        left: -120px;
+      }
+      [data-theme="dark"] body::after,
+      body::after {
+        opacity: 0.35;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, #6c63ff, transparent);
+        bottom: -100px;
+        right: -100px;
+        animation-delay: 3s;
+      }
+      [data-theme="light"] body::before {
+        opacity: 0.15;
+      }
+      [data-theme="light"] body::after {
+        opacity: 0.15;
+      }
+
+      @keyframes blob {
+        0% {
+          transform: scale(1) translate(0, 0);
+        }
+        100% {
+          transform: scale(1.15) translate(30px, 20px);
+        }
+      }
+
+      /* ── THEME TOGGLE BUTTON ── */
+      .theme-toggle {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 999;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--muted);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px var(--shadow);
+      }
+      .theme-toggle:hover {
+        color: var(--blue);
+        border-color: var(--blue);
+      }
+
+      .page-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 60px;
+        padding: 20px;
+        z-index: 1;
+      }
+
+      /* Left illustration */
+      .hero-side {
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        max-width: 360px;
+      }
+      @media (min-width: 900px) {
+        .hero-side {
+          display: flex;
+        }
+      }
+
+      .hero-icon {
+        width: 90px;
+        height: 90px;
+        background: linear-gradient(135deg, var(--blue), var(--indigo));
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        margin-bottom: 24px;
+        box-shadow: 0 20px 40px rgba(79, 142, 247, 0.4);
+      }
+
+      .hero-side h1 {
+        font-size: 2.4rem;
+        color: var(--text);
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 16px;
+      }
+      .hero-side h1 span {
+        color: var(--blue);
+      }
+
+      .hero-side p {
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin-bottom: 32px;
+      }
+
+      .feature-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text);
+        font-size: 0.95rem;
+      }
+      .feature-item .dot {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        background: rgba(79, 142, 247, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--blue);
+        font-size: 16px;
+      }
+
+      /* Login card */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 40px 36px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 32px 80px var(--shadow);
+        backdrop-filter: blur(8px);
+        transition: background 0.3s, border-color 0.3s;
+      }
+
+      .card-header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .card-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(79, 142, 247, 0.12);
+        border: 1px solid rgba(79, 142, 247, 0.3);
+        color: var(--blue);
+        padding: 6px 16px;
+        border-radius: 100px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      .card-header h2 {
+        color: var(--text);
+        font-size: 1.7rem;
+        font-weight: 700;
+      }
+      .card-header p {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-top: 6px;
+      }
+
+      /* Form */
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        color: var(--muted);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        margin-bottom: 8px;
+      }
+
+      .input-wrap {
+        position: relative;
+      }
+      .input-wrap i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        font-size: 15px;
+        pointer-events: none;
+        transition: color 0.2s;
+      }
+      .input-wrap input {
+        width: 100%;
+        background: var(--input-bg);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 13px 14px 13px 42px;
+        color: var(--text);
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.3s;
+      }
+      .input-wrap input::placeholder {
+        color: var(--muted);
+        opacity: 0.7;
+      }
+      .input-wrap input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
+      }
+      .input-wrap:focus-within i {
+        color: var(--blue);
+      }
+
+      .eye-btn {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 15px;
+        transition: color 0.2s;
+      }
+      .eye-btn:hover {
+        color: var(--blue);
+      }
+
+      .btn-login {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, var(--blue), var(--indigo));
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: opacity 0.2s, transform 0.1s;
+        box-shadow: 0 8px 24px rgba(79, 142, 247, 0.35);
+      }
+      .btn-login:hover {
+        opacity: 0.92;
+      }
+      .btn-login:active {
+        transform: scale(0.98);
+      }
+      .btn-login:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        display: none;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .alert {
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        margin-bottom: 20px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+      }
+      .alert.error {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #ef4444;
+        display: flex;
+      }
+      .alert.success {
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #22c55e;
+        display: flex;
+      }
+
+      .footer-note {
+        text-align: center;
+        margin-top: 24px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      .footer-note a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Theme Toggle -->
+    <button
+      class="theme-toggle"
+      onclick="toggleTheme()"
+      title="Toggle light/dark mode"
+    >
+      <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <div class="page-wrapper">
+      <!-- Left hero -->
+      <div class="hero-side">
+        <div class="hero-icon">🚴</div>
+        <h1>Quick <span>Laundry</span><br />Delivery Portal</h1>
+        <p>
+          Your personal dashboard to manage pickups, track deliveries, and
+          update order statuses — all in one place.
+        </p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="dot"><i class="fas fa-clipboard-list"></i></div>
+            View all assigned orders instantly
+          </div>
+          <div class="feature-item">
+            <div class="dot"><i class="fas fa-truck"></i></div>
+            Update pickup & delivery status live
+          </div>
+          <div class="feature-item">
+            <div class="dot"><i class="fas fa-chart-bar"></i></div>
+            Track your daily performance
+          </div>
+          <div class="feature-item">
+            <div class="dot"><i class="fas fa-toggle-on"></i></div>
+            Toggle on/off duty availability
+          </div>
+        </div>
+      </div>
+
+      <!-- Login card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-badge">
+            <i class="fas fa-motorcycle"></i> Delivery Boy Portal
+          </div>
+          <h2>Welcome Back 👋</h2>
+          <p>Sign in to your delivery account</p>
+        </div>
+
+        <div class="alert" id="alertBox">
+          <i class="fas fa-circle-exclamation"></i>
+          <span id="alertMsg"></span>
+        </div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-wrap">
+              <i class="fas fa-envelope" style="pointer-events: none"></i>
+              <input
+                type="email"
+                id="email"
+                placeholder="ravi@quicklaundry.com"
+                required
+                autocomplete="email"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap">
+              <i class="fas fa-lock" style="pointer-events: none"></i>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                required
+                autocomplete="current-password"
+              />
+              <button type="button" class="eye-btn" onclick="toggleEye(this)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-login" type="submit" id="loginBtn">
+            <div class="spinner" id="spinner"></div>
+            <i class="fas fa-arrow-right-to-bracket" id="loginIcon"></i>
+            <span id="loginText">Sign In</span>
+          </button>
+        </form>
+
+        <div class="footer-note">
+          Only admin can create delivery accounts.
+          <br />Need help?
+          <a href="mailto:admin@quicklaundry.com">Contact admin</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API = window.location.origin + "/api/delivery/auth";
+
+      // ── THEME ──
+      function getTheme() {
+        return localStorage.getItem("ql_theme") || "dark";
+      }
+      function applyTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("themeIcon").className =
+          theme === "dark" ? "fas fa-sun" : "fas fa-moon";
+      }
+      function toggleTheme() {
+        const next = getTheme() === "dark" ? "light" : "dark";
+        localStorage.setItem("ql_theme", next);
+        applyTheme(next);
+      }
+      applyTheme(getTheme());
+
+      // ── FORM ──
+      function toggleEye(btn) {
+        const input = btn.previousElementSibling;
+        const icon = btn.querySelector("i");
+        if (input.type === "password") {
+          input.type = "text";
+          icon.className = "fas fa-eye-slash";
+        } else {
+          input.type = "password";
+          icon.className = "fas fa-eye";
+        }
+      }
+
+      function showAlert(msg, type = "error") {
+        const box = document.getElementById("alertBox");
+        box.className = "alert " + type;
+        document.getElementById("alertMsg").textContent = msg;
+      }
+
+      function setLoading(loading) {
+        const btn = document.getElementById("loginBtn");
+        const spinner = document.getElementById("spinner");
+        const icon = document.getElementById("loginIcon");
+        const text = document.getElementById("loginText");
+        btn.disabled = loading;
+        spinner.style.display = loading ? "block" : "none";
+        icon.style.display = loading ? "none" : "inline";
+        text.textContent = loading ? "Signing in…" : "Sign In";
+      }
+
+      async function handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        document.getElementById("alertBox").className = "alert";
+        setLoading(true);
+
+        try {
+          const res = await fetch(`${API}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            showAlert(data.message || "Login failed. Please try again.");
+            setLoading(false);
+            return;
+          }
+
+          localStorage.setItem("delivery_token", data.data.token);
+          localStorage.setItem("delivery_user", JSON.stringify(data.data.user));
+
+          showAlert("Login successful! Redirecting…", "success");
+          setTimeout(() => {
+            window.location.href = "delivery-dashboard.html";
+          }, 900);
+        } catch (err) {
+          showAlert("Server unreachable. Please try again.");
+          setLoading(false);
+        }
+      }
+
+      if (localStorage.getItem("delivery_token")) {
+        window.location.href = "delivery-dashboard.html";
+      }
+    </script>
+  </body>
+</html>

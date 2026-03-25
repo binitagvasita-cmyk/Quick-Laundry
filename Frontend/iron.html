@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iron Only Service - Quick Laundry</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- CSS Files (existing) -->
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="css/iron.css" />
+    <link rel="stylesheet" href="css/auth-modal.css" />
+
+    <!-- ══════════════════════════════════════════
+         NEW IRON PAGE UI STYLES
+         ══════════════════════════════════════════ -->
+    <style>
+      /* ─── Root Overrides — matches site purple theme ─── */
+      :root {
+        --iron-purple: #6b21a8;
+        --iron-purple-light: #7c3aed;
+        --iron-accent: #a855f7;
+        --iron-dark: #150826;
+        --iron-dark2: #1e0a3c;
+        --glass-bg: rgba(255,255,255,0.07);
+        --glass-border: rgba(255,255,255,0.12);
+      }
+
+      body { font-family: 'DM Sans', sans-serif; }
+
+      /* ════════════════════════════════════════════
+         VIDEO HERO SECTION
+         ════════════════════════════════════════════ */
+      .iron-hero-section {
+        position: relative;
+        min-height: 56vh;
+        max-height: 62vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: var(--iron-dark);
+      }
+
+      /* ── Background Video ── */
+      .hero-video-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        background: linear-gradient(135deg, #150826 0%, #2d0d5e 50%, #150826 100%);
+      }
+
+      .hero-bg-video {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 100%;
+        min-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: cover;
+        opacity: 0.45;
+        filter: saturate(1.2) brightness(0.7);
+      }
+
+      /* ── Steam / Particle Overlay ── */
+      .hero-steam-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .steam-particle {
+        position: absolute;
+        bottom: 0;
+        width: 6px;
+        border-radius: 50% 50% 30% 30%;
+        background: radial-gradient(ellipse at center, rgba(255,255,255,0.18) 0%, transparent 70%);
+        animation: steamRise var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
+        opacity: 0;
+      }
+
+      @keyframes steamRise {
+        0%   { opacity: 0; transform: translateY(0) scaleX(1); }
+        20%  { opacity: 0.6; }
+        60%  { opacity: 0.3; transform: translateY(-40vh) scaleX(2.5) rotate(10deg); }
+        100% { opacity: 0; transform: translateY(-80vh) scaleX(4) rotate(20deg); }
+      }
+
+      /* Generate steam particles */
+      .steam-particle:nth-child(1)  { left: 8%;  width: 8px;  height: 80px;  --dur: 7s;  --delay: 0s;   }
+      .steam-particle:nth-child(2)  { left: 18%; width: 12px; height: 120px; --dur: 9s;  --delay: 1.5s; }
+      .steam-particle:nth-child(3)  { left: 30%; width: 6px;  height: 60px;  --dur: 6s;  --delay: 0.8s; }
+      .steam-particle:nth-child(4)  { left: 42%; width: 10px; height: 100px; --dur: 8s;  --delay: 2.2s; }
+      .steam-particle:nth-child(5)  { left: 55%; width: 7px;  height: 90px;  --dur: 7.5s; --delay: 0.3s; }
+      .steam-particle:nth-child(6)  { left: 65%; width: 14px; height: 130px; --dur: 10s; --delay: 1.1s; }
+      .steam-particle:nth-child(7)  { left: 75%; width: 8px;  height: 70px;  --dur: 6.5s; --delay: 3s;  }
+      .steam-particle:nth-child(8)  { left: 85%; width: 11px; height: 110px; --dur: 8.5s; --delay: 0.6s; }
+      .steam-particle:nth-child(9)  { left: 92%; width: 6px;  height: 55px;  --dur: 7s;  --delay: 2.8s; }
+      .steam-particle:nth-child(10) { left: 50%; width: 9px;  height: 95px;  --dur: 9s;  --delay: 1.8s; }
+
+      /* ── Gradient overlays ── */
+      .hero-gradient-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        background:
+          linear-gradient(to bottom, rgba(21,8,38,0.25) 0%, rgba(21,8,38,0.08) 40%, rgba(21,8,38,0.65) 100%),
+          linear-gradient(to right, rgba(107,33,168,0.4) 0%, transparent 65%);
+      }
+
+      /* ── Hero Content ── */
+      .hero-video-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        padding: 1.5rem 1.5rem 2.5rem;
+        max-width: 780px;
+        margin: 0 auto;
+      }
+
+      .hero-service-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(124,58,237,0.18);
+        border: 1.5px solid rgba(168,85,247,0.45);
+        color: #d8b4fe;
+        padding: 0.4rem 1.1rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        backdrop-filter: blur(8px);
+        animation: fadeInDown 0.6s ease both;
+      }
+
+      .hero-service-badge i {
+        font-size: 0.9rem;
+        animation: ironBounce 2s ease-in-out infinite;
+      }
+
+      @keyframes ironBounce {
+        0%, 100% { transform: rotate(-5deg) scale(1); }
+        50%       { transform: rotate(5deg) scale(1.15); }
+      }
+
+      .hero-main-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 3.8rem);
+        font-weight: 900;
+        color: #ffffff;
+        line-height: 1.08;
+        margin: 0 0 0.8rem;
+        text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        animation: fadeInUp 0.7s 0.1s ease both;
+      }
+
+      .hero-title-line2 {
+        display: block;
+        background: linear-gradient(90deg, #c084fc 0%, #ffffff 50%, #a855f7 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 18px rgba(168,85,247,0.5));
+      }
+
+      .hero-subtitle {
+        font-size: clamp(0.88rem, 1.6vw, 1.05rem);
+        color: rgba(255,255,255,0.72);
+        margin-bottom: 1.5rem;
+        font-weight: 400;
+        line-height: 1.6;
+        animation: fadeInUp 0.7s 0.2s ease both;
+      }
+
+      .hero-cta-row {
+        display: flex;
+        gap: 0.85rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.8rem;
+        animation: fadeInUp 0.7s 0.3s ease both;
+      }
+
+      .hero-cta-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.8rem 1.8rem;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 28px rgba(124,58,237,0.4);
+        border: 1.5px solid rgba(168,85,247,0.3);
+      }
+
+      .hero-cta-primary:hover {
+        transform: translateY(-3px) scale(1.04);
+        box-shadow: 0 14px 40px rgba(124,58,237,0.55);
+      }
+
+      .hero-cta-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: var(--glass-bg);
+        color: white;
+        font-weight: 600;
+        font-size: 0.95rem;
+        padding: 0.8rem 1.8rem;
+        border-radius: 50px;
+        text-decoration: none;
+        border: 1.5px solid var(--glass-border);
+        backdrop-filter: blur(12px);
+        transition: all 0.3s ease;
+      }
+
+      .hero-cta-secondary:hover {
+        background: rgba(255,255,255,0.14);
+        transform: translateY(-3px);
+      }
+
+      .hero-stats-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        background: rgba(124,58,237,0.12);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(168,85,247,0.2);
+        border-radius: 16px;
+        padding: 0.75rem 1.5rem;
+        animation: fadeInUp 0.7s 0.4s ease both;
+        flex-wrap: wrap;
+      }
+
+      .hero-stat-item {
+        text-align: center;
+        padding: 0.35rem 1.2rem;
+      }
+
+      .hero-stat-value {
+        display: block;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #c084fc;
+        line-height: 1;
+      }
+
+      .hero-stat-label {
+        display: block;
+        font-size: 0.67rem;
+        color: rgba(255,255,255,0.55);
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        margin-top: 0.15rem;
+      }
+
+      .hero-stat-divider {
+        width: 1px;
+        height: 30px;
+        background: rgba(168,85,247,0.25);
+      }
+
+      /* ── Scroll indicator ── */
+      .hero-scroll-indicator {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        color: rgba(255,255,255,0.5);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        animation: fadeIn 1s 1s ease both;
+      }
+
+      .hero-scroll-indicator i {
+        font-size: 1.2rem;
+        animation: scrollBounce 1.5s ease-in-out infinite;
+      }
+
+      @keyframes scrollBounce {
+        0%, 100% { transform: translateY(0); opacity: 0.5; }
+        50%       { transform: translateY(6px); opacity: 1; }
+      }
+
+      @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+
+      /* ════════════════════════════════════════════
+         PROMO VIDEO SECTION
+         ════════════════════════════════════════════ */
+      .promo-video-section {
+        padding: 4rem 1.5rem;
+        background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #faf5ff 100%);
+        overflow: hidden;
+        position: relative;
+      }
+
+      [data-theme="dark"] .promo-video-section {
+        background: linear-gradient(135deg, #1a0a30 0%, #130820 50%, #1a0a30 100%);
+      }
+
+      .promo-video-section::before {
+        content: '';
+        position: absolute;
+        top: -80px; right: -80px;
+        width: 350px; height: 350px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(147,51,234,0.12) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .promo-video-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 4rem;
+        align-items: center;
+      }
+
+      .promo-video-embed-wrap {
+        position: relative;
+      }
+
+      .promo-video-frame-outer {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow:
+          0 30px 80px rgba(107,33,168,0.25),
+          0 0 0 1px rgba(147,51,234,0.2);
+        transform: perspective(1000px) rotateY(3deg) rotateX(2deg);
+        transition: transform 0.4s ease;
+      }
+
+      .promo-video-frame-outer:hover {
+        transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+      }
+
+      .promo-video-frame-outer::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(147,51,234,0.08) 0%, transparent 60%);
+        z-index: 1;
+        pointer-events: none;
+        border-radius: 20px;
+      }
+
+      .promo-video-ratio {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+      }
+
+      .promo-video-ratio iframe {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        border: none;
+        border-radius: 20px;
+      }
+
+      /* Decorative glow dot */
+      .promo-video-dot {
+        position: absolute;
+        width: 220px; height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(147,51,234,0.2) 0%, transparent 70%);
+        bottom: -60px; right: -60px;
+        z-index: -1;
+      }
+
+      .promo-video-content-side {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .promo-overline {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #7c3aed;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .promo-overline::before {
+        content: '';
+        display: inline-block;
+        width: 28px; height: 2px;
+        background: #7c3aed;
+        border-radius: 2px;
+      }
+
+      .promo-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+        font-weight: 700;
+        color: #1e0a3c;
+        line-height: 1.2;
+        margin: 0;
+      }
+
+      [data-theme="dark"] .promo-title { color: #f0e6ff; }
+
+      .promo-title-accent { color: #7c3aed; }
+
+      .promo-desc {
+        color: #6b7280;
+        line-height: 1.7;
+        font-size: 0.97rem;
+        margin: 0;
+      }
+
+      [data-theme="dark"] .promo-desc { color: #a89fc0; }
+
+      .promo-feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .promo-feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: #374151;
+      }
+
+      [data-theme="dark"] .promo-feature-list li { color: #c4b5d4; }
+
+      .promo-feature-icon {
+        width: 32px; height: 32px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6b21a8 0%, #7c3aed 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+      }
+
+      .promo-cta-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #7c3aed;
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-decoration: none;
+        margin-top: 0.5rem;
+        transition: gap 0.2s ease;
+      }
+
+      .promo-cta-link:hover { gap: 0.9rem; }
+
+      /* ════════════════════════════════════════════
+         DATE RESTRICTION BANNER
+         ════════════════════════════════════════════ */
+      .date-limit-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        border: 1.5px solid #f59e0b;
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: #78350f;
+      }
+
+      [data-theme="dark"] .date-limit-banner {
+        background: rgba(245,158,11,0.08);
+        border-color: rgba(245,158,11,0.4);
+        color: #fcd34d;
+      }
+
+      .date-limit-banner i {
+        color: #d97706;
+        font-size: 1.1rem;
+        margin-top: 1px;
+        flex-shrink: 0;
+      }
+
+      [data-theme="dark"] .date-limit-banner i { color: #f59e0b; }
+
+      .date-limit-banner strong { color: #92400e; display: block; margin-bottom: 0.2rem; font-size: 0.9rem; }
+      [data-theme="dark"] .date-limit-banner strong { color: #fde68a; }
+
+      /* ════════════════════════════════════════════
+         ENHANCED SPLIT SECTION STYLING
+         (Works on top of existing iron.css)
+         ════════════════════════════════════════════ */
+
+      /* Visual badge on pricing cards */
+      .pricing-card.standard::after,
+      .pricing-card.urgent::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        border-radius: 16px 16px 0 0;
+      }
+
+      .pricing-card.standard { position: relative; }
+      .pricing-card.standard::after {
+        background: linear-gradient(90deg, #7c3aed, #9333ea);
+      }
+
+      .pricing-card.urgent { position: relative; }
+      .pricing-card.urgent::after {
+        background: linear-gradient(90deg, #f59e0b, #d97706);
+      }
+
+      /* ════════════════════════════════════════════
+         ATTRACTIVE SECTION HEADERS GLOBAL TWEAK
+         ════════════════════════════════════════════ */
+      .section-header h2 {
+        font-family: 'Playfair Display', serif;
+      }
+
+      /* ════════════════════════════════════════════
+         HOW IT WORKS — Glowing step numbers
+         ════════════════════════════════════════════ */
+      .step-number {
+        background: linear-gradient(135deg, var(--iron-purple) 0%, var(--iron-purple-light) 100%) !important;
+        box-shadow: 0 4px 20px rgba(107,33,168,0.35) !important;
+      }
+
+      /* ════════════════════════════════════════════
+         RESPONSIVE
+         ════════════════════════════════════════════ */
+      @media (max-width: 900px) {
+        .promo-video-inner {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+        .promo-video-frame-outer {
+          transform: none;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .hero-stats-bar {
+          flex-direction: column;
+          gap: 0.5rem;
+          padding: 1rem;
+        }
+        .hero-stat-divider { width: 60px; height: 1px; }
+        .hero-cta-row { flex-direction: column; align-items: center; }
+        .hero-main-title { font-size: 2.5rem; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Auth Modal Overlay (unchanged) -->
+    <div class="auth-modal-overlay" id="authModalOverlay">
+      <div class="auth-modal-container" id="authModalContainer">
+        <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+        <iframe id="authIframe" src="about:blank" style="width:100%;height:100%;border:none"></iframe>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <!-- Header Container -->
+      <div id="header-container"></div>
+
+      <!-- Sidebar Container -->
+      <div id="sidebar-container"></div>
+
+      <!-- ════════════════════════════════════════
+           MAIN CONTENT
+           ════════════════════════════════════════ -->
+      <main class="main-content">
+
+        <!-- ──────────────────────────────────────
+             VIDEO HERO SECTION
+             Replace VIDEO_URL below with your
+             own ironing video URL, or use the
+             YouTube iframe alternative (commented)
+             ────────────────────────────────────── -->
+        <section class="iron-hero-section">
+
+          <!-- Background Video -->
+          <div class="hero-video-bg">
+            <!--
+              💡 Option 1 (Direct Video — recommended):
+              Replace the src with your own or a stock video URL.
+              Good free sources: mixkit.co, coverr.co, pexels.com
+            -->
+            <video
+              class="hero-bg-video"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              poster="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=1200&q=80"
+            >
+              <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-ironing-a-shirt-42560-large.mp4" type="video/mp4" />
+              <!-- Fallback source (replace with your video) -->
+            </video>
+
+            <!--
+              💡 Option 2 (YouTube background — uncomment to use):
+              Replace YOUR_YOUTUBE_VIDEO_ID with the actual ID.
+              <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+                <iframe
+                  style="position:absolute;top:50%;left:50%;width:200%;height:200%;transform:translate(-50%,-50%);pointer-events:none;"
+                  src="https://www.youtube.com/watch?v=0eYvlK4Bn4I&pp=ygUUaXJvbiBzZXJ2aWNlIGxhdW5kcnk%3D"
+                  frameborder="0"
+                  allow="autoplay;encrypted-media">
+                </iframe>
+              </div>
+            -->
+          </div>
+
+          <!-- Steam Particles -->
+          <div class="hero-steam-layer">
+            <div class="steam-particle"></div>
+            <div class="steam-particle"></div>
+            <div class="steam-particle"></div>
+            <div class="steam-particle"></div>
+            <div class="steam-particle"></div>
+            <div class="steam-particle"></div>
+            <div class="steam-particle"></div>
+            <div class="steam-particle"></div>
+            <div class="steam-particle"></div>
+            <div class="steam-particle"></div>
+          </div>
+
+          <!-- Gradient Overlay -->
+          <div class="hero-gradient-overlay"></div>
+
+          <!-- Hero Content -->
+          <div class="hero-video-content">
+            <div class="hero-service-badge">
+              <i class="fas fa-iron"></i>
+              Iron Only Service · Quick Laundry
+            </div>
+
+            <h1 class="hero-main-title">
+              Crisp Clothes,
+              <span class="hero-title-line2">Every Single Day</span>
+            </h1>
+
+            <p class="hero-subtitle">
+              Professional ironing by expert hands — wrinkle-free, pressed to perfection
+              and delivered right to your doorstep in Satellite, Ahmedabad.
+            </p>
+
+            <div class="hero-cta-row">
+              <a href="#orderFormSection" class="hero-cta-primary">
+                <i class="fas fa-calendar-check"></i>
+                Book Iron Service
+              </a>
+              <a href="#ironPromoVideo" class="hero-cta-secondary">
+                <i class="fas fa-play-circle"></i>
+                Watch How It Works
+              </a>
+            </div>
+
+            <div class="hero-stats-bar">
+              <div class="hero-stat-item">
+                <span class="hero-stat-value">₹10</span>
+                <span class="hero-stat-label">Standard / Piece</span>
+              </div>
+              <div class="hero-stat-divider"></div>
+              <div class="hero-stat-item">
+                <span class="hero-stat-value">₹15</span>
+                <span class="hero-stat-label">Express / Piece</span>
+              </div>
+              <div class="hero-stat-divider"></div>
+              <div class="hero-stat-item">
+                <span class="hero-stat-value">24hr</span>
+                <span class="hero-stat-label">Fast Delivery</span>
+              </div>
+              <div class="hero-stat-divider"></div>
+              <div class="hero-stat-item">
+                <span class="hero-stat-value">100%</span>
+                <span class="hero-stat-label">Satisfaction</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scroll Indicator -->
+          <div class="hero-scroll-indicator">
+            <span>Scroll</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════
+             SPLIT LAYOUT: Left = Pricing  |  Right = Order Form
+             (Unchanged — handled by existing iron.css)
+             ══════════════════════════════════════════════════════ -->
+        <section class="split-section" id="orderFormSection">
+          <div class="split-container">
+
+            <!-- ── LEFT PANEL: Iron Only Service ── -->
+            <div class="split-left">
+              <div class="split-panel-header">
+                <div class="icon-badge"><i class="fas fa-iron"></i></div>
+                <h2>Iron Only Service</h2>
+                <p>Professional ironing for your already washed clothes</p>
+              </div>
+
+              <div class="pricing-grid">
+                <div class="pricing-card standard">
+                  <div class="card-header">
+                    <i class="fas fa-clock"></i>
+                    <h3>Standard Iron</h3>
+                    <div class="badge">Most Popular</div>
+                  </div>
+                  <div class="price">
+                    <span class="currency">₹</span>
+                    <span class="amount">10</span>
+                    <span class="period">/piece</span>
+                  </div>
+                  <ul class="features">
+                    <li><i class="fas fa-check"></i> Normal delivery (24-48 hrs)</li>
+                    <li><i class="fas fa-check"></i> Professional pressing</li>
+                    <li><i class="fas fa-check"></i> Wrinkle-free finish</li>
+                    <li><i class="fas fa-check"></i> Hanger or folded</li>
+                    <li><i class="fas fa-check"></i> Quality guarantee</li>
+                  </ul>
+                </div>
+
+                <div class="pricing-card urgent featured">
+                  <div class="card-header">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Urgent Iron</h3>
+                    <div class="badge urgent-badge">Express</div>
+                  </div>
+                  <div class="price">
+                    <span class="currency">₹</span>
+                    <span class="amount">15</span>
+                    <span class="period">/piece</span>
+                  </div>
+                  <ul class="features">
+                    <li><i class="fas fa-check"></i> Same day delivery</li>
+                    <li><i class="fas fa-check"></i> Priority service</li>
+                    <li><i class="fas fa-check"></i> Premium pressing</li>
+                    <li><i class="fas fa-check"></i> Perfect finish</li>
+                    <li><i class="fas fa-check"></i> 100% satisfaction</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── DIVIDER ── -->
+            <div class="split-divider"></div>
+
+            <!-- ── RIGHT PANEL: Place Order Form ── -->
+            <div class="split-right">
+              <div class="split-panel-header">
+                <div class="icon-badge"><i class="fas fa-shopping-cart"></i></div>
+                <h2>Place Your Order</h2>
+                <p>Fill in the details to schedule your iron service</p>
+              </div>
+
+              <div class="order-form-wrapper">
+                <form class="iron-order-form" id="ironOrderForm">
+
+                  <div class="form-section">
+                    <h3><i class="fas fa-th-list"></i> Service Details</h3>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="serviceType">Service Type *</label>
+                        <select id="serviceType" name="serviceType" required>
+                          <option value="">Select service type</option>
+                          <option value="standard" data-price="10">Standard Iron - ₹10/piece</option>
+                          <option value="urgent" data-price="15">Urgent Iron - ₹15/piece</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="quantity">Quantity (pieces) *</label>
+                        <input type="number" id="quantity" name="quantity" min="1" value="1" required />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-section">
+                    <h3><i class="fas fa-map-marker-alt"></i> Pickup Details</h3>
+
+                    <!-- Address auto-fill hint -->
+                    <div class="address-autofill-hint" id="addressAutofillHint" style="display:none;">
+                      <i class="fas fa-info-circle"></i>
+                      <span>Address auto-filled from your profile. You can edit it.</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="pickupAddress">Pickup Address *</label>
+                      <textarea id="pickupAddress" name="pickupAddress" rows="2"
+                        placeholder="Loading your registered address…" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="pickupDate">Pickup Date *</label>
+
+                        <!-- 5-Day Booking Window Notice -->
+                        <div class="date-limit-banner">
+                          <i class="fas fa-calendar-alt"></i>
+                          <div>
+                            <strong>📅 5-Day Booking Window</strong>
+                            You can schedule pickup up to 5 days ahead only. This helps us manage orders efficiently and serve you better!
+                          </div>
+                        </div>
+
+                        <input type="date" id="pickupDate" name="pickupDate" required />
+                      </div>
+                      <div class="form-group">
+                        <label for="pickupTime">Pickup Time *</label>
+                        <select id="pickupTime" name="pickupTime" required>
+                          <option value="">Select time slot</option>
+                          <option value="09:00-11:00">9:00 AM - 11:00 AM</option>
+                          <option value="11:00-13:00">11:00 AM - 1:00 PM</option>
+                          <option value="13:00-15:00">1:00 PM - 3:00 PM</option>
+                          <option value="15:00-17:00">3:00 PM - 5:00 PM</option>
+                          <option value="17:00-19:00">5:00 PM - 7:00 PM</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-section">
+                    <h3><i class="fas fa-comment"></i> Additional Info</h3>
+                    <div class="form-group">
+                      <label for="specialInstructions">Special Instructions (Optional)</label>
+                      <textarea id="specialInstructions" name="specialInstructions" rows="2"
+                        placeholder="e.g., starch, fold vs hang, delicate fabric..."></textarea>
+                    </div>
+                  </div>
+
+                  <div class="order-summary">
+                    <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                    <div class="summary-row"><span>Service Type:</span><span id="summaryServiceType">-</span></div>
+                    <div class="summary-row"><span>Quantity:</span><span id="summaryQuantity">-</span></div>
+                    <div class="summary-row"><span>Price per piece:</span><span id="summaryPricePerPiece">-</span></div>
+                    <div class="summary-row total"><span>Total Amount:</span><span id="summaryTotal">₹0</span></div>
+                  </div>
+
+                  <!-- ══ TWO ACTION BUTTONS ══ -->
+                  <div class="form-action-buttons">
+                    <button type="button" class="btn-add-cart" id="addToCartBtn">
+                      <i class="fas fa-shopping-cart"></i>
+                      <span>Add to Cart</span>
+                    </button>
+                    <button type="button" class="btn-place-order" id="placeOrderBtn">
+                      <i class="fas fa-bolt"></i>
+                      <span>Place Order</span>
+                    </button>
+                  </div>
+
+                  <p class="btn-hint-text">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Add to Cart</strong> saves for later &nbsp;|&nbsp;
+                    <strong>Place Order</strong> confirms immediately
+                  </p>
+
+                  <p class="form-note">
+                    <i class="fas fa-info-circle"></i>
+                    By placing this order, you agree to our
+                    <a href="terms.html">Terms of Service</a> and <a href="privacy-policy.html">Privacy Policy</a>
+                  </p>
+
+                </form>
+              </div>
+            </div><!-- end split-right -->
+
+          </div><!-- end split-container -->
+        </section>
+
+        <!-- ──────────────────────────────────────
+             PROMO VIDEO SECTION
+             ────────────────────────────────────── -->
+        <section class="promo-video-section" id="ironPromoVideo">
+          <div class="promo-video-inner">
+
+            <!-- Video Embed -->
+            <div class="promo-video-embed-wrap">
+              <div class="promo-video-frame-outer">
+                <div class="promo-video-ratio">
+                  <!--
+                    💡 Replace the YouTube video ID below.
+                    Search for an ironing / laundry service video on YouTube,
+                    open it, copy the ID from the URL (the part after "watch?v=")
+                    and paste it in both places below.
+                    Example: https://www.youtube.com/watch?v=REPLACE_WITH_ID
+                  -->
+                  <iframe
+                    src="../Frontend/images/services/iron.mp4"
+                    title="Iron Service - How It Works"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+              <div class="promo-video-dot"></div>
+            </div>
+
+            <!-- Content Side -->
+            <div class="promo-video-content-side">
+              <span class="promo-overline">
+                <i class="fas fa-play-circle"></i>
+                See It In Action
+              </span>
+
+              <h2 class="promo-title">
+                Why Our Iron Service<br>
+                <span class="promo-title-accent">Stands Apart</span>
+              </h2>
+
+              <p class="promo-desc">
+                Watch how our experts handle every garment with precision — from
+                delicate silks to sturdy cotton — using temperature-controlled irons
+                for a flawless, wrinkle-free finish every time.
+              </p>
+
+              <ul class="promo-feature-list">
+                <li>
+                  <span class="promo-feature-icon"><i class="fas fa-thermometer-half"></i></span>
+                  Temperature-controlled irons for every fabric type
+                </li>
+                <li>
+                  <span class="promo-feature-icon"><i class="fas fa-clock"></i></span>
+                  24-hour standard turnaround, same-day express available
+                </li>
+                <li>
+                  <span class="promo-feature-icon"><i class="fas fa-shield-alt"></i></span>
+                  100% satisfaction guarantee — we re-iron for free if needed
+                </li>
+                <li>
+                  <span class="promo-feature-icon"><i class="fas fa-motorcycle"></i></span>
+                  Free pickup & delivery within Satellite, Ahmedabad
+                </li>
+              </ul>
+
+              <a href="#orderFormSection" class="promo-cta-link">
+                Schedule Your Pickup Now <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── HOW IT WORKS (unchanged) ── -->
+        <section class="instructions-section">
+          <div class="container">
+            <div class="section-header">
+              <div class="icon-badge"><i class="fas fa-info-circle"></i></div>
+              <h2>How It Works</h2>
+              <p>Simple steps to get your clothes ironed</p>
+            </div>
+            <div class="instructions-grid">
+              <div class="instruction-card">
+                <div class="step-number">1</div>
+                <div class="instruction-icon"><i class="fas fa-tshirt"></i></div>
+                <h3>Prepare Your Clothes</h3>
+                <p>Ensure your clothes are already washed and dry. Separate delicate items from regular clothes.</p>
+              </div>
+              <div class="instruction-card">
+                <div class="step-number">2</div>
+                <div class="instruction-icon"><i class="fas fa-calendar-check"></i></div>
+                <h3>Schedule Pickup</h3>
+                <p>Choose a convenient pickup time and date within the next 5 days. Our team will collect your clothes from your doorstep.</p>
+              </div>
+              <div class="instruction-card">
+                <div class="step-number">3</div>
+                <div class="instruction-icon"><i class="fas fa-iron"></i></div>
+                <h3>Professional Ironing</h3>
+                <p>Our experts will iron your clothes with care, ensuring a crisp, wrinkle-free finish.</p>
+              </div>
+              <div class="instruction-card">
+                <div class="step-number">4</div>
+                <div class="instruction-icon"><i class="fas fa-home"></i></div>
+                <h3>Doorstep Delivery</h3>
+                <p>Get your perfectly ironed clothes delivered right to your door at your preferred time.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FAQ Section (unchanged) -->
+        <section class="faq-section">
+          <div class="container">
+            <div class="section-header">
+              <div class="icon-badge">
+                <i class="fas fa-question-circle"></i>
+              </div>
+              <h2>Frequently Asked Questions</h2>
+              <p>Find answers to common questions</p>
+            </div>
+
+            <div class="faq-grid">
+              <div class="faq-item">
+                <div class="faq-question">
+                  <i class="fas fa-chevron-right"></i>
+                  <h4>What is the minimum order quantity?</h4>
+                </div>
+                <div class="faq-answer">
+                  <p>We accept orders for a minimum of 1 piece. There's no maximum limit - we can handle bulk orders too!</p>
+                </div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-question">
+                  <i class="fas fa-chevron-right"></i>
+                  <h4>Do I need to wash clothes before ironing?</h4>
+                </div>
+                <div class="faq-answer">
+                  <p>Yes, this is an iron-only service. Please ensure your clothes are already washed and completely dry before pickup.</p>
+                </div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-question">
+                  <i class="fas fa-chevron-right"></i>
+                  <h4>What if I'm not satisfied with the service?</h4>
+                </div>
+                <div class="faq-answer">
+                  <p>We offer 100% satisfaction guarantee. If you're not happy, we'll re-iron your clothes free of charge within 24 hours.</p>
+                </div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-question">
+                  <i class="fas fa-chevron-right"></i>
+                  <h4>Is urgent service available on weekends?</h4>
+                </div>
+                <div class="faq-answer">
+                  <p>Yes! Our urgent service is available 7 days a week, including weekends and most holidays.</p>
+                </div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-question">
+                  <i class="fas fa-chevron-right"></i>
+                  <h4>How do you handle delicate fabrics?</h4>
+                </div>
+                <div class="faq-answer">
+                  <p>We use temperature-controlled irons and special techniques for delicate fabrics like silk, satin, and linen to prevent damage.</p>
+                </div>
+              </div>
+
+              <div class="faq-item">
+                <div class="faq-question">
+                  <i class="fas fa-chevron-right"></i>
+                  <h4>Why can I only book 5 days in advance?</h4>
+                </div>
+                <div class="faq-answer">
+                  <p>To ensure timely service and smooth scheduling for all customers, we accept bookings up to 5 days in advance. This helps our team manage pickups efficiently and guarantee quality service.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer Container -->
+      <div id="footer-container"></div>
+    </div>
+
+    <!-- ✅ Load shared storage utility FIRST -->
+    <script src="js/storage-utils.js"></script>
+
+    <!-- ✅ AUTH MODAL CONTROLLER (unchanged) -->
+    <script>
+      (function () {
+        function setLS(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+        function openAuthModal(page) {
+          page=page||"login";
+          var ov=document.getElementById("authModalOverlay"),
+              ct=document.getElementById("authModalContainer"),
+              fr=document.getElementById("authIframe");
+          if(!ov||!fr){console.error("Auth modal not found");return;}
+          fr.src=(page==="login")?"login.html":"registration.html";
+          if(ct)ct.classList.add("loading");
+          ov.classList.add("active");
+          document.body.style.overflow="hidden";
+          fr.onload=function(){if(ct)ct.classList.remove("loading");};
+        }
+        function closeAuthModal() {
+          var ov=document.getElementById("authModalOverlay"),
+              fr=document.getElementById("authIframe");
+          if(!ov)return;
+          ov.classList.add("closing");
+          setTimeout(function(){ov.classList.remove("active","closing");if(fr)fr.src="about:blank";document.body.style.overflow="";},300);
+        }
+        document.addEventListener("DOMContentLoaded",function(){
+          var b=document.getElementById("authModalClose"),o=document.getElementById("authModalOverlay");
+          if(b)b.addEventListener("click",closeAuthModal);
+          if(o)o.addEventListener("click",function(e){if(e.target===o)closeAuthModal();});
+          document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeAuthModal();if(typeof closeOrderPreview==="function")closeOrderPreview();}});
+        });
+        window.addEventListener("message",function(ev){
+          var m=ev.data||{};
+          if(m.type==="CLOSE_MODAL")closeAuthModal();
+          else if(m.type==="SWITCH_TO_REGISTRATION"){var f=document.getElementById("authIframe");if(f)f.src="registration.html";}
+          else if(m.type==="SWITCH_TO_LOGIN"){var f=document.getElementById("authIframe");if(f)f.src="login.html";}
+          else if(m.type==="AUTH_SUCCESS"){
+            var d=m.data||{};
+            setLS("isLoggedIn","true");setLS("userName",d.userName||"User");setLS("userEmail",d.userEmail||"");setLS("jwtToken",d.token||"demo_"+Date.now());
+            closeAuthModal();
+            if(typeof window.checkAuthState==="function")window.checkAuthState();
+            if(typeof window.checkSidebarAuthState==="function")window.checkSidebarAuthState();
+            window.dispatchEvent(new CustomEvent("loginSuccess",{detail:d}));
+            if(typeof window.showNotification==="function")window.showNotification("Welcome back, "+(d.userName||"User")+"! 👋","success");
+          }
+        });
+        window.openAuthModal=openAuthModal;
+        window.closeAuthModal=closeAuthModal;
+        console.log("✅ Auth modal controller ready");
+      })();
+    </script>
+
+    <!-- ✅ Load Components (unchanged) -->
+    <script>
+      async function loadComponents() {
+        try {
+          const headerResponse = await fetch("header.html");
+          const headerData = await headerResponse.text();
+          document.getElementById("header-container").innerHTML = headerData;
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          await new Promise((resolve, reject) => {
+            const headerScript = document.createElement("script");
+            headerScript.src = "js/header.js";
+            headerScript.onload = () => { resolve(); };
+            headerScript.onerror = reject;
+            document.body.appendChild(headerScript);
+          });
+
+          await new Promise((resolve) => setTimeout(resolve, 300));
+
+          if (typeof window.checkAuthState === "function") {
+            window.checkAuthState();
+          } else {
+            setTimeout(() => { if (typeof window.checkAuthState === "function") window.checkAuthState(); }, 500);
+          }
+
+          const sidebarResponse = await fetch("sidebar.html");
+          const sidebarData = await sidebarResponse.text();
+          document.getElementById("sidebar-container").innerHTML = sidebarData;
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          const sidebarScript = document.createElement("script");
+          sidebarScript.src = "js/sidebar.js";
+          document.body.appendChild(sidebarScript);
+
+          const footerResponse = await fetch("footer.html");
+          const footerData = await footerResponse.text();
+          document.getElementById("footer-container").innerHTML = footerData;
+
+          const footerScript = document.createElement("script");
+          footerScript.src = "js/footer.js";
+          document.body.appendChild(footerScript);
+
+        } catch (error) {
+          console.error("❌ Error loading components:", error);
+        }
+      }
+      loadComponents();
+    </script>
+
+    <!-- ✅ Iron Service JavaScript (updated with date restriction) -->
+    <script src="js/iron.js"></script>
+  </body>
+</html>

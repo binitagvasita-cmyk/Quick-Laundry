@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assign Deliveries – Quick Laundry Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap");
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #080d17;
+        --surface: #0f1829;
+        --card: #141e30;
+        --card2: #1a2540;
+        --border: #1e2d45;
+        --border2: #243350;
+        --blue: #3b82f6;
+        --blue2: #60a5fa;
+        --indigo: #6366f1;
+        --green: #10b981;
+        --amber: #f59e0b;
+        --red: #ef4444;
+        --muted: #64748b;
+        --text: #cbd5e1;
+        --white: #f1f5f9;
+        --font: "DM Sans", sans-serif;
+        --mono: "DM Mono", monospace;
+      }
+
+      html {
+        font-size: 15px;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        min-height: 100vh;
+      }
+
+      /* ── TOP BAR ── */
+      .topbar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 0 32px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 200;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .brand-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, var(--blue), var(--indigo));
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+      .brand-name {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--white);
+      }
+      .brand-name span {
+        color: var(--blue2);
+      }
+
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .topbar-badge {
+        background: rgba(59, 130, 246, 0.12);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        color: var(--blue2);
+        padding: 5px 12px;
+        border-radius: 100px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+      }
+
+      /* ── LAYOUT ── */
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 28px 32px;
+      }
+
+      .page-header {
+        margin-bottom: 28px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .page-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--white);
+      }
+      .page-subtitle {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-top: 4px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 10px;
+        border: none;
+        font-family: var(--font);
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--blue), var(--indigo));
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+      }
+      .btn-primary:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+      }
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--border2);
+        color: var(--text);
+      }
+      .btn-ghost:hover {
+        background: var(--card2);
+        color: var(--white);
+      }
+
+      /* ── SUMMARY STRIP ── */
+      .summary-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+      .summary-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .summary-label {
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .summary-value {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: var(--white);
+        line-height: 1.1;
+      }
+      .summary-value.amber {
+        color: var(--amber);
+      }
+      .summary-value.green {
+        color: var(--green);
+      }
+      .summary-value.blue {
+        color: var(--blue2);
+      }
+
+      /* ── TWO COLUMN LAYOUT ── */
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 20px;
+        align-items: start;
+      }
+      @media (max-width: 1100px) {
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── PANEL ── */
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .panel-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .panel-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .panel-title i {
+        color: var(--blue);
+      }
+
+      .pill {
+        background: rgba(59, 130, 246, 0.12);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        color: var(--blue2);
+        padding: 3px 10px;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      /* ── ORDER TABLE ── */
+      .order-list {
+        padding: 8px 0;
+      }
+
+      .order-row {
+        padding: 16px 22px;
+        border-bottom: 1px solid var(--border);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+        transition: background 0.15s;
+        cursor: pointer;
+      }
+      .order-row:last-child {
+        border-bottom: none;
+      }
+      .order-row:hover {
+        background: var(--card);
+      }
+      .order-row.selected {
+        background: rgba(59, 130, 246, 0.07);
+        border-left: 3px solid var(--blue);
+      }
+
+      .order-num {
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--blue2);
+        font-weight: 500;
+      }
+      .order-customer {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--white);
+        margin: 3px 0;
+      }
+      .order-meta {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .order-meta span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .amount-tag {
+        font-family: var(--mono);
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--green);
+        white-space: nowrap;
+      }
+
+      .status-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        margin-right: 4px;
+      }
+      .status-dot.pending {
+        background: var(--amber);
+      }
+      .status-dot.confirmed {
+        background: var(--blue);
+      }
+      .status-dot.picked_up {
+        background: var(--indigo);
+      }
+
+      .assign-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 8px;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        color: var(--blue2);
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: var(--font);
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .assign-btn:hover {
+        background: var(--blue);
+        color: #fff;
+        border-color: var(--blue);
+      }
+
+      /* ── PARTNER SIDEBAR ── */
+      .partner-list {
+        padding: 8px 0;
+      }
+
+      .partner-row {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: background 0.15s;
+      }
+      .partner-row:last-child {
+        border-bottom: none;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #1e3a5f, #2d4d7a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--blue2);
+        flex-shrink: 0;
+      }
+      .partner-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .partner-name {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--white);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .partner-sub {
+        font-size: 0.74rem;
+        color: var(--muted);
+        display: flex;
+        gap: 8px;
+        margin-top: 2px;
+        flex-wrap: wrap;
+      }
+      .partner-badges {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
+
+      .badge {
+        padding: 2px 8px;
+        border-radius: 100px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+      .badge-green {
+        background: rgba(16, 185, 129, 0.12);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+      .badge-red {
+        background: rgba(239, 68, 68, 0.12);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
+      .badge-amber {
+        background: rgba(245, 158, 11, 0.12);
+        color: #fcd34d;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+      }
+      .badge-blue {
+        background: rgba(59, 130, 246, 0.12);
+        color: var(--blue2);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+      }
+      .badge-muted {
+        background: rgba(100, 116, 139, 0.12);
+        color: var(--muted);
+        border: 1px solid rgba(100, 116, 139, 0.2);
+      }
+
+      .workload {
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .workload-num {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--white);
+        font-family: var(--mono);
+      }
+      .workload-label {
+        font-size: 0.68rem;
+        color: var(--muted);
+      }
+
+      /* ── MODAL ── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        z-index: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s;
+      }
+      .modal-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .modal {
+        background: var(--card);
+        border: 1px solid var(--border2);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 540px;
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(20px) scale(0.97);
+        transition: transform 0.25s;
+        overflow: hidden;
+      }
+      .modal-overlay.open .modal {
+        transform: translateY(0) scale(1);
+      }
+
+      .modal-head {
+        padding: 22px 24px 18px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .modal-order-info {
+        flex: 1;
+      }
+      .modal-order-num {
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--blue2);
+      }
+      .modal-order-customer {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--white);
+        margin-top: 2px;
+      }
+      .modal-order-meta {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 4px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .modal-close {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: transparent;
+        border: 1px solid var(--border2);
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .modal-close:hover {
+        background: var(--card2);
+        color: var(--white);
+      }
+
+      .modal-search-wrap {
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--border);
+      }
+      .modal-search {
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        padding: 10px 14px 10px 38px;
+        color: var(--white);
+        font-size: 0.9rem;
+        font-family: var(--font);
+        outline: none;
+        transition: border-color 0.2s;
+        position: relative;
+      }
+      .modal-search:focus {
+        border-color: var(--blue);
+      }
+      .search-icon {
+        position: absolute;
+        left: 37px;
+        margin-top: -38px;
+        color: var(--muted);
+        font-size: 13px;
+        pointer-events: none;
+      }
+      .search-wrap-inner {
+        position: relative;
+      }
+      .search-wrap-inner i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        font-size: 13px;
+        pointer-events: none;
+      }
+
+      .modal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px 0;
+      }
+
+      /* partner select row in modal */
+      .mpartner-row {
+        padding: 14px 24px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .mpartner-row:last-child {
+        border-bottom: none;
+      }
+      .mpartner-row:hover {
+        background: var(--card2);
+      }
+
+      .mpartner-left {
+        flex: 1;
+      }
+      .mpartner-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--white);
+      }
+      .mpartner-sub {
+        font-size: 0.77rem;
+        color: var(--muted);
+        margin-top: 3px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .mpartner-badges {
+        display: flex;
+        gap: 5px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+      }
+      .mpartner-right {
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .mpartner-workload {
+        font-family: var(--mono);
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--white);
+      }
+      .mpartner-workload-label {
+        font-size: 0.68rem;
+        color: var(--muted);
+      }
+      .mpartner-delivered {
+        font-size: 0.75rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .select-indicator {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        border: 2px solid var(--border2);
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
+      }
+      .mpartner-row.chosen .select-indicator {
+        background: var(--blue);
+        border-color: var(--blue);
+      }
+      .mpartner-row.chosen .select-indicator::after {
+        content: "✓";
+        color: #fff;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .modal-foot {
+        padding: 16px 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 10px;
+      }
+      .modal-foot .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      .btn-confirm {
+        background: linear-gradient(135deg, var(--blue), var(--indigo));
+        color: #fff;
+        font-weight: 700;
+      }
+      .btn-confirm:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .btn-confirm:not(:disabled):hover {
+        opacity: 0.88;
+      }
+
+      /* ── TOAST ── */
+      .toast-container {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 9999;
+      }
+      .toast {
+        background: var(--card2);
+        border: 1px solid var(--border2);
+        border-radius: 12px;
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 280px;
+        max-width: 380px;
+        font-size: 0.88rem;
+        color: var(--white);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        animation: slideIn 0.3s ease;
+      }
+      .toast-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .toast.success .toast-icon {
+        color: var(--green);
+      }
+      .toast.error .toast-icon {
+        color: var(--red);
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(60px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* ── EMPTY STATE ── */
+      .empty {
+        padding: 52px 24px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .empty i {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+        opacity: 0.4;
+      }
+      .empty p {
+        font-size: 0.9rem;
+      }
+
+      /* ── LOADING SKELETON ── */
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          var(--card) 25%,
+          var(--card2) 50%,
+          var(--card) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite;
+        border-radius: 6px;
+      }
+      @keyframes shimmer {
+        to {
+          background-position: -200% 0;
+        }
+      }
+
+      /* ── SCROLLBAR ── */
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">🚀</div>
+        <div>
+          <div class="brand-name">Quick <span>Laundry</span></div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-badge">
+          <i class="fas fa-shield-alt"></i> Admin Panel
+        </div>
+        <button class="btn btn-ghost" onclick="refreshAll()" title="Refresh">
+          <i class="fas fa-rotate-right"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div>
+          <div class="page-title">Assign Deliveries</div>
+          <div class="page-subtitle">
+            Select any unassigned order → choose a delivery partner → confirm
+            assignment
+          </div>
+        </div>
+        <button class="btn btn-ghost" onclick="refreshAll()">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+
+      <!-- SUMMARY STRIP -->
+      <div class="summary-strip" id="summaryStrip">
+        <div class="summary-card">
+          <div class="summary-label">Unassigned Orders</div>
+          <div class="summary-value amber" id="statUnassigned">—</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Total Partners</div>
+          <div class="summary-value blue" id="statTotal">—</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">On Duty</div>
+          <div class="summary-value green" id="statOnDuty">—</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">Off Duty</div>
+          <div class="summary-value" id="statOffDuty">—</div>
+        </div>
+      </div>
+
+      <!-- TWO COLUMN -->
+      <div class="two-col">
+        <!-- LEFT: UNASSIGNED ORDERS -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fas fa-box-open"></i> Unassigned Orders
+            </div>
+            <span class="pill" id="orderCountPill">0</span>
+          </div>
+          <div class="order-list" id="orderList">
+            <!-- injected by JS -->
+            <div class="empty">
+              <i class="fas fa-inbox"></i>
+              <p>Loading orders…</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: ALL DELIVERY PARTNERS -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fas fa-motorcycle"></i> All Partners
+            </div>
+            <span class="pill" id="partnerCountPill">0</span>
+          </div>
+          <div class="partner-list" id="partnerList">
+            <div class="empty">
+              <i class="fas fa-user-clock"></i>
+              <p>Loading partners…</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSIGN MODAL -->
+    <div class="modal-overlay" id="assignModal">
+      <div class="modal">
+        <div class="modal-head">
+          <div class="modal-order-info">
+            <div class="modal-order-num" id="modalOrderNum"></div>
+            <div class="modal-order-customer" id="modalOrderCustomer"></div>
+            <div class="modal-order-meta" id="modalOrderMeta"></div>
+          </div>
+          <button class="modal-close" onclick="closeModal()">
+            <i class="fas fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="modal-search-wrap">
+          <div class="search-wrap-inner">
+            <i class="fas fa-search"></i>
+            <input
+              type="text"
+              class="modal-search"
+              id="partnerSearch"
+              placeholder="Search partner by name or vehicle…"
+              oninput="filterModalPartners()"
+            />
+          </div>
+        </div>
+
+        <div class="modal-body" id="modalPartnerList">
+          <!-- injected by JS -->
+        </div>
+
+        <div class="modal-foot">
+          <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button
+            class="btn btn-confirm"
+            id="confirmBtn"
+            disabled
+            onclick="confirmAssign()"
+          >
+            <i class="fas fa-check"></i> Confirm Assignment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+      const API = window.location.origin + "/api/admin/delivery";
+
+      // ── Auth token ──────────────────────────────
+      function getToken() {
+        return localStorage.getItem("admin_token") || "";
+      }
+      function authHeaders() {
+        return {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`,
+        };
+      }
+
+      // ── State ───────────────────────────────────
+      let allOrders = [];
+      let allPartners = [];
+      let selectedOrderId = null;
+      let selectedPartnerId = null;
+      let currentOrderForModal = null;
+
+      // ── Boot ────────────────────────────────────
+      window.addEventListener("DOMContentLoaded", refreshAll);
+
+      async function refreshAll() {
+        await Promise.all([loadOrders(), loadPartners()]);
+      }
+
+      // ── Load unassigned orders ───────────────────
+      async function loadOrders() {
+        try {
+          const res = await fetch(`${API}/orders/unassigned`, {
+            headers: authHeaders(),
+          });
+          const data = await res.json();
+          allOrders = data.data || [];
+          renderOrders();
+          document.getElementById("statUnassigned").textContent =
+            allOrders.length;
+          document.getElementById("orderCountPill").textContent =
+            allOrders.length;
+        } catch (e) {
+          console.error("Orders fetch failed", e);
+          document.getElementById(
+            "orderList"
+          ).innerHTML = `<div class="empty"><i class="fas fa-circle-exclamation"></i><p>Could not load orders</p></div>`;
+        }
+      }
+
+      // ── Load all delivery partners ───────────────
+      async function loadPartners() {
+        try {
+          const res = await fetch(`${API}/boys/all`, {
+            headers: authHeaders(),
+          });
+          const data = await res.json();
+          allPartners = data.data || [];
+          renderPartnerSidebar();
+          document.getElementById("statTotal").textContent = allPartners.length;
+          document.getElementById("statOnDuty").textContent =
+            allPartners.filter((p) => p.is_available && p.is_active).length;
+          document.getElementById("statOffDuty").textContent =
+            allPartners.filter((p) => !p.is_available || !p.is_active).length;
+          document.getElementById("partnerCountPill").textContent =
+            allPartners.length;
+        } catch (e) {
+          console.error("Partners fetch failed", e);
+          document.getElementById(
+            "partnerList"
+          ).innerHTML = `<div class="empty"><i class="fas fa-circle-exclamation"></i><p>Could not load partners</p></div>`;
+        }
+      }
+
+      // ── Render unassigned order rows ─────────────
+      function renderOrders() {
+        const list = document.getElementById("orderList");
+        if (!allOrders.length) {
+          list.innerHTML = `<div class="empty"><i class="fas fa-check-circle" style="color:var(--green)"></i><p>All orders are assigned!</p></div>`;
+          return;
+        }
+        list.innerHTML = allOrders
+          .map(
+            (o) => `
+      <div class="order-row ${selectedOrderId === o.order_id ? "selected" : ""}"
+           onclick="openAssignModal(${o.order_id})">
+        <div>
+          <div class="order-num">${o.order_number}</div>
+          <div class="order-customer">${esc(o.customer_name)}</div>
+          <div class="order-meta">
+            <span><i class="fas fa-phone" style="font-size:.7rem"></i> ${esc(
+              o.customer_phone
+            )}</span>
+            <span><i class="fas fa-map-marker-alt" style="font-size:.7rem"></i> ${esc(
+              shortAddr(o.pickup_address)
+            )}</span>
+            ${
+              o.pickup_date
+                ? `<span><i class="fas fa-calendar" style="font-size:.7rem"></i> ${
+                    o.pickup_date.split(" ")[0]
+                  }</span>`
+                : ""
+            }
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+          <div class="amount-tag">₹${(o.total_amount || 0).toFixed(0)}</div>
+          <button class="assign-btn" onclick="event.stopPropagation();openAssignModal(${
+            o.order_id
+          })">
+            <i class="fas fa-user-plus"></i> Assign
+          </button>
+        </div>
+      </div>
+    `
+          )
+          .join("");
+      }
+
+      // ── Render partner sidebar ───────────────────
+      function renderPartnerSidebar() {
+        const list = document.getElementById("partnerList");
+        if (!allPartners.length) {
+          list.innerHTML = `<div class="empty"><i class="fas fa-user-slash"></i><p>No partners found</p></div>`;
+          return;
+        }
+        list.innerHTML = allPartners
+          .map(
+            (p) => `
+      <div class="partner-row">
+        <div class="avatar">${p.full_name.charAt(0).toUpperCase()}</div>
+        <div class="partner-info">
+          <div class="partner-name">${esc(p.full_name)}</div>
+          <div class="partner-sub">
+            <span><i class="fas fa-motorcycle"></i> ${esc(
+              p.vehicle_type
+            )}</span>
+            ${p.vehicle_number ? `<span>${esc(p.vehicle_number)}</span>` : ""}
+          </div>
+          <div class="partner-badges">
+            ${dutyBadge(p)}
+            ${statusBadge(p)}
+          </div>
+        </div>
+        <div class="workload">
+          <div class="workload-num">${p.active_orders}</div>
+          <div class="workload-label">active</div>
+        </div>
+      </div>
+    `
+          )
+          .join("");
+      }
+
+      // ── Open assign modal ────────────────────────
+      function openAssignModal(orderId) {
+        const order = allOrders.find((o) => o.order_id === orderId);
+        if (!order) return;
+
+        currentOrderForModal = order;
+        selectedPartnerId = null;
+
+        document.getElementById("modalOrderNum").textContent =
+          order.order_number;
+        document.getElementById("modalOrderCustomer").textContent =
+          order.customer_name;
+        document.getElementById("modalOrderMeta").innerHTML = `
+      <span><i class="fas fa-phone"></i> ${esc(order.customer_phone)}</span>
+      <span><i class="fas fa-map-marker-alt"></i> ${esc(
+        shortAddr(order.pickup_address)
+      )}</span>
+      <span style="color:var(--green)">₹${(order.total_amount || 0).toFixed(
+        0
+      )}</span>
+    `;
+
+        document.getElementById("partnerSearch").value = "";
+        renderModalPartners(allPartners);
+
+        document.getElementById("confirmBtn").disabled = true;
+        document.getElementById("assignModal").classList.add("open");
+      }
+
+      function closeModal() {
+        document.getElementById("assignModal").classList.remove("open");
+        currentOrderForModal = null;
+        selectedPartnerId = null;
+      }
+
+      // ── Render modal partner list ────────────────
+      function renderModalPartners(partners) {
+        const list = document.getElementById("modalPartnerList");
+        if (!partners.length) {
+          list.innerHTML = `<div class="empty"><i class="fas fa-search"></i><p>No partners match</p></div>`;
+          return;
+        }
+        list.innerHTML = partners
+          .map(
+            (p) => `
+      <div class="mpartner-row ${
+        selectedPartnerId === p.user_id ? "chosen" : ""
+      }"
+           onclick="selectPartner(${p.user_id})" data-id="${p.user_id}">
+        <div class="select-indicator"></div>
+        <div class="mpartner-left">
+          <div class="mpartner-name">${esc(p.full_name)}</div>
+          <div class="mpartner-sub">
+            <span><i class="fas fa-motorcycle"></i> ${esc(p.vehicle_type)}${
+              p.vehicle_number ? " · " + esc(p.vehicle_number) : ""
+            }</span>
+            <span><i class="fas fa-phone"></i> ${esc(p.phone)}</span>
+          </div>
+          <div class="mpartner-badges">
+            ${dutyBadge(p)}
+            ${statusBadge(p)}
+          </div>
+        </div>
+        <div class="mpartner-right">
+          <div class="mpartner-workload">${p.active_orders}</div>
+          <div class="mpartner-workload-label">active orders</div>
+          <div class="mpartner-delivered">${p.total_delivered} delivered</div>
+        </div>
+      </div>
+    `
+          )
+          .join("");
+      }
+
+      function filterModalPartners() {
+        const q = document.getElementById("partnerSearch").value.toLowerCase();
+        const filtered = allPartners.filter(
+          (p) =>
+            p.full_name.toLowerCase().includes(q) ||
+            (p.vehicle_number || "").toLowerCase().includes(q) ||
+            p.vehicle_type.toLowerCase().includes(q)
+        );
+        renderModalPartners(filtered);
+      }
+
+      function selectPartner(userId) {
+        selectedPartnerId = userId;
+        document.querySelectorAll(".mpartner-row").forEach((row) => {
+          row.classList.toggle("chosen", parseInt(row.dataset.id) === userId);
+        });
+        document.getElementById("confirmBtn").disabled = false;
+      }
+
+      // ── Confirm assignment ───────────────────────
+      async function confirmAssign() {
+        if (!currentOrderForModal || !selectedPartnerId) return;
+
+        const btn = document.getElementById("confirmBtn");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning…';
+
+        try {
+          const res = await fetch(
+            `${API}/orders/${currentOrderForModal.order_id}/assign`,
+            {
+              method: "PUT",
+              headers: authHeaders(),
+              body: JSON.stringify({ delivery_boy_id: selectedPartnerId }),
+            }
+          );
+          const data = await res.json();
+
+          if (!res.ok || !data.success) {
+            showToast(data.message || "Assignment failed", "error");
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Confirm Assignment';
+            return;
+          }
+
+          const partner = allPartners.find(
+            (p) => p.user_id === selectedPartnerId
+          );
+          const isOnDuty = partner && partner.is_available && partner.is_active;
+
+          showToast(
+            `Order ${currentOrderForModal.order_number} assigned to ${data.data.assigned_to}` +
+              (isOnDuty ? "" : " ⚠️ (partner is off duty)"),
+            "success"
+          );
+
+          closeModal();
+          await loadOrders(); // refresh order list
+          await loadPartners(); // refresh workload counts
+        } catch (e) {
+          console.error(e);
+          showToast("Network error. Please retry.", "error");
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-check"></i> Confirm Assignment';
+        }
+      }
+
+      // ── Helpers ──────────────────────────────────
+      function dutyBadge(p) {
+        if (!p.is_active) return `<span class="badge badge-red">Blocked</span>`;
+        return p.is_available
+          ? `<span class="badge badge-green">On Duty</span>`
+          : `<span class="badge badge-amber">Off Duty</span>`;
+      }
+
+      function statusBadge(p) {
+        if (p.active_orders === 0)
+          return `<span class="badge badge-muted">Free</span>`;
+        if (p.active_orders <= 2)
+          return `<span class="badge badge-blue">${p.active_orders} active</span>`;
+        return `<span class="badge badge-amber">${p.active_orders} active</span>`;
+      }
+
+      function shortAddr(addr) {
+        if (!addr) return "—";
+        const parts = addr.split(",");
+        return parts.slice(0, 2).join(", ").trim();
+      }
+
+      function esc(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function showToast(message, type = "success") {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+      <i class="toast-icon fas ${
+        type === "success" ? "fa-circle-check" : "fa-circle-exclamation"
+      }"></i>
+      <span>${esc(message)}</span>
+    `;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+      }
+
+      // Close modal on backdrop click
+      document
+        .getElementById("assignModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeModal();
+        });
+    </script>
+  </body>
+</html>

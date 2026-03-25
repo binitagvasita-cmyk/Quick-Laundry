@@ -1,0 +1,10 @@
+Frontend/images/
+Backend/uploads/
+*.mp4
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+.env
+node_modules/

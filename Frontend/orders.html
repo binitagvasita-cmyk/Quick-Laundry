@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Quick Laundry</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files - Load in correct order -->
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/orders.css">
+    <link rel="stylesheet" href="css/auth-modal.css">
+</head>
+<body>
+    <!-- Auth Modal Overlay -->
+    <div class="auth-modal-overlay" id="authModalOverlay">
+        <div class="auth-modal-container" id="authModalContainer">
+            <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+            <iframe id="authIframe" src="about:blank" style="width: 100%; height: 100%; border: none"></iframe>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <!-- Header will be loaded here -->
+        <div id="header-container"></div>
+        
+        <!-- Sidebar will be loaded here -->
+        <div id="sidebar-container"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <section class="page-header">
+                <div class="header-content">
+                    <div class="breadcrumb">
+                        <a href="home-content.html"><i class="fas fa-home"></i> Home</a>
+                        <i class="fas fa-chevron-right"></i>
+                        <span>My Orders</span>
+                    </div>
+                    <h1 class="page-title">My <span class="gradient-text">Orders</span></h1>
+                    <p class="page-subtitle">Track and manage your laundry orders</p>
+                </div>
+            </section>
+
+            <!-- Order Stats -->
+            <section class="order-stats-section">
+                <div class="container">
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="totalOrders">0</h3>
+                                <p>Total Orders</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="pendingOrders">0</h3>
+                                <p>Pending</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon processing">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="processingOrders">0</h3>
+                                <p>Processing</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon completed">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="completedOrders">0</h3>
+                                <p>Completed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Tabs -->
+            <section class="filter-section">
+                <div class="container">
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-filter="all">
+                            <i class="fas fa-th-large"></i>
+                            <span>All Orders</span>
+                        </button>
+                        <button class="filter-tab" data-filter="pending">
+                            <i class="fas fa-clock"></i>
+                            <span>Pending</span>
+                        </button>
+                        <button class="filter-tab" data-filter="confirmed">
+                            <i class="fas fa-check"></i>
+                            <span>Confirmed</span>
+                        </button>
+                        <button class="filter-tab" data-filter="processing">
+                            <i class="fas fa-cog"></i>
+                            <span>Processing</span>
+                        </button>
+                        <button class="filter-tab" data-filter="delivered">
+                            <i class="fas fa-box"></i>
+                            <span>Delivered</span>
+                        </button>
+                        <button class="filter-tab" data-filter="cancelled">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Cancelled</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Orders List -->
+            <section class="orders-section">
+                <div class="container">
+                    <!-- Loading State -->
+                    <div class="loading-container" id="loadingContainer">
+                        <div class="loading-spinner"></div>
+                        <p>Loading your orders...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div class="error-container" id="errorContainer" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Failed to Load Orders</h3>
+                        <p id="errorMessage">Could not connect to the server.</p>
+                        <button class="retry-btn" onclick="window.loadOrders()">
+                            <i class="fas fa-redo"></i> Retry
+                        </button>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No Orders Yet</h3>
+                        <p>You haven't placed any orders. Start by browsing our services!</p>
+                        <a href="services.html" class="cta-btn">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Browse Services</span>
+                        </a>
+                    </div>
+
+                    <!-- Orders Grid -->
+                    <div class="orders-grid" id="ordersGrid">
+                        <!-- Orders will be loaded here dynamically -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="order-modal" id="orderModal">
+        <div class="order-modal-content" id="orderModalContent">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Load Components Script -->
+    <script>
+        console.log("🚀 Orders Page - Loading Components...");
+
+        // Function to load external HTML
+        function loadComponent(url, containerId, callback) {
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to load ${url}`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    const container = document.getElementById(containerId);
+                    if (container) {
+                        container.innerHTML = data;
+                        console.log(`✅ ${url} loaded successfully`);
+                        if (callback) callback();
+                    }
+                })
+                .catch(error => {
+                    console.error(`❌ Error loading ${url}:`, error);
+                });
+        }
+
+        // Function to load external script
+        function loadScript(src, callback) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = () => {
+                console.log(`✅ ${src} loaded`);
+                if (callback) callback();
+            };
+            script.onerror = () => {
+                console.error(`❌ Failed to load ${src}`);
+            };
+            document.body.appendChild(script);
+        }
+
+        // Load components in sequence
+        function initializeComponents() {
+            // 1. Load Header
+            loadComponent('header.html', 'header-container', () => {
+                // After header HTML loads, load header JS
+                loadScript('js/header.js', () => {
+                    console.log("✅ Header fully initialized");
+                });
+            });
+
+            // 2. Load Sidebar
+            loadComponent('sidebar.html', 'sidebar-container', () => {
+                // After sidebar HTML loads, load sidebar JS
+                loadScript('js/sidebar.js', () => {
+                    console.log("✅ Sidebar fully initialized");
+                });
+            });
+
+            // 3. Load home-content.js for auth modal functions
+            loadScript('js/home-content.js', () => {
+                console.log("✅ Auth modal functions loaded");
+            });
+
+            // 4. Load orders.js (main page logic)
+            loadScript('js/orders.js', () => {
+                console.log("✅ Orders page logic loaded");
+            });
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeComponents);
+        } else {
+            initializeComponents();
+        }
+
+        console.log("✨ Orders Page Setup Complete");
+    </script>
+</body>
+</html>

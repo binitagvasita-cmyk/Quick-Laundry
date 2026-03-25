@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Token Debugger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .info-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .info-label {
+            font-weight: 700;
+            color: #667eea;
+            min-width: 150px;
+        }
+        
+        .info-value {
+            flex: 1;
+            word-break: break-all;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-success {
+            background: #10b981;
+        }
+        
+        .status-error {
+            background: #ef4444;
+        }
+        
+        .status-warning {
+            background: #f59e0b;
+        }
+        
+        .token-payload {
+            background: #1e293b;
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        .test-button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .test-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+        
+        .test-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 JWT Token Debugger</h1>
+        <p class="subtitle">Diagnose authentication issues in your laundry app</p>
+        
+        <!-- Token Info Section -->
+        <div class="section" id="tokenSection">
+            <h2>📋 Token Information</h2>
+            <div id="tokenInfo">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing token...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test API Section -->
+        <div class="section">
+            <h2>🧪 Test API Connection</h2>
+            <p style="margin-bottom: 1rem; color: #666;">
+                Click the button below to test if your token works with the backend API
+            </p>
+            <button class="test-button" id="testButton" onclick="testAPI()">
+                Test Create Order Endpoint
+            </button>
+            <div id="testResult"></div>
+        </div>
+        
+        <!-- Solutions Section -->
+        <div class="section" id="solutionsSection" style="display: none;">
+            <h2>💡 Recommended Solutions</h2>
+            <div id="solutions"></div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000';
+        
+        // Analyze token on load
+        document.addEventListener('DOMContentLoaded', analyzeToken);
+        
+        function analyzeToken() {
+            const tokenInfo = document.getElementById('tokenInfo');
+            const token = localStorage.getItem('jwtToken');
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userEmail = localStorage.getItem('userEmail');
+            
+            let html = '<div class="info-grid">';
+            let issues = [];
+            
+            // Check if logged in flag exists
+            html += `
+                <div class="info-item">
+                    <div class="info-label">
+                        <span class="status-indicator ${isLoggedIn === 'true' ? 'status-success' : 'status-error'}"></span>
+                        Login Status:
+                    </div>
+                    <div class="info-value">${isLoggedIn === 'true' ? 'Logged In' : 'Not Logged In'}</div>
+                </div>
+            `;
+            
+            // Check if token exists
+            if (!token) {
+                html += `
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="status-indicator status-error"></span>
+                            Token:
+                        </div>
+                        <div class="info-value">❌ No token found in localStorage</div>
+                    </div>
+                `;
+                issues.push({
+                    title: 'Missing Token',
+                    description: 'No JWT token found in localStorage. You need to login first.',
+                    solution: 'Go to the home page and login using your credentials or Google OAuth.'
+                });
+            } else {
+                html += `
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="status-indicator status-success"></span>
+                            Token:
+                        </div>
+                        <div class="info-value">✅ Token found (${token.length} characters)</div>
+                    </div>
+                `;
+                
+                // Try to decode token
+                try {
+                    const parts = token.split('.');
+                    if (parts.length !== 3) {
+                        throw new Error('Invalid token format');
+                    }
+                    
+                    const payload = JSON.parse(atob(parts[1]));
+                    
+                    html += `
+                        <div class="info-item">
+                            <div class="info-label">Token Format:</div>
+                            <div class="info-value">✅ Valid JWT format</div>
+                        </div>
+                    `;
+                    
+                    // Check expiration
+                    if (payload.exp) {
+                        const expiry = new Date(payload.exp * 1000);
+                        const now = new Date();
+                        const isExpired = now > expiry;
+                        const timeUntilExpiry = expiry - now;
+                        const hoursUntil = Math.floor(timeUntilExpiry / (1000 * 60 * 60));
+                        const minutesUntil = Math.floor((timeUntilExpiry % (1000 * 60 * 60)) / (1000 * 60));
+                        
+                        html += `
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <span class="status-indicator ${isExpired ? 'status-error' : 'status-success'}"></span>
+                                    Expiration:
+                                </div>
+                                <div class="info-value">
+                                    ${expiry.toLocaleString()}
+                                    ${isExpired ? 
+                                        '<br><strong style="color: #ef4444;">❌ TOKEN IS EXPIRED!</strong>' : 
+                                        `<br><span style="color: #10b981;">✅ Valid for ${hoursUntil}h ${minutesUntil}m</span>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                        
+                        if (isExpired) {
+                            issues.push({
+                                title: 'Expired Token',
+                                description: `Your token expired at ${expiry.toLocaleString()}. This is the most common cause of 401 errors.`,
+                                solution: 'Logout and login again to get a fresh token.'
+                            });
+                        }
+                    }
+                    
+                    // Show payload
+                    html += `
+                        <div class="info-item" style="display: block;">
+                            <div class="info-label" style="margin-bottom: 0.5rem;">Token Payload:</div>
+                            <div class="token-payload">${JSON.stringify(payload, null, 2)}</div>
+                        </div>
+                    `;
+                    
+                    // Check user info
+                    if (payload.user_id) {
+                        html += `
+                            <div class="info-item">
+                                <div class="info-label">User ID:</div>
+                                <div class="info-value">${payload.user_id}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (payload.email) {
+                        html += `
+                            <div class="info-item">
+                                <div class="info-label">Email:</div>
+                                <div class="info-value">${payload.email}</div>
+                            </div>
+                        `;
+                    }
+                    
+                } catch (e) {
+                    html += `
+                        <div class="info-item">
+                            <div class="info-label">
+                                <span class="status-indicator status-error"></span>
+                                Token Format:
+                            </div>
+                            <div class="info-value">❌ Invalid JWT format: ${e.message}</div>
+                        </div>
+                    `;
+                    issues.push({
+                        title: 'Invalid Token Format',
+                        description: 'The token exists but is not a valid JWT format.',
+                        solution: 'Clear your localStorage and login again.'
+                    });
+                }
+                
+                // Show token preview
+                html += `
+                    <div class="info-item" style="display: block;">
+                        <div class="info-label" style="margin-bottom: 0.5rem;">Token String (first 100 chars):</div>
+                        <div style="font-family: monospace; font-size: 0.85rem; word-break: break-all; color: #666;">
+                            ${token.substring(0, 100)}...
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            tokenInfo.innerHTML = html;
+            
+            // Show solutions if there are issues
+            if (issues.length > 0) {
+                showSolutions(issues);
+            }
+        }
+        
+        function showSolutions(issues) {
+            const section = document.getElementById('solutionsSection');
+            const solutions = document.getElementById('solutions');
+            
+            let html = '';
+            issues.forEach((issue, index) => {
+                html += `
+                    <div class="alert alert-${issue.title.includes('Expired') || issue.title.includes('Missing') ? 'error' : 'warning'}">
+                        <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">
+                            ${index + 1}. ${issue.title}
+                        </h3>
+                        <p style="margin-bottom: 0.5rem;">${issue.description}</p>
+                        <p style="font-weight: 700;">
+                            💡 Solution: ${issue.solution}
+                        </p>
+                    </div>
+                `;
+            });
+            
+            solutions.innerHTML = html;
+            section.style.display = 'block';
+        }
+        
+        async function testAPI() {
+            const button = document.getElementById('testButton');
+            const resultDiv = document.getElementById('testResult');
+            
+            button.disabled = true;
+            button.textContent = 'Testing...';
+            
+            resultDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Sending request to backend...</p>
+                </div>
+            `;
+            
+            const token = localStorage.getItem('jwtToken');
+            
+            if (!token) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-error">
+                        <strong>❌ Test Failed</strong>
+                        <p>No token found. Please login first.</p>
+                    </div>
+                `;
+                button.disabled = false;
+                button.textContent = 'Test Create Order Endpoint';
+                return;
+            }
+            
+            // Test data
+            const testData = {
+                items: [{
+                    serviceId: 1,
+                    serviceName: 'Test Service',
+                    price: 10,
+                    quantity: 1,
+                    unit: 'piece',
+                    total: 10
+                }],
+                pickupAddress: 'Test Address, Test City',
+                pickupDate: '2026-01-25',
+                pickupTime: '09:00-11:00',
+                deliveryType: 'standard',
+                paymentMethod: 'cod',
+                subtotal: 10,
+                deliveryCharge: 0,
+                totalAmount: 10
+            };
+            
+            try {
+                console.log('🚀 Sending test request...');
+                console.log('Token:', token.substring(0, 20) + '...');
+                
+                const response = await fetch(`${API_BASE}/api/orders/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                console.log('Response status:', response.status);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (response.ok && data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>✅ Test Successful!</strong>
+                            <p>Your token is valid and the API is working correctly.</p>
+                            <p style="margin-top: 0.5rem;">Order created: ${data.data?.orderNumber || 'N/A'}</p>
+                        </div>
+                    `;
+                } else if (response.status === 401) {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-error">
+                            <strong>❌ 401 Unauthorized</strong>
+                            <p><strong>Error:</strong> ${data.message || 'Authentication failed'}</p>
+                            <div class="test-result">
+                                <strong>Likely Causes:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                    <li>Token has expired (most common)</li>
+                                    <li>JWT secret mismatch between generation and validation</li>
+                                    <li>Session has been invalidated in database</li>
+                                    <li>Token format is incorrect</li>
+                                </ul>
+                                <p style="margin-top: 1rem; font-weight: 700; color: #ef4444;">
+                                    🔧 Quick Fix: Logout and login again to get a fresh token
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-error">
+                            <strong>❌ Test Failed</strong>
+                            <p><strong>Status:</strong> ${response.status}</p>
+                            <p><strong>Message:</strong> ${data.message || 'Unknown error'}</p>
+                            <div class="test-result">
+                                <pre>${JSON.stringify(data, null, 2)}</pre>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Test error:', error);
+                resultDiv.innerHTML = `
+                    <div class="alert alert-error">
+                        <strong>❌ Network Error</strong>
+                        <p>Could not connect to the backend server.</p>
+                        <p style="margin-top: 0.5rem;"><strong>Error:</strong> ${error.message}</p>
+                        <p style="margin-top: 1rem; font-weight: 700;">
+                            Make sure your Flask server is running at ${API_BASE}
+                        </p>
+                    </div>
+                `;
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Test Create Order Endpoint';
+            }
+        }
+    </script>
+</body>
+</html>

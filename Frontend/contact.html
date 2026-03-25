@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Quick Laundry</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/contact.css">
+    <link rel="stylesheet" href="css/auth-modal.css">
+</head>
+<body>
+
+<!-- Auth Modal -->
+<div class="auth-modal-overlay" id="authModalOverlay">
+    <div class="auth-modal-container" id="authModalContainer">
+        <button class="auth-modal-close" id="authModalClose" aria-label="Close"><i class="fas fa-times"></i></button>
+        <iframe id="authIframe" src="about:blank" style="width:100%;height:100%;border:none"></iframe>
+    </div>
+</div>
+
+<div class="main-wrapper">
+    <div id="header-container"></div>
+    <div id="sidebar-container"></div>
+
+    <main class="main-content">
+
+        <!-- ══ HERO ══ -->
+        <section class="contact-hero">
+            <div class="contact-hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-headset"></i>
+                    <span>24/7 Support</span>
+                </div>
+                <h1 class="contact-hero-title">
+                    We're Here<br>to <span class="gradient-text">Help You</span>
+                </h1>
+                <p class="contact-hero-description">
+                    Have a question or just want to say hello? Reach out through any channel and our team will get back to you as soon as possible.
+                </p>
+            </div>
+
+            <div class="floating-contact-icon icon-1"><i class="fas fa-envelope"></i></div>
+            <div class="floating-contact-icon icon-2"><i class="fas fa-phone"></i></div>
+            <div class="floating-contact-icon icon-3"><i class="fas fa-map-marker-alt"></i></div>
+
+            <div class="hero-scroll">
+                <div class="hero-scroll-line"></div>
+                <span>Scroll</span>
+            </div>
+        </section>
+
+        <!-- ══ CONTACT SECTION ══ -->
+        <section class="contact-section">
+
+            <!-- Info Cards -->
+            <div class="contact-info-cards">
+                <div class="info-card">
+                    <div class="info-card-icon"><i class="fas fa-phone-alt"></i></div>
+                    <h3 class="info-card-title">Call Us</h3>
+                    <p class="info-card-text">+91 98765 43210</p>
+                    <p class="info-card-subtext">Mon–Sun · 6 AM – 11 PM</p>
+                    <a href="tel:+919876543210" class="info-card-link">
+                        Call Now <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-icon"><i class="fas fa-envelope"></i></div>
+                    <h3 class="info-card-title">Email Us</h3>
+                    <p class="info-card-text">support@quicklaundry.com</p>
+                    <p class="info-card-subtext">Response within 2 hours</p>
+                    <a href="mailto:support@quicklaundry.com" class="info-card-link">
+                        Send Email <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <h3 class="info-card-title">Visit Us</h3>
+                    <p class="info-card-text">123 Clean Street, Laundry City</p>
+                    <p class="info-card-subtext">Gujarat, India – 360001</p>
+                    <a href="#map" class="info-card-link">
+                        Get Directions <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Grid: Social + Form -->
+            <div class="contact-grid">
+
+                <!-- Social Connect -->
+                <div class="social-connect-section">
+                    <div class="social-connect-header">
+                        <div class="social-panel-eyebrow">
+                            <i class="fas fa-share-alt"></i> Connect With Us
+                        </div>
+                        <h3 class="social-connect-title">Follow Us on Social Media</h3>
+                        <p class="social-connect-subtitle">Reach out directly or stay updated through our channels</p>
+                    </div>
+
+                    <div class="social-connect-cards">
+                        <a href="https://wa.me/919876543210" target="_blank" class="social-card whatsapp-card">
+                            <div class="social-card-icon"><i class="fab fa-whatsapp"></i></div>
+                            <div class="social-card-content">
+                                <h4 class="social-card-title">WhatsApp</h4>
+                                <p class="social-card-text">Chat with us instantly</p>
+                                <span class="social-card-badge">● Online Now</span>
+                            </div>
+                            <i class="fas fa-arrow-right social-card-arrow"></i>
+                        </a>
+
+                        <a href="https://instagram.com/quicklaundry" target="_blank" class="social-card instagram-card">
+                            <div class="social-card-icon"><i class="fab fa-instagram"></i></div>
+                            <div class="social-card-content">
+                                <h4 class="social-card-title">Instagram</h4>
+                                <p class="social-card-text">@quicklaundry</p>
+                                <span class="social-card-badge">10K Followers</span>
+                            </div>
+                            <i class="fas fa-arrow-right social-card-arrow"></i>
+                        </a>
+
+                        <a href="https://facebook.com/quicklaundry" target="_blank" class="social-card facebook-card">
+                            <div class="social-card-icon"><i class="fab fa-facebook-f"></i></div>
+                            <div class="social-card-content">
+                                <h4 class="social-card-title">Facebook</h4>
+                                <p class="social-card-text">Quick Laundry Official</p>
+                                <span class="social-card-badge">15K Likes</span>
+                            </div>
+                            <i class="fas fa-arrow-right social-card-arrow"></i>
+                        </a>
+
+                        <a href="https://twitter.com/quicklaundry" target="_blank" class="social-card twitter-card">
+                            <div class="social-card-icon"><i class="fab fa-twitter"></i></div>
+                            <div class="social-card-content">
+                                <h4 class="social-card-title">Twitter / X</h4>
+                                <p class="social-card-text">@quicklaundry</p>
+                                <span class="social-card-badge">5K Followers</span>
+                            </div>
+                            <i class="fas fa-arrow-right social-card-arrow"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-form-wrapper">
+                    <div class="form-header">
+                        <div class="form-eyebrow">
+                            <i class="fas fa-paper-plane"></i> Send a Message
+                        </div>
+                        <h2 class="form-title">We'd Love to<br>Hear From You</h2>
+                        <p class="form-subtitle">Fill out the form below and we'll respond within 24 hours</p>
+                    </div>
+
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName" class="form-label">
+                                    <i class="fas fa-user"></i> First Name
+                                </label>
+                                <input type="text" id="firstName" name="firstName" class="form-input" placeholder="John" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName" class="form-label">
+                                    <i class="fas fa-user"></i> Last Name
+                                </label>
+                                <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Email Address
+                                </label>
+                                <input type="email" id="email" name="email" class="form-input" placeholder="john@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone" class="form-label">
+                                    <i class="fas fa-phone"></i> Phone Number
+                                </label>
+                                <input type="tel" id="phone" name="phone" class="form-input" placeholder="+91 98765 43210" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject" class="form-label">
+                                <i class="fas fa-tag"></i> Subject
+                            </label>
+                            <select id="subject" name="subject" class="form-select" required>
+                                <option value="">Select a subject</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="service">Service Question</option>
+                                <option value="complaint">Complaint</option>
+                                <option value="feedback">Feedback</option>
+                                <option value="partnership">Partnership</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message" class="form-label">
+                                <i class="fas fa-comment-dots"></i> Your Message
+                            </label>
+                            <textarea id="message" name="message" class="form-textarea" rows="5" placeholder="Tell us how we can help you..." required></textarea>
+                            <span class="char-count">0 / 500</span>
+                        </div>
+
+                        <button type="submit" class="form-submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Send Message</span>
+                            <div class="btn-shine"></div>
+                        </button>
+                    </form>
+                </div>
+
+            </div><!-- /contact-grid -->
+        </section>
+
+        <!-- ══ MAP ══ -->
+        <section class="map-section" id="map">
+            <div class="map-header">
+                <div class="section-eyebrow"><i class="fas fa-map-pin"></i> Our Location</div>
+                <h2 class="section-title">Find Us Here</h2>
+                <p class="section-subtitle">Visit our location or reach out through any of our contact channels</p>
+            </div>
+            <div class="map-container">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3721.5441389991937!2d70.76573!3d22.46871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3959ca248c77c099%3A0xdf5ac10af64ac8ee!2sJamnagar%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1234567890"
+                    class="map-iframe"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </section>
+
+        <!-- ══ FAQ ══ -->
+        <section class="faq-section">
+            <div class="faq-inner">
+                <div class="faq-header">
+                    <div class="section-eyebrow"><i class="fas fa-question-circle"></i> FAQ</div>
+                    <h2 class="section-title">Frequently Asked Questions</h2>
+                    <p class="section-subtitle">Quick answers to common questions</p>
+                </div>
+
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            <span>What are your operating hours?</span>
+                            <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                        </button>
+                        <div class="faq-answer">
+                            <p>We operate 24/7 with pickup and delivery services available from 6 AM to 11 PM daily. Our customer support is available round the clock.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            <span>How long does it take to process laundry?</span>
+                            <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Standard service takes 24–48 hours. We also offer express service with same-day delivery available for an additional fee.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            <span>Do you offer pickup and delivery?</span>
+                            <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes! We offer free pickup and delivery within the city limits. Simply schedule a pickup through our app or website.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            <span>What payment methods do you accept?</span>
+                            <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                        </button>
+                        <div class="faq-answer">
+                            <p>We accept cash, credit/debit cards, UPI, and all major digital wallets. Payment can be made at pickup or delivery.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            <span>Are your cleaning products eco-friendly?</span>
+                            <div class="faq-icon"><i class="fas fa-chevron-down"></i></div>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Absolutely! We use only eco-friendly, biodegradable detergents that are safe for your clothes and the environment.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ CTA ══ -->
+        <section class="contact-cta">
+            <div class="cta-inner">
+                <div class="cta-card">
+                    <div class="cta-content">
+                        <div class="cta-badge">
+                            <i class="fas fa-bolt"></i> Still Have Questions?
+                        </div>
+                        <h2 class="cta-title">Let's Talk Right Now</h2>
+                        <p class="cta-description">Our support team is standing by to help you with any inquiry, big or small.</p>
+                        <div class="cta-buttons">
+                            <button class="cta-btn cta-btn-primary" onclick="window.location.href='tel:+919876543210'">
+                                <i class="fas fa-phone-alt"></i> Call Us Now
+                            </button>
+                            <button class="cta-btn cta-btn-secondary" onclick="window.open('https://wa.me/919876543210','_blank')">
+                                <i class="fab fa-whatsapp"></i> WhatsApp Chat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- Load components -->
+<script>
+    fetch('header.html')
+        .then(r => r.text())
+        .then(html => {
+            document.getElementById('header-container').innerHTML = html;
+            const s = document.createElement('script');
+            s.src = 'js/header.js';
+            document.body.appendChild(s);
+        }).catch(e => console.error('Header:', e));
+
+    fetch('sidebar.html')
+        .then(r => r.text())
+        .then(html => {
+            document.getElementById('sidebar-container').innerHTML = html;
+            const s = document.createElement('script');
+            s.src = 'js/sidebar.js';
+            document.body.appendChild(s);
+        }).catch(e => console.error('Sidebar:', e));
+</script>
+
+<script src="js/contact.js"></script>
+<script src="js/home-content.js"></script>
+</body>
+</html>

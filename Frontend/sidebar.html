@@ -1,0 +1,174 @@
+<!-- ============================================
+     SIDEBAR COMPONENT - STANDALONE
+     This file contains ONLY the sidebar component
+     ============================================ -->
+<link rel="stylesheet" href="css/sidebar.css" />
+<!-- Sidebar Component -->
+<aside class="sidebar" id="sidebar">
+  <!-- Sidebar Header -->
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <i class="fas fa-tshirt"></i>
+    </div>
+    <h3 class="sidebar-title">Quick Menu</h3>
+    <button class="sidebar-close" id="sidebarClose">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <!-- User Info Section (Only visible when logged in) -->
+  <div class="sidebar-user-info" id="sidebarUserInfo" style="display: none">
+    <div class="sidebar-user-avatar">
+      <i class="fas fa-user-circle"></i>
+    </div>
+    <div class="sidebar-user-details">
+      <h4 class="sidebar-user-name" id="sidebarUserName">John Doe</h4>
+      <p class="sidebar-user-email" id="sidebarUserEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c565354527c59445d514c5059125f5351">[email&#160;protected]</a></p>
+    </div>
+  </div>
+
+  <!-- Sidebar Navigation - Guest (Not Logged In) -->
+  <nav class="sidebar-nav" id="sidebarNavGuest">
+    <a href="home-content.html" class="sidebar-link active" data-section="home">
+      <div class="sidebar-link-icon">
+        <i class="fas fa-home"></i>
+      </div>
+      <span class="sidebar-link-text">Home</span>
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+
+    <a href="services.html" class="sidebar-link" data-section="services">
+      <div class="sidebar-link-icon">
+        <i class="fas fa-concierge-bell"></i>
+      </div>
+      <span class="sidebar-link-text">Services</span>
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+
+    <a href="pricing.html" class="sidebar-link" data-section="pricing">
+      <div class="sidebar-link-icon">
+        <i class="fas fa-tags"></i>
+      </div>
+      <span class="sidebar-link-text">Pricing</span>
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+
+    <a href="contact.html" class="sidebar-link" data-section="contact">
+      <div class="sidebar-link-icon">
+        <i class="fas fa-envelope"></i>
+      </div>
+      <span class="sidebar-link-text">Contact Us</span>
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+
+    <a
+      href="#login"
+      class="sidebar-link sidebar-link-highlight"
+      id="sidebarLoginBtn"
+    >
+      <div class="sidebar-link-icon">
+        <i class="fas fa-sign-in-alt"></i>
+      </div>
+      <span class="sidebar-link-text">Login / Register</span>
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+  </nav>
+
+  <!-- Sidebar Navigation - User (Logged In) -->
+  <nav class="sidebar-nav" id="sidebarNavUser" style="display: none">
+    <a href="home-content.html" class="sidebar-link active" data-section="home">
+      <div class="sidebar-link-icon">
+        <i class="fas fa-home"></i>
+      </div>
+      <span class="sidebar-link-text">Home</span>
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+
+    <a href="pricing.html" class="sidebar-link" data-section="profile">
+      <div class="sidebar-link-icon">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <span class="sidebar-link-text">Pricing</span>
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+
+    <a href="orders.html" class="sidebar-link" data-section="orders">
+      <div class="sidebar-link-icon">
+        <i class="fas fa-shopping-bag"></i>
+      </div>
+      <span class="sidebar-link-text">My order</span>
+      
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+
+    <a
+      href="services.html"
+      class="sidebar-link sidebar-link-highlight"
+      data-section="book"
+    >
+      <div class="sidebar-link-icon">
+        <i class="fas fa-calendar-plus"></i>
+      </div>
+      <span class="sidebar-link-text">Book Laundry</span>
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+
+    
+
+    <!-- Account Section -->
+    <div class="sidebar-section-divider">
+      <span>Account</span>
+    </div>
+
+    <a
+      href="#logout"
+      class="sidebar-link sidebar-link-logout"
+      id="sidebarLogout"
+    >
+      <div class="sidebar-link-icon">
+        <i class="fas fa-sign-out-alt"></i>
+      </div>
+      <span class="sidebar-link-text">Logout</span>
+      <i class="fas fa-chevron-right sidebar-link-arrow"></i>
+    </a>
+  </nav>
+
+    <!-- Sidebar Footer -->
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-item">
+      <i class="fas fa-map-marker-alt"></i>
+      <span>Satellite, Ahmedabad - 380015</span>
+    </div>
+    <div class="sidebar-footer-item">
+      <i class="fas fa-phone"></i>
+      <span>+91 98765 43210</span>
+    </div>
+    <div class="sidebar-footer-item">
+      <i class="fas fa-clock"></i>
+      <span>Mon&#8211;Sat: 8 AM &#8211; 9 PM</span>
+    </div>
+    <div class="sidebar-footer-item">
+      <i class="fas fa-envelope"></i>
+      <span>cleanify.satellite@gmail.com</span>
+    </div>
+    <!-- Service Area Badge -->
+    <div style="margin-top:0.75rem;padding:0.6rem 0.9rem;background:linear-gradient(135deg,rgba(107,70,193,0.12),rgba(147,51,234,0.12));border:1.5px solid var(--accent-color);border-radius:10px;font-size:0.78rem;color:var(--accent-color);font-weight:700;display:flex;align-items:center;gap:0.5rem;">
+      <i class="fas fa-location-dot" style="font-size:1rem"></i>
+      <span>Serving within 10 km of Satellite</span>
+    </div>
+    <div class="sidebar-social">
+      <a href="https://wa.me/919876543210" target="_blank" class="sidebar-social-link" title="WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+      <a href="https://instagram.com/cleanifylaundry" target="_blank" class="sidebar-social-link" title="Instagram">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="https://facebook.com/cleanifylaundry" target="_blank" class="sidebar-social-link" title="Facebook">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+    </div>
+  </div>
+</aside>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>

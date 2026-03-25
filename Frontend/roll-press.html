@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quick Laundry - Roll Press Service</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="css/roll-press.css" />
+    <link rel="stylesheet" href="css/auth-modal.css" />
+
+    <style>
+      /* ════════════════════════════════════════════
+         ROLL PRESS — ENHANCED UI  (purple theme)
+         ════════════════════════════════════════════ */
+      :root {
+        --rp-purple:  #6b21a8;
+        --rp-violet:  #7c3aed;
+        --rp-accent:  #a855f7;
+        --rp-light:   #c084fc;
+        --rp-dark:    #150826;
+        --rp-glass:   rgba(255,255,255,0.07);
+        --rp-glass-b: rgba(255,255,255,0.14);
+      }
+      body { font-family: 'DM Sans', sans-serif; }
+
+      /* ══ VIDEO HERO ════════════════════════════ */
+      /* NOTE: NO overflow:hidden here — keeps right card fully visible */
+      .rp-hero-new {
+        position: relative;
+        background: var(--rp-dark);
+        padding-bottom: 60px; /* room for wave */
+      }
+
+      /* Video sits behind everything */
+      .rp-hero-videowrap {
+        position: absolute; inset: 0; z-index: 0; overflow: hidden;
+        background: linear-gradient(135deg,#150826 0%,#2d0d5e 50%,#150826 100%);
+      }
+      .rp-hero-bgvideo {
+        position: absolute; top:50%; left:50%;
+        transform: translate(-50%,-50%);
+        min-width:100%; min-height:100%;
+        object-fit:cover; opacity:.38;
+        filter:saturate(1.15) brightness(.6) hue-rotate(10deg);
+      }
+
+      /* Particles */
+      .rp-particles {
+        position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden;
+      }
+      .rp-particle {
+        position:absolute;
+        width:var(--ps,60px); height:var(--ps,60px);
+        border-radius:50%;
+        background:radial-gradient(circle,rgba(168,85,247,.3) 0%,transparent 70%);
+        animation:rpFloat var(--pd,7s) ease-in-out var(--pdl,0s) infinite alternate;
+      }
+      @keyframes rpFloat {
+        0%  { transform:translate(0,0) scale(1); opacity:.25; }
+        100%{ transform:translate(var(--px,20px),var(--py,-40px)) scale(1.4); opacity:.6; }
+      }
+
+      /* Dark gradient overlay */
+      .rp-hero-overlay {
+        position:absolute; inset:0; z-index:2;
+        background:
+          linear-gradient(to bottom, rgba(21,8,38,.15) 0%, rgba(21,8,38,.04) 40%, rgba(21,8,38,.7) 100%),
+          linear-gradient(to right, rgba(107,33,168,.5) 0%, transparent 60%);
+      }
+
+      /* Wave at bottom */
+      .rp-hero-wave {
+        position:absolute; bottom:-2px; left:0;
+        width:100%; height:70px; z-index:4; pointer-events:none;
+      }
+
+      /* Two-column content grid — z-index above video+overlay */
+      .rp-hero-inner {
+        position:relative; z-index:10;
+        max-width:1200px; margin:0 auto;
+        padding: 5rem 2rem 5rem;
+        display:grid;
+        grid-template-columns:1fr 400px;
+        gap:3rem;
+        align-items:center;
+      }
+
+      /* ── LEFT: text ── */
+      .rp-hero-pill {
+        display:inline-flex; align-items:center; gap:.5rem;
+        background:rgba(124,58,237,.18);
+        border:1.5px solid rgba(168,85,247,.45);
+        color:#d8b4fe;
+        padding:.4rem 1.1rem; border-radius:999px;
+        font-size:.75rem; font-weight:700;
+        letter-spacing:.12em; text-transform:uppercase;
+        margin-bottom:1rem; backdrop-filter:blur(8px);
+        animation:rpDown .6s ease both;
+      }
+      .rp-hero-pill i { animation:rpBounce 2.5s ease-in-out infinite; }
+      @keyframes rpBounce { 0%,100%{transform:rotate(-8deg) scale(1);} 50%{transform:rotate(8deg) scale(1.2);} }
+
+      .rp-hero-h1 {
+        font-family:'Playfair Display',serif;
+        font-size:clamp(2.2rem,5vw,4rem);
+        font-weight:900; color:#fff; line-height:1.05;
+        margin:0 0 .9rem;
+        text-shadow:0 4px 30px rgba(0,0,0,.5);
+        animation:rpUp .7s .1s ease both;
+      }
+      .rp-hero-h1 span {
+        display:block;
+        background:linear-gradient(90deg,#c084fc 0%,#fff 50%,#a855f7 100%);
+        -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+        filter:drop-shadow(0 0 18px rgba(168,85,247,.5));
+      }
+
+      .rp-hero-p {
+        font-size:clamp(.88rem,1.5vw,1.05rem);
+        color:rgba(255,255,255,.72); margin-bottom:1.5rem; line-height:1.65;
+        animation:rpUp .7s .2s ease both;
+      }
+
+      .rp-hero-statsrow {
+        display:flex; align-items:center; flex-wrap:wrap; gap:0;
+        background:rgba(124,58,237,.12); backdrop-filter:blur(20px);
+        border:1px solid rgba(168,85,247,.22); border-radius:14px;
+        padding:.65rem 1.25rem; margin-bottom:1.8rem;
+        animation:rpUp .7s .3s ease both;
+      }
+      .rp-hstat { text-align:center; padding:.3rem 1rem; }
+      .rp-hstat-val { display:block; font-family:'Playfair Display',serif; font-size:1.45rem; font-weight:900; color:#c084fc; line-height:1; }
+      .rp-hstat-lbl { display:block; font-size:.65rem; color:rgba(255,255,255,.55); font-weight:500; letter-spacing:.05em; margin-top:.12rem; }
+      .rp-hstat-div { width:1px; height:28px; background:rgba(168,85,247,.25); }
+
+      .rp-hero-ctas { display:flex; gap:.85rem; flex-wrap:wrap; animation:rpUp .7s .4s ease both; }
+      .rp-hero-cta-primary {
+        display:inline-flex; align-items:center; gap:.6rem;
+        background:linear-gradient(135deg,#7c3aed,#6d28d9);
+        color:#fff; font-weight:700; font-size:.95rem;
+        padding:.85rem 1.8rem; border-radius:50px; text-decoration:none;
+        border:1.5px solid rgba(168,85,247,.3);
+        box-shadow:0 8px 28px rgba(124,58,237,.45);
+        transition:all .3s ease;
+      }
+      .rp-hero-cta-primary:hover { transform:translateY(-3px) scale(1.04); box-shadow:0 14px 40px rgba(124,58,237,.6); }
+      .rp-hero-cta-secondary {
+        display:inline-flex; align-items:center; gap:.6rem;
+        background:var(--rp-glass); color:#fff; font-weight:600; font-size:.95rem;
+        padding:.85rem 1.8rem; border-radius:50px; text-decoration:none;
+        border:1.5px solid var(--rp-glass-b); backdrop-filter:blur(12px);
+        transition:all .3s ease;
+      }
+      .rp-hero-cta-secondary:hover { background:rgba(255,255,255,.14); transform:translateY(-3px); }
+
+      /* ── RIGHT: visual card ── */
+      .rp-hero-visual-new {
+        position:relative;
+        display:flex; align-items:center; justify-content:center;
+        animation:rpUp .7s .2s ease both;
+      }
+
+      .rp-visual-card {
+        width:100%; max-width:380px;
+        background:rgba(30,10,60,0.72);   /* solid-ish dark so content readable */
+        border:1.5px solid rgba(168,85,247,.35);
+        border-radius:24px;
+        backdrop-filter:blur(24px);
+        padding:1.75rem;
+        box-shadow:
+          0 24px 60px rgba(107,33,168,.4),
+          inset 0 1px 0 rgba(255,255,255,.08);
+      }
+
+      .rp-vc-icon {
+        width:60px; height:60px; border-radius:16px; margin:0 auto 1.1rem;
+        background:linear-gradient(135deg,#7c3aed,#a855f7);
+        display:flex; align-items:center; justify-content:center;
+        font-size:1.6rem; color:#fff;
+        box-shadow:0 8px 24px rgba(124,58,237,.45);
+      }
+      .rp-vc-title {
+        text-align:center; font-family:'Playfair Display',serif;
+        font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:1.1rem;
+      }
+
+      .rp-vc-features { list-style:none; padding:0; margin:0 0 1.25rem; display:flex; flex-direction:column; gap:.6rem; }
+      .rp-vc-features li {
+        display:flex; align-items:center; gap:.6rem;
+        font-size:.86rem; font-weight:500; color:rgba(255,255,255,.85);
+      }
+      .rp-vc-features li i { color:#a855f7; font-size:.78rem; width:14px; flex-shrink:0; }
+
+      .rp-vc-price-row {
+        display:flex; align-items:center; justify-content:space-between;
+        background:rgba(255,255,255,.07); border-radius:12px; padding:.75rem 1rem;
+        border:1px solid rgba(168,85,247,.2);
+      }
+      .rp-vc-price-lbl  { font-size:.76rem; color:rgba(255,255,255,.5); font-weight:500; }
+      .rp-vc-price-val  { font-family:'Playfair Display',serif; font-size:1.55rem; font-weight:900; color:#c084fc; }
+      .rp-vc-price-per  { font-size:.7rem; color:rgba(255,255,255,.4); }
+
+      /* Floating badges */
+      .rp-vbadge {
+        position:absolute;
+        display:inline-flex; align-items:center; gap:.4rem;
+        background:#fff; color:#6b21a8;
+        font-size:.73rem; font-weight:700;
+        padding:.4rem .8rem; border-radius:999px;
+        box-shadow:0 6px 20px rgba(107,33,168,.25);
+        white-space:nowrap;
+      }
+      .rp-vbadge.b1 { top:-14px; right:16px; animation:rpBdg 3s ease-in-out infinite alternate; }
+      .rp-vbadge.b2 { bottom:8px; left:-14px; animation:rpBdg 3s ease-in-out 1.2s infinite alternate; }
+      @keyframes rpBdg { 0%{transform:translateY(0);} 100%{transform:translateY(-9px);} }
+
+      /* Scroll hint */
+      .rp-hero-scroll {
+        position:absolute; bottom:75px; left:50%; transform:translateX(-50%);
+        z-index:10; display:flex; flex-direction:column; align-items:center; gap:.3rem;
+        color:rgba(255,255,255,.4); font-size:.66rem; letter-spacing:.1em; text-transform:uppercase;
+        animation:rpFade 1s 1.5s ease both;
+      }
+      .rp-hero-scroll i { font-size:1rem; animation:rpScrollB 1.5s ease-in-out infinite; }
+      @keyframes rpScrollB { 0%,100%{transform:translateY(0);opacity:.4;} 50%{transform:translateY(5px);opacity:.9;} }
+
+      @keyframes rpDown { from{opacity:0;transform:translateY(-20px);} to{opacity:1;transform:translateY(0);} }
+      @keyframes rpUp   { from{opacity:0;transform:translateY(30px);}  to{opacity:1;transform:translateY(0);} }
+      @keyframes rpFade { from{opacity:0;} to{opacity:1;} }
+
+      /* ══ FEATURES STRIP ════════════════════════ */
+      .rp-strip-new {
+        padding:.9rem 2rem;
+        background:linear-gradient(135deg,#f5f3ff,#ede9fe);
+        border-bottom:1px solid rgba(124,58,237,.12);
+      }
+      [data-theme="dark"] .rp-strip-new { background:linear-gradient(135deg,#1a0a30,#130820); border-color:rgba(167,139,250,.15); }
+
+      .rp-strip-inner {
+        max-width:1200px; margin:0 auto;
+        display:flex; align-items:center; justify-content:center;
+        gap:1.5rem; flex-wrap:wrap;
+      }
+      .rp-chip {
+        display:inline-flex; align-items:center; gap:.5rem;
+        background:rgba(124,58,237,.08); border:1px solid rgba(124,58,237,.18);
+        color:#6b21a8; font-size:.82rem; font-weight:700;
+        padding:.45rem 1rem; border-radius:999px;
+        transition:all .25s ease; cursor:default;
+      }
+      [data-theme="dark"] .rp-chip { background:rgba(167,139,250,.1); border-color:rgba(167,139,250,.2); color:#c4b5fd; }
+      .rp-chip:hover { background:#7c3aed; color:#fff; transform:translateY(-2px); box-shadow:0 4px 14px rgba(124,58,237,.3); }
+      .rp-chip i { font-size:.78rem; }
+
+      /* ══ ORDER SECTION ═════════════════════════ */
+      .rp-order-section-new {
+        padding:4rem 2rem;
+        background:var(--primary-bg,#fff);
+      }
+      [data-theme="dark"] .rp-order-section-new { background:var(--primary-bg,#0f0820); }
+
+      .rp-order-wrap {
+        max-width:1200px; margin:0 auto;
+        display:grid; grid-template-columns:1fr 340px; gap:2.5rem; align-items:start;
+      }
+
+      /* Form card */
+      .rp-form-card-new {
+        background:var(--primary-bg,#fff);
+        border:1.5px solid var(--border-color,#e5e7eb);
+        border-radius:20px; overflow:hidden;
+        box-shadow:0 4px 24px rgba(107,33,168,.08);
+      }
+      [data-theme="dark"] .rp-form-card-new { background:var(--secondary-bg,#1a0f2e); border-color:rgba(167,139,250,.2); }
+
+      .rp-form-hdr {
+        background:linear-gradient(135deg,#6b21a8,#7c3aed);
+        padding:1.4rem 2rem; display:flex; align-items:center; gap:1rem; color:#fff;
+      }
+      .rp-form-hdr-icon {
+        width:46px; height:46px; border-radius:13px;
+        background:rgba(255,255,255,.15); border:1.5px solid rgba(255,255,255,.25);
+        display:flex; align-items:center; justify-content:center;
+        font-size:1.3rem; flex-shrink:0;
+      }
+      .rp-form-hdr h2 { font-family:'Playfair Display',serif; font-size:1.35rem; font-weight:700; margin:0 0 .2rem; }
+      .rp-form-hdr p  { font-size:.82rem; opacity:.82; margin:0; }
+
+      .rp-form-body { padding:1.75rem 2rem; }
+
+      /* Section labels */
+      .rp-sec-lbl {
+        display:flex; align-items:center; gap:.55rem;
+        font-size:.78rem; font-weight:700; color:#7c3aed;
+        text-transform:uppercase; letter-spacing:.07em;
+        margin:0 0 .9rem; padding-bottom:.5rem;
+        border-bottom:1.5px solid rgba(124,58,237,.15);
+      }
+      [data-theme="dark"] .rp-sec-lbl { color:#a78bfa; border-bottom-color:rgba(167,139,250,.2); }
+
+      /* ✅ 5-Day booking banner — purple */
+      .rp-date-banner {
+        display:flex; align-items:flex-start; gap:.7rem;
+        background:linear-gradient(135deg,#faf5ff,#ede9fe);
+        border:1.5px solid rgba(124,58,237,.35);
+        border-radius:10px; padding:.7rem .9rem; margin-bottom:.6rem;
+        font-size:.81rem; color:#4c1d95;
+      }
+      [data-theme="dark"] .rp-date-banner { background:rgba(124,58,237,.1); border-color:rgba(167,139,250,.35); color:#d8b4fe; }
+      .rp-date-banner > i { color:#7c3aed; font-size:.95rem; margin-top:1px; flex-shrink:0; }
+      .rp-date-banner strong { display:block; margin-bottom:.15rem; font-size:.83rem; color:#3b0764; }
+      [data-theme="dark"] .rp-date-banner strong { color:#e9d5ff; }
+
+      /* Side panel */
+      .rp-side-new { display:flex; flex-direction:column; gap:1.4rem; }
+
+      .rp-summary-card-new {
+        background:var(--primary-bg,#fff);
+        border:1.5px solid rgba(124,58,237,.2);
+        border-radius:18px; overflow:hidden;
+        box-shadow:0 4px 20px rgba(107,33,168,.08);
+      }
+      [data-theme="dark"] .rp-summary-card-new { background:var(--secondary-bg,#1a0f2e); border-color:rgba(167,139,250,.25); }
+
+      .rp-summary-hdr-new {
+        background:linear-gradient(135deg,rgba(107,33,168,.08),rgba(124,58,237,.05));
+        padding:.95rem 1.2rem;
+        display:flex; align-items:center; gap:.6rem;
+        border-bottom:1.5px solid rgba(124,58,237,.12);
+        font-weight:700; font-size:.9rem; color:#6b21a8;
+      }
+      [data-theme="dark"] .rp-summary-hdr-new { background:rgba(167,139,250,.06); border-color:rgba(167,139,250,.15); color:#c4b5fd; }
+
+      .rp-info-card-new {
+        background:var(--primary-bg,#fff);
+        border:1.5px solid var(--border-color,#e5e7eb);
+        border-radius:18px; padding:1.3rem;
+        box-shadow:0 4px 20px rgba(107,33,168,.06);
+      }
+      [data-theme="dark"] .rp-info-card-new { background:var(--secondary-bg,#1a0f2e); border-color:rgba(167,139,250,.2); }
+
+      .rp-info-card-new h3 {
+        display:flex; align-items:center; gap:.5rem;
+        font-size:.82rem; font-weight:700; color:#6b21a8;
+        text-transform:uppercase; letter-spacing:.07em;
+        margin:0 0 .9rem; padding-bottom:.5rem;
+        border-bottom:1.5px solid rgba(124,58,237,.12);
+      }
+      [data-theme="dark"] .rp-info-card-new h3 { color:#a78bfa; border-bottom-color:rgba(167,139,250,.2); }
+
+      /* ══ PROMO VIDEO ════════════════════════════ */
+      .rp-video-section {
+        padding:4.5rem 2rem;
+        background:linear-gradient(135deg,#faf5ff 0%,#f3e8ff 50%,#faf5ff 100%);
+        position:relative; overflow:hidden;
+      }
+      [data-theme="dark"] .rp-video-section { background:linear-gradient(135deg,#1a0a30 0%,#0f0820 50%,#1a0a30 100%); }
+      .rp-video-section::before { content:''; position:absolute; top:-80px; right:-80px; width:350px; height:350px; border-radius:50%; background:radial-gradient(circle,rgba(124,58,237,.1) 0%,transparent 70%); pointer-events:none; }
+
+      .rp-video-inner { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:1.2fr 1fr; gap:4rem; align-items:center; }
+      .rp-vframe { position:relative; border-radius:20px; overflow:hidden; box-shadow:0 30px 80px rgba(107,33,168,.25),0 0 0 1px rgba(168,85,247,.2); transform:perspective(1000px) rotateY(3deg) rotateX(2deg); transition:transform .4s ease; }
+      .rp-vframe:hover { transform:perspective(1000px) rotateY(0) rotateX(0); }
+      .rp-vratio { position:relative; padding-bottom:56.25%; height:0; }
+      .rp-vratio iframe,.rp-vratio video { position:absolute; top:0; left:0; width:100%; height:100%; border:none; border-radius:20px; object-fit:cover; }
+
+      .rp-v-overline { display:inline-flex; align-items:center; gap:.5rem; color:#7c3aed; font-size:.77rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:.7rem; }
+      .rp-v-overline::before { content:''; display:inline-block; width:26px; height:2px; background:#7c3aed; border-radius:2px; }
+      .rp-v-title { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,3.5vw,2.4rem); font-weight:700; color:#150826; line-height:1.2; margin:0 0 .9rem; }
+      [data-theme="dark"] .rp-v-title { color:#f3e8ff; }
+      .rp-v-accent { color:#7c3aed; }
+      .rp-v-desc { color:#4b5563; line-height:1.7; font-size:.95rem; margin:0 0 1.1rem; }
+      [data-theme="dark"] .rp-v-desc { color:#c4b5fd; opacity:.85; }
+      .rp-v-feats { list-style:none; padding:0; margin:0 0 1.4rem; display:flex; flex-direction:column; gap:.65rem; }
+      .rp-v-feats li { display:flex; align-items:center; gap:.7rem; font-size:.9rem; font-weight:500; color:#374151; }
+      [data-theme="dark"] .rp-v-feats li { color:#e9d5ff; }
+      .rp-vfi { width:28px; height:28px; border-radius:7px; flex-shrink:0; background:linear-gradient(135deg,#6b21a8,#7c3aed); display:flex; align-items:center; justify-content:center; color:#fff; font-size:.7rem; }
+
+      /* ══ HOW IT WORKS ══════════════════════════ */
+      .rp-how-new { padding:4rem 2rem; background:var(--primary-bg,#fff); }
+      [data-theme="dark"] .rp-how-new { background:var(--secondary-bg,#0f0820); }
+
+      .rp-sec-hdr { text-align:center; margin-bottom:3rem; }
+      .rp-sec-badge { display:inline-flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg,#6b21a8,#7c3aed); color:#fff; font-size:1.35rem; margin:0 auto 1rem; box-shadow:0 6px 20px rgba(107,33,168,.35); }
+      .rp-sec-hdr h2 { font-family:'Playfair Display',serif; font-size:clamp(1.6rem,3vw,2.3rem); font-weight:700; color:var(--text-primary,#111); margin:0 0 .5rem; }
+      .rp-sec-hdr p { color:var(--text-secondary,#6b7280); font-size:.92rem; }
+
+      .rp-steps-new { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); gap:2rem; }
+      .rp-step-new { text-align:center; padding:1.75rem 1rem; position:relative; background:var(--secondary-bg,#f9fafb); border-radius:16px; border:1.5px solid var(--border-color,#e5e7eb); transition:transform .25s,box-shadow .25s; }
+      .rp-step-new:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(107,33,168,.1); }
+      [data-theme="dark"] .rp-step-new { background:rgba(255,255,255,.03); border-color:rgba(167,139,250,.12); }
+      .rp-step-new:not(:last-child)::after { content:'\f054'; font-family:'Font Awesome 6 Free'; font-weight:900; position:absolute; right:-1.1rem; top:42%; transform:translateY(-50%); color:rgba(168,85,247,.35); font-size:1rem; z-index:1; }
+      .rp-step-num-new { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#6b21a8,#7c3aed); color:#fff; font-size:1.05rem; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; box-shadow:0 4px 16px rgba(107,33,168,.35); }
+      .rp-step-ico { font-size:1.75rem; color:#a855f7; margin-bottom:.65rem; }
+      .rp-step-new h4 { font-size:.92rem; font-weight:700; color:var(--text-primary,#111); margin:0 0 .35rem; }
+      .rp-step-new p  { font-size:.8rem; color:var(--text-secondary,#6b7280); line-height:1.5; margin:0; }
+
+      /* ══ CTA SECTION ═══════════════════════════ */
+      .rp-cta-new {
+        padding:5rem 2rem;
+        background:linear-gradient(135deg,#6b21a8 0%,#7c3aed 50%,#4c1d95 100%);
+        position:relative; overflow:hidden; text-align:center;
+      }
+      .rp-cta-new::before { content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='25' fill='rgba(255,255,255,0.03)'/%3E%3C/svg%3E"); background-size:60px; }
+      .rp-cta-inner { position:relative; z-index:1; max-width:700px; margin:0 auto; }
+      .rp-cta-new h2 { font-family:'Playfair Display',serif; font-size:clamp(1.8rem,4vw,2.8rem); font-weight:900; color:#fff; margin:0 0 1rem; }
+      .rp-cta-new p  { font-size:1.05rem; color:rgba(255,255,255,.8); margin:0 0 2rem; }
+      .rp-cta-new-btn { display:inline-flex; align-items:center; gap:.65rem; background:#fff; color:#6b21a8; font-weight:800; font-size:1rem; padding:1rem 2.5rem; border-radius:50px; text-decoration:none; box-shadow:0 8px 28px rgba(0,0,0,.2); transition:all .3s ease; }
+      .rp-cta-new-btn:hover { transform:translateY(-3px) scale(1.04); box-shadow:0 14px 40px rgba(0,0,0,.3); }
+
+      /* ══ RESPONSIVE ════════════════════════════ */
+      @media(max-width:1024px) {
+        .rp-hero-inner { grid-template-columns:1fr; padding:4rem 2rem 5rem; text-align:center; }
+        .rp-hero-visual-new { display:none; }
+        .rp-hero-ctas { justify-content:center; }
+        .rp-hero-statsrow { justify-content:center; }
+        .rp-order-wrap { grid-template-columns:1fr; }
+        .rp-steps-new { grid-template-columns:1fr 1fr; }
+        .rp-step-new:nth-child(2):not(:last-child)::after { display:none; }
+        .rp-video-inner { grid-template-columns:1fr; gap:2rem; }
+        .rp-vframe { transform:none; }
+      }
+      @media(max-width:640px) {
+        .rp-hero-statsrow { flex-direction:column; gap:.4rem; padding:.9rem; }
+        .rp-hstat-div { width:55px; height:1px; }
+        .rp-steps-new { grid-template-columns:1fr; }
+        .rp-step-new:not(:last-child)::after { display:none; }
+        .rp-form-body { padding:1.25rem; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Auth Modal (unchanged) -->
+    <div class="auth-modal-overlay" id="authModalOverlay">
+      <div class="auth-modal-container" id="authModalContainer">
+        <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+        <iframe id="authIframe" src="about:blank" style="width:100%;height:100%;border:none"></iframe>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <div id="header-container"></div>
+      <div id="sidebar-container"></div>
+
+      <main class="main-content" style="margin-top:76px;">
+
+        <!-- ══ VIDEO HERO ════════════════════════════ -->
+        <section class="rp-hero-new">
+
+          <!-- Background video -->
+          <div class="rp-hero-videowrap">
+            <video class="rp-hero-bgvideo" autoplay muted loop playsinline preload="metadata"
+              poster="https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=1200&q=80">
+              <source src="../Frontend/images/about.mp4" type="video/mp4"/>
+            </video>
+          </div>
+
+          <!-- Particles -->
+          <div class="rp-particles">
+            <div class="rp-particle" style="left:8%;top:18%;--ps:90px;--pd:7s;--pdl:0s;--px:35px;--py:-55px;"></div>
+            <div class="rp-particle" style="left:72%;top:32%;--ps:65px;--pd:9s;--pdl:1s;--px:-28px;--py:-38px;"></div>
+            <div class="rp-particle" style="left:42%;top:68%;--ps:110px;--pd:6s;--pdl:.5s;--px:45px;--py:-65px;"></div>
+            <div class="rp-particle" style="left:22%;top:52%;--ps:55px;--pd:8s;--pdl:2s;--px:-22px;--py:-32px;"></div>
+            <div class="rp-particle" style="left:86%;top:58%;--ps:75px;--pd:10s;--pdl:.8s;--px:22px;--py:-48px;"></div>
+          </div>
+
+          <div class="rp-hero-overlay"></div>
+
+          <!-- Wave bottom edge -->
+          <svg class="rp-hero-wave" viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path d="M0,35 C360,70 1080,0 1440,35 L1440,70 L0,70 Z" fill="var(--primary-bg,#fff)" opacity=".97"/>
+          </svg>
+
+          <!-- Two-column content -->
+          <div class="rp-hero-inner">
+
+            <!-- LEFT: text -->
+            <div>
+              <div class="rp-hero-pill"><i class="fas fa-certificate"></i> Premium Service</div>
+
+              <h1 class="rp-hero-h1">
+                Roll Press
+                <span>Service</span>
+              </h1>
+
+              <p class="rp-hero-p">
+                Professional roll pressing for perfectly crisp, wrinkle-free clothes.
+                Ideal for sarees, dupattas, and delicate fabrics that need gentle care.
+              </p>
+
+              <div class="rp-hero-statsrow">
+                <div class="rp-hstat"><span class="rp-hstat-val">4.9</span><span class="rp-hstat-lbl">Rating</span></div>
+                <div class="rp-hstat-div"></div>
+                <div class="rp-hstat"><span class="rp-hstat-val">5K+</span><span class="rp-hstat-lbl">Pressed</span></div>
+                <div class="rp-hstat-div"></div>
+                <div class="rp-hstat"><span class="rp-hstat-val">24hr</span><span class="rp-hstat-lbl">Turnaround</span></div>
+                <div class="rp-hstat-div"></div>
+                <div class="rp-hstat"><span class="rp-hstat-val">100%</span><span class="rp-hstat-lbl">Satisfaction</span></div>
+              </div>
+
+              <div class="rp-hero-ctas">
+                <a href="#order-form" class="rp-hero-cta-primary"><i class="fas fa-calendar-plus"></i> Book Now</a>
+                <a href="#rpVideo" class="rp-hero-cta-secondary"><i class="fas fa-play-circle"></i> Watch How It Works</a>
+              </div>
+            </div>
+
+            <!-- RIGHT: glass card -->
+            <div class="rp-hero-visual-new">
+              <div class="rp-vbadge b1"><i class="fas fa-wind"></i> Steam Roll</div>
+              <div class="rp-visual-card">
+                <div class="rp-vc-icon"><i class="fas fa-scroll"></i></div>
+                <div class="rp-vc-title">Roll Press Service</div>
+                <ul class="rp-vc-features">
+                  <li><i class="fas fa-check-circle"></i> Gentle on delicate fabrics</li>
+                  <li><i class="fas fa-check-circle"></i> Perfect for sarees &amp; dupattas</li>
+                  <li><i class="fas fa-check-circle"></i> Crisp, wrinkle-free finish</li>
+                  <li><i class="fas fa-check-circle"></i> Free pickup &amp; delivery</li>
+                  <li><i class="fas fa-check-circle"></i> 24-hour turnaround</li>
+                </ul>
+                <div class="rp-vc-price-row">
+                  <div>
+                    <div class="rp-vc-price-lbl">Starting from</div>
+                    <div class="rp-vc-price-per">per piece</div>
+                  </div>
+                  <div class="rp-vc-price-val">₹50</div>
+                </div>
+              </div>
+              <div class="rp-vbadge b2"><i class="fas fa-sparkles"></i> Crisp Finish</div>
+            </div>
+
+          </div><!-- /rp-hero-inner -->
+
+          <div class="rp-hero-scroll"><span>Scroll</span><i class="fas fa-chevron-down"></i></div>
+        </section>
+
+        <!-- ══ FEATURES STRIP ════════════════════════ -->
+        <section class="rp-strip-new">
+          <div class="rp-strip-inner">
+            <div class="rp-chip"><i class="fas fa-truck"></i> Free Pickup</div>
+            <div class="rp-chip"><i class="fas fa-shield-alt"></i> Fabric Safe</div>
+            <div class="rp-chip"><i class="fas fa-clock"></i> 24hr Delivery</div>
+            <div class="rp-chip"><i class="fas fa-tag"></i> Best Price</div>
+            <div class="rp-chip"><i class="fas fa-undo"></i> Easy Return</div>
+            <div class="rp-chip"><i class="fas fa-calendar-check"></i> 5-Day Booking</div>
+          </div>
+        </section>
+
+        <!-- ══ ORDER FORM ════════════════════════════ -->
+        <section class="rp-order-section-new" id="order-form">
+          <div class="rp-order-wrap">
+
+            <!-- LEFT: Form card -->
+            <div class="rp-form-card-new">
+              <div class="rp-form-hdr">
+                <div class="rp-form-hdr-icon"><i class="fas fa-clipboard-list"></i></div>
+                <div>
+                  <h2>Place Your Order</h2>
+                  <p>Fill in the details below to book your roll press service</p>
+                </div>
+              </div>
+
+              <!-- Loading state (id unchanged) -->
+              <div class="rp-loading-state" id="formLoadingState" style="padding:2rem;">
+                <div class="rp-spinner"></div>
+                <p>Loading services...</p>
+              </div>
+
+              <!-- Error state (id unchanged) -->
+              <div class="rp-error-state" id="formErrorState" style="display:none;padding:2rem;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Failed to load services. Please refresh the page.</p>
+                <button class="rp-retry-btn" onclick="loadRollPressServices()">Retry</button>
+              </div>
+
+              <!-- FORM — all IDs 100% unchanged -->
+              <form class="rp-form" id="rollPressForm" style="display:none">
+                <div class="rp-form-body">
+
+                  <!-- ① Service Details -->
+                  <div class="rp-sec-lbl"><i class="fas fa-concierge-bell"></i> Service Details</div>
+
+                  <div class="rp-form-group">
+                    <label class="rp-label">
+                      <i class="fas fa-concierge-bell"></i> Select Service <span class="rp-required">*</span>
+                    </label>
+                    <div class="rp-select-wrapper">
+                      <select class="rp-select" id="serviceSelect" required>
+                        <option value="">-- Choose a Roll Press Service --</option>
+                      </select>
+                      <i class="fas fa-chevron-down rp-select-arrow"></i>
+                    </div>
+                    <div class="rp-field-hint" id="serviceHint">Select a service to see pricing details</div>
+                  </div>
+
+                  <!-- Price display -->
+                  <div class="rp-price-display" id="priceDisplay" style="display:none">
+                    <div class="rp-price-info">
+                      <div class="rp-price-left">
+                        <span class="rp-price-label">Unit Price</span>
+                        <span class="rp-price-value" id="unitPriceDisplay">₹0</span>
+                        <span class="rp-price-unit" id="unitDisplay">per piece</span>
+                      </div>
+                      <div class="rp-price-divider"></div>
+                      <div class="rp-price-right">
+                        <span class="rp-price-label">Total Amount</span>
+                        <span class="rp-total-value" id="totalPriceDisplay">₹0</span>
+                      </div>
+                    </div>
+                    <div class="rp-service-desc" id="serviceDescDisplay"></div>
+                  </div>
+
+                  <!-- Quantity -->
+                  <div class="rp-form-group">
+                    <label class="rp-label">
+                      <i class="fas fa-sort-numeric-up"></i> Quantity <span class="rp-required">*</span>
+                    </label>
+                    <div class="rp-qty-wrapper">
+                      <button type="button" class="rp-qty-btn" id="qtyMinus"><i class="fas fa-minus"></i></button>
+                      <input type="number" class="rp-qty-input" id="quantityInput" value="1" min="1" max="100" required />
+                      <button type="button" class="rp-qty-btn" id="qtyPlus"><i class="fas fa-plus"></i></button>
+                    </div>
+                  </div>
+
+                  <!-- ② Pickup Details -->
+                  <div class="rp-sec-lbl" style="margin-top:1.5rem;"><i class="fas fa-map-marker-alt"></i> Pickup Details</div>
+
+                  <div class="rp-form-row">
+                    <!-- Date -->
+                    <div class="rp-form-group">
+                      <label class="rp-label">
+                        <i class="fas fa-calendar-alt"></i> Pickup Date <span class="rp-required">*</span>
+                      </label>
+
+                      <!-- ✅ 5-Day Booking Window Banner -->
+                      <div class="rp-date-banner">
+                        <i class="fas fa-calendar-check"></i>
+                        <div>
+                          <strong>📅 5-Day Booking Window</strong>
+                          You can schedule pickup up to 5 days ahead only. This helps us manage orders efficiently and serve you better!
+                        </div>
+                      </div>
+
+                      <div class="rp-input-wrapper">
+                        <i class="fas fa-calendar-alt rp-input-icon"></i>
+                        <input type="date" class="rp-input" id="pickupDate" required />
+                      </div>
+                    </div>
+
+                    <!-- Time -->
+                    <div class="rp-form-group">
+                      <label class="rp-label">
+                        <i class="fas fa-clock"></i> Pickup Time <span class="rp-required">*</span>
+                      </label>
+                      <div class="rp-select-wrapper">
+                        <select class="rp-select" id="pickupTime" required>
+                          <option value="">Select Time</option>
+                          <option value="09:00-11:00">9:00 AM – 11:00 AM</option>
+                          <option value="11:00-13:00">11:00 AM – 1:00 PM</option>
+                          <option value="13:00-15:00">1:00 PM – 3:00 PM</option>
+                          <option value="15:00-17:00">3:00 PM – 5:00 PM</option>
+                          <option value="17:00-19:00">5:00 PM – 7:00 PM</option>
+                        </select>
+                        <i class="fas fa-chevron-down rp-select-arrow"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Address -->
+                  <div class="rp-form-group">
+                    <label class="rp-label">
+                      <i class="fas fa-map-marker-alt"></i> Pickup Address <span class="rp-required">*</span>
+                      <span class="rp-autofill-hint" id="rpAddressHint" style="display:none;">
+                        <i class="fas fa-magic"></i> Auto-filled from your profile
+                      </span>
+                    </label>
+                    <div class="rp-input-wrapper">
+                      <i class="fas fa-map-marker-alt rp-input-icon"></i>
+                      <input type="text" class="rp-input" id="pickupAddress"
+                             placeholder="Enter your full pickup address" required />
+                    </div>
+                  </div>
+
+                  <!-- ③ Additional Info -->
+                  <div class="rp-sec-lbl" style="margin-top:1.5rem;"><i class="fas fa-comment-alt"></i> Additional Info</div>
+
+                  <div class="rp-form-group">
+                    <label class="rp-label">
+                      <i class="fas fa-comment-alt"></i> Special Instructions <span class="rp-optional">(Optional)</span>
+                    </label>
+                    <textarea class="rp-textarea" id="specialInstructions"
+                              placeholder="Any special care instructions for your clothes..."></textarea>
+                  </div>
+
+                  <!-- Payment -->
+                  <div class="rp-form-group">
+                    <label class="rp-label"><i class="fas fa-credit-card"></i> Payment Method</label>
+                    <div class="rp-option-group rp-payment-group" id="paymentOptions">
+                      <label class="rp-option-card">
+                        <input type="radio" name="paymentMethod" value="cod" checked />
+                        <div class="rp-option-inner">
+                          <div class="rp-option-left">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span class="rp-option-title">Cash on Delivery</span>
+                          </div>
+                        </div>
+                      </label>
+                      <label class="rp-option-card">
+                        <input type="radio" name="paymentMethod" value="online" />
+                        <div class="rp-option-inner">
+                          <div class="rp-option-left">
+                            <i class="fas fa-qrcode"></i>
+                            <span class="rp-option-title">Online Payment (UPI)</span>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Inline order summary (IDs unchanged) -->
+                  <div class="rp-inline-summary">
+                    <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                    <div class="rp-inline-summary-row"><span>Service:</span><span id="rps_service">-</span></div>
+                    <div class="rp-inline-summary-row"><span>Quantity:</span><span id="rps_qty">-</span></div>
+                    <div class="rp-inline-summary-row"><span>Price / piece:</span><span id="rps_price">-</span></div>
+                    <div class="rp-inline-summary-row"><span>Delivery:</span><span id="rps_delivery">Free</span></div>
+                    <div class="rp-inline-summary-row rp-inline-summary-total"><span>Total:</span><span id="rps_total">₹0</span></div>
+                  </div>
+
+                  <!-- Buttons (IDs unchanged) -->
+                  <div class="rp-form-actions">
+                    <button type="button" class="rp-btn rp-btn-cart" id="addToCartBtn">
+                      <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </button>
+                    <button type="button" class="rp-btn rp-btn-order" id="placeOrderBtn">
+                      <i class="fas fa-bolt"></i> Place Order
+                    </button>
+                  </div>
+
+                  <p class="rp-btn-hint">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Add to Cart</strong> saves for later &nbsp;|&nbsp; <strong>Place Order</strong> confirms immediately
+                  </p>
+
+                  <!-- Login notice (id unchanged) -->
+                  <div class="rp-login-notice" id="loginNotice" style="display:none">
+                    <i class="fas fa-info-circle"></i>
+                    Please <a href="#" id="loginLinkInForm">login</a> to place an order or add to cart.
+                  </div>
+
+                </div>
+              </form>
+            </div><!-- /rp-form-card-new -->
+
+            <!-- RIGHT: Side panel (IDs unchanged) -->
+            <div class="rp-side-new">
+
+              <div class="rp-summary-card-new" id="orderSummary">
+                <div class="rp-summary-hdr-new">
+                  <i class="fas fa-receipt"></i> Order Summary
+                </div>
+                <div class="rp-summary-body" id="summaryBody" style="padding:1.2rem;">
+                  <div class="rp-summary-empty">
+                    <i class="fas fa-shopping-basket"></i>
+                    <p>Select a service to see your order summary</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rp-info-card-new">
+                <h3><i class="fas fa-star"></i> Why Roll Press?</h3>
+                <ul class="rp-info-list">
+                  <li>
+                    <div class="rp-info-icon"><i class="fas fa-check-circle"></i></div>
+                    <div><strong>Gentle on Fabric</strong><span>No direct heat – perfect for delicate materials</span></div>
+                  </li>
+                  <li>
+                    <div class="rp-info-icon"><i class="fas fa-check-circle"></i></div>
+                    <div><strong>Wrinkle-Free Finish</strong><span>Crisp, smooth result every time</span></div>
+                  </li>
+                  <li>
+                    <div class="rp-info-icon"><i class="fas fa-check-circle"></i></div>
+                    <div><strong>Ideal for Sarees</strong><span>Best for sarees, dupattas, silk fabrics</span></div>
+                  </li>
+                  <li>
+                    <div class="rp-info-icon"><i class="fas fa-check-circle"></i></div>
+                    <div><strong>Quick Turnaround</strong><span>Get your clothes back within 24 hours</span></div>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="rp-info-card-new">
+                <h3><i class="fas fa-truck"></i> Delivery Info</h3>
+                <div class="rp-delivery-card" style="padding:0;border:none;box-shadow:none;">
+                  <div class="rp-delivery-item">
+                    <div class="rp-delivery-icon"><i class="fas fa-truck"></i></div>
+                    <div><strong>Free Pickup &amp; Delivery</strong><span>At your doorstep, no extra charge</span></div>
+                  </div>
+                  <div class="rp-delivery-item">
+                    <div class="rp-delivery-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div><strong>100% Safe &amp; Insured</strong><span>Your clothes are fully protected</span></div>
+                  </div>
+                  <div class="rp-delivery-item">
+                    <div class="rp-delivery-icon"><i class="fas fa-headset"></i></div>
+                    <div><strong>24/7 Support</strong><span>We're always here to help you</span></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ══ PROMO VIDEO ════════════════════════════ -->
+        <section class="rp-video-section" id="rpVideo">
+          <div class="rp-video-inner">
+            <div>
+              <div class="rp-vframe">
+                <div class="rp-vratio">
+                  <!--
+                    💡 Replace with your video:
+                    Local: <video controls><source src="../Frontend/images/services/roll-press.mp4"/></video>
+                    YouTube: change the embed ID below
+                  -->
+                  <iframe
+                    src="../Frontend/images/services/rollpressvideo.mp4"
+                    title="Roll Press Service – How It Works"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="rp-v-overline"><i class="fas fa-scroll"></i> See Us In Action</div>
+              <h2 class="rp-v-title">The Art of <span class="rp-v-accent">Perfect Pressing</span></h2>
+              <p class="rp-v-desc">Watch how our expert team uses precision roll press techniques to deliver perfectly crisp, wrinkle-free results for your most delicate fabrics — sarees, dupattas, and more.</p>
+              <ul class="rp-v-feats">
+                <li><div class="rp-vfi"><i class="fas fa-scroll"></i></div> Professional roll press equipment</li>
+                <li><div class="rp-vfi"><i class="fas fa-leaf"></i></div> Safe for all delicate fabrics</li>
+                <li><div class="rp-vfi"><i class="fas fa-shield-alt"></i></div> 100% satisfaction guaranteed</li>
+                <li><div class="rp-vfi"><i class="fas fa-truck"></i></div> Free pickup &amp; delivery</li>
+              </ul>
+              <a href="#order-form" style="display:inline-flex;align-items:center;gap:.5rem;color:#7c3aed;font-weight:700;font-size:.93rem;text-decoration:none;">
+                Book Now <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══ HOW IT WORKS ══════════════════════════ -->
+        <section class="rp-how-new">
+          <div class="rp-sec-hdr">
+            <div class="rp-sec-badge"><i class="fas fa-list-ol"></i></div>
+            <h2>How Roll Press Works</h2>
+            <p>Simple 4-step process to get perfectly pressed clothes</p>
+          </div>
+          <div class="rp-steps-new">
+            <div class="rp-step-new">
+              <div class="rp-step-num-new">1</div>
+              <div class="rp-step-ico"><i class="fas fa-mouse-pointer"></i></div>
+              <h4>Select Service</h4>
+              <p>Choose your roll press service from the dropdown above</p>
+            </div>
+            <div class="rp-step-new">
+              <div class="rp-step-num-new">2</div>
+              <div class="rp-step-ico"><i class="fas fa-calendar-check"></i></div>
+              <h4>Schedule Pickup</h4>
+              <p>Pick a convenient date (within 5 days) and time slot</p>
+            </div>
+            <div class="rp-step-new">
+              <div class="rp-step-num-new">3</div>
+              <div class="rp-step-ico"><i class="fas fa-magic"></i></div>
+              <h4>We Press</h4>
+              <p>Professional roll pressing with quality care and precision</p>
+            </div>
+            <div class="rp-step-new">
+              <div class="rp-step-num-new">4</div>
+              <div class="rp-step-ico"><i class="fas fa-home"></i></div>
+              <h4>Delivered Back</h4>
+              <p>Fresh, crisp clothes delivered to your door on time</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══ CTA ═══════════════════════════════════ -->
+        <section class="rp-cta-new">
+          <div class="rp-cta-inner">
+            <h2>Ready for Perfectly Pressed Clothes?</h2>
+            <p>Join thousands of happy customers who trust Quick Laundry for their roll press needs</p>
+            <a href="#order-form" class="rp-cta-new-btn">
+              <i class="fas fa-calendar-plus"></i> Book Roll Press Now
+            </a>
+          </div>
+        </section>
+
+      </main>
+
+      <div id="footer-container"></div>
+    </div>
+
+    <!-- ✅ Load Components (unchanged) -->
+    <script>
+      fetch("header.html")
+        .then(r => r.text())
+        .then(data => {
+          document.getElementById("header-container").innerHTML = data;
+          const s = document.createElement("script");
+          s.src = "js/header.js";
+          document.body.appendChild(s);
+        })
+        .catch(e => console.error("Header load error:", e));
+
+      fetch("sidebar.html")
+        .then(r => r.text())
+        .then(data => {
+          document.getElementById("sidebar-container").innerHTML = data;
+          const s = document.createElement("script");
+          s.src = "js/sidebar.js";
+          document.body.appendChild(s);
+        })
+        .catch(e => console.error("Sidebar load error:", e));
+
+      fetch("footer.html")
+        .then(r => r.text())
+        .then(data => {
+          document.getElementById("footer-container").innerHTML = data;
+          const s = document.createElement("script");
+          s.src = "js/footer.js";
+          document.body.appendChild(s);
+        })
+        .catch(e => console.error("Footer load error:", e));
+    </script>
+
+    <!-- ✅ roll-press.js unchanged — all IDs intact -->
+    <script src="js/roll-press.js"></script>
+  </body>
+</html>
