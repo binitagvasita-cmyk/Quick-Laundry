@@ -595,56 +595,11 @@ def create_app():
     # ============================================
     # ROOT ENDPOINT (UPDATED WITH ADMIN INFO)
     # ============================================
-    
-    @app.route('/', methods=['GET'])
+    @app.route('/')
     def root():
-        """Root endpoint - API information"""
-        endpoints = {
-            # Existing user endpoints
-            'auth': '/api/auth',
-            'google_auth': '/api/auth/google',
-            'services': '/api/services',
-            'categories': '/api/categories',
-            'cart': '/api/cart',
-            'reviews': '/api/reviews',
-            'profile': '/api/profile',
-            'uploads': '/uploads',
-            'health': '/health',
-            'docs': '/api/docs'
-        }
-        
-        features = {
-            'google_oauth': bool(config.GOOGLE_CLIENT_ID),
-            'services_api': True,
-            'dynamic_services': True,
-            'cart_system': True,
-            'review_system': True,
-            'profile_system': True,
-            'file_uploads': True
-        }
-        
-        # Add admin endpoints if available
-        try:
-            from routes.admin_auth import admin_auth_bp
-            endpoints['admin_auth'] = '/api/admin/auth'
-            endpoints['admin_dashboard'] = '/api/admin/dashboard'
-            endpoints['admin_panel'] = '/admin'
-            features['admin_panel'] = True
-        except:
-            features['admin_panel'] = False
-        
-        return APIResponse.success(
-            {
-                'name': config.APP_NAME,
-                'version': config.APP_VERSION,
-                'environment': os.getenv('FLASK_ENV', 'development'),
-                'status': 'running',
-                'endpoints': endpoints,
-                'features': features
-            },
-            "Welcome to Quick Laundry API"
-        )
-    
+        """Serve frontend homepage"""
+        frontend_dir = os.path.join(os.path.dirname(__file__), 'Frontend')
+        return send_from_directory(frontend_dir, 'home-content.html')
     # ============================================
     # HEALTH CHECK ENDPOINT (ENHANCED)
     # ============================================
@@ -1091,7 +1046,15 @@ def create_app():
     # ============================================
     # ERROR HANDLERS (UNCHANGED)
     # ============================================
-    
+    @app.route('/<path:path>')
+    def serve_frontend(path):
+        """Serve frontend static files"""
+        frontend_dir = os.path.join(os.path.dirname(__file__), 'Frontend')
+        full_path = os.path.join(frontend_dir, path)
+        if os.path.exists(full_path):
+            return send_from_directory(frontend_dir, path)
+        # If file not found, return 404 JSON (don't serve index.html for missing API routes)
+        return APIResponse.error("Resource not found", None, 404)
     @app.errorhandler(404)
     def not_found(error):
         """Handle 404 errors"""
