@@ -9,9 +9,9 @@ Complete backend integration with database
 from flask import Blueprint, request, jsonify
 from middleware.auth_middleware import token_required, optional_token
 from utils.response import APIResponse
-from database.db_connection import get_db_connection
+from database.db import get_db
 import traceback
-
+import pymysql
 services_bp = Blueprint('services', __name__)
 
 
@@ -24,8 +24,8 @@ def get_all_services():
     try:
         category_id = request.args.get('category')
         
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         query = """
             SELECT 
@@ -71,7 +71,7 @@ def get_all_services():
                 service['features'] = []
         
         cursor.close()
-        conn.close()
+        
         
         return APIResponse.success(
             message=f'Retrieved {len(services)} services successfully',
@@ -94,8 +94,8 @@ def get_service_by_id(service_id):
     Get detailed information about a specific service
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         query = """
             SELECT 
@@ -121,7 +121,7 @@ def get_service_by_id(service_id):
         
         if not service:
             cursor.close()
-            conn.close()
+            
             return APIResponse.error(
                 message='Service not found',
                 status_code=404
@@ -145,7 +145,7 @@ def get_service_by_id(service_id):
         service['features'] = [f['feature_text'] for f in features]
         
         cursor.close()
-        conn.close()
+        
         
         return APIResponse.success(
             message='Service retrieved successfully',
@@ -169,8 +169,8 @@ def get_service_price(service_id):
     Lightweight endpoint for dynamic price updates
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         query = """
             SELECT 
@@ -186,7 +186,7 @@ def get_service_price(service_id):
         service = cursor.fetchone()
         
         cursor.close()
-        conn.close()
+        
         
         if not service:
             return APIResponse.error(
@@ -221,8 +221,8 @@ def get_services_by_category(category_id):
     Optimized for category-specific pages (wash+iron, dry clean, etc.)
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Get category info
         category_query = """
@@ -240,7 +240,7 @@ def get_services_by_category(category_id):
         
         if not category:
             cursor.close()
-            conn.close()
+            
             return APIResponse.error(
                 message='Category not found',
                 status_code=404
@@ -266,7 +266,7 @@ def get_services_by_category(category_id):
         services = cursor.fetchall()
         
         cursor.close()
-        conn.close()
+        
         
         return APIResponse.success(
             message=f'Retrieved {len(services)} services for category {category["name"]}',
@@ -292,8 +292,8 @@ def get_featured_services():
     Get only featured services (for homepage or highlights)
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         query = """
             SELECT 
@@ -327,7 +327,7 @@ def get_featured_services():
                 service['features'] = []
         
         cursor.close()
-        conn.close()
+        
         
         return APIResponse.success(
             message=f'Retrieved {len(services)} featured services',
@@ -350,8 +350,8 @@ def get_categories():
     Get all active categories
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         query = """
             SELECT 
@@ -372,7 +372,7 @@ def get_categories():
         categories = cursor.fetchall()
         
         cursor.close()
-        conn.close()
+         
         
         return APIResponse.success(
             message=f'Retrieved {len(categories)} categories',
@@ -417,8 +417,8 @@ def get_bulk_prices():
                 status_code=400
             )
         
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Create placeholders for IN clause
         placeholders = ','.join(['%s'] * len(service_ids))
@@ -437,7 +437,7 @@ def get_bulk_prices():
         services = cursor.fetchall()
         
         cursor.close()
-        conn.close()
+         
         
         # Convert to dict for easy lookup
         price_map = {}
@@ -475,7 +475,7 @@ def create_service(current_user):
     """
     try:
         data = request.get_json()
-        
+    
         # Validate required fields
         required_fields = ['service_name', 'base_price', 'price_unit']
         for field in required_fields:
@@ -485,8 +485,8 @@ def create_service(current_user):
                     status_code=400
                 )
         
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        conn = get_db()
+        cursor = conn.connection.cursor()
         
         query = """
             INSERT INTO services 
@@ -522,9 +522,9 @@ def create_service(current_user):
             for idx, feature in enumerate(data['features']):
                 cursor.execute(features_query, (service_id, feature, idx))
         
-        conn.commit()
+        conn.connection.commit()
         cursor.close()
-        conn.close()
+         
         
         return APIResponse.success(
             message='Service created successfully',
@@ -550,8 +550,8 @@ def update_service(current_user, service_id):
     try:
         data = request.get_json()
         
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        conn = get_db()
+        cursor = conn.connection.cursor()
         
         # Build dynamic update query
         update_fields = []
@@ -597,9 +597,9 @@ def update_service(current_user, service_id):
                 for idx, feature in enumerate(data['features']):
                     cursor.execute(features_query, (service_id, feature, idx))
         
-        conn.commit()
+        conn.connection.commit()
         cursor.close()
-        conn.close()
+        
         
         return APIResponse.success(
             message='Service updated successfully'
@@ -622,8 +622,8 @@ def delete_service(current_user, service_id):
     Soft delete a service (Admin only)
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        conn = get_db()
+        cursor = conn.connection.cursor()
         
         # Soft delete - set is_active to False
         query = """
@@ -633,10 +633,10 @@ def delete_service(current_user, service_id):
         """
         
         cursor.execute(query, (service_id,))
-        conn.commit()
+        conn.connection.commit()
         
         cursor.close()
-        conn.close()
+        
         
         return APIResponse.success(
             message='Service deleted successfully'

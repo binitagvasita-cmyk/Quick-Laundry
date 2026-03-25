@@ -1093,8 +1093,8 @@ def create_app():
     def after_request(response):
         """Add security headers to response"""
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.headers['X-Frame-Options'] = 'DENY'
-        response.headers['X-XSS-Protection'] = '1; mode=block'
+        # response.headers['X-Frame-Options'] = 'DENY'
+        # response.headers['X-XSS-Protection'] = '1; mode=block'
         return response
     
     # ============================================
