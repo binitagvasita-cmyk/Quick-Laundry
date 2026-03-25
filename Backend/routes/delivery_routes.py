@@ -9,7 +9,7 @@ Status transitions for delivery boy:
 ============================================================
 """
 
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app  # ← add current_app here
 from database.db import get_db
 from utils.response import APIResponse
 from routes.delivery_auth import delivery_required
@@ -439,28 +439,66 @@ def toggle_availability():
 # ─────────────────────────────────────────────
 # GET /api/delivery/profile
 # ─────────────────────────────────────────────
-@delivery_bp.route('/profile', methods=['GET'])
+# ─────────────────────────────────────────────
+# GET/PUT /api/delivery/profile
+# ─────────────────────────────────────────────
+@delivery_bp.route('/profile', methods=['GET', 'PUT'])
 @delivery_required
 def get_profile():
     try:
         uid    = request.delivery_user_id
         db     = get_db()
         cursor = db.connection.cursor()
-        cursor.execute("""
-            SELECT u.user_id, u.full_name, u.email, u.phone,
-                   u.address, u.city, u.pincode, u.profile_picture, u.created_at,
-                   db2.delivery_id, db2.vehicle_type, db2.vehicle_number,
-                   db2.is_available, db2.total_delivered, db2.joined_at
-            FROM users u JOIN delivery_boys db2 ON u.user_id = db2.user_id
-            WHERE u.user_id = %s
-        """, (uid,))
-        profile = cursor.fetchone()
-        cursor.close()
-        if profile:
+
+        if request.method == 'GET':
+            cursor.execute("""
+                SELECT u.user_id, u.full_name, u.email, u.phone,
+                       u.address, u.city, u.pincode, u.profile_picture, u.created_at,
+                       db2.delivery_id, db2.vehicle_type, db2.vehicle_number,
+                       db2.is_available, db2.total_delivered, db2.joined_at,
+                       db2.current_area, db2.location_notes
+                FROM users u JOIN delivery_boys db2 ON u.user_id = db2.user_id
+                WHERE u.user_id = %s
+            """, (uid,))
+            profile = cursor.fetchone()
+            cursor.close()
+            if not profile:
+                return APIResponse.error('Profile not found', None, 404)
             for key in ['created_at', 'joined_at']:
                 if profile.get(key):
                     profile[key] = str(profile[key])
-        return APIResponse.success(profile, 'Profile fetched')
+            return APIResponse.success(profile, 'Profile fetched')
+
+        elif request.method == 'PUT':
+            data = request.get_json() or {}
+            cursor.execute("""
+                UPDATE users
+                SET full_name = %s, phone = %s, city = %s, address = %s, updated_at = NOW()
+                WHERE user_id = %s
+            """, (
+                data.get('full_name', '').strip(),
+                data.get('phone', '').strip(),
+                data.get('city', '').strip(),
+                data.get('address', '').strip(),
+                uid,
+            ))
+            cursor.execute("""
+                UPDATE delivery_boys
+                SET vehicle_type = %s, vehicle_number = %s,
+                    current_area = %s, location_notes = %s, updated_at = NOW()
+                WHERE user_id = %s
+            """, (
+                data.get('vehicle_type', 'bike').strip().lower(),
+                data.get('vehicle_number', '').strip(),
+                data.get('current_area', '').strip(),
+                data.get('location_notes', '').strip(),
+                uid,
+            ))
+            db.connection.commit()
+            cursor.close()
+            return APIResponse.success(None, 'Profile updated successfully')
+
     except Exception as e:
         print(f'❌ Profile error: {e}')
-        return APIResponse.error('Failed to fetch profile', None, 500)
+        import traceback; traceback.print_exc()
+        return APIResponse.error('Failed to load profile', None, 500)
