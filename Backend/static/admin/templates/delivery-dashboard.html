@@ -1617,7 +1617,6 @@
         if (page === "orders") loadOrders(currentFilter);
         if (page === "profile") loadProfile();
         if (page === "dashboard") loadDashboard();
-        // Close mobile sidebar
         document.getElementById("sidebar").classList.remove("open");
       }
 
@@ -1942,7 +1941,6 @@
           profileData = data.data;
           const p = profileData;
 
-          // Info display
           document.getElementById("profileAvatar").textContent = p.full_name
             .charAt(0)
             .toUpperCase();
@@ -1960,7 +1958,6 @@
             ? new Date(p.joined_at).toLocaleDateString("en-IN")
             : "–";
 
-          // Pre-fill edit form
           document.getElementById("editPhone").value = p.phone || "";
           document.getElementById("editCity").value = p.city || "";
           document.getElementById("editAddress").value = p.address || "";
@@ -1970,30 +1967,21 @@
             document.getElementById("editVehicleType").value = p.vehicle_type;
           }
 
-          // Load saved location from localStorage (UI convenience)
-          const savedLoc = JSON.parse(
-            localStorage.getItem("ql_location") || "null"
-          );
-          if (savedLoc) {
-            document.getElementById("locArea").value = savedLoc.area || "";
-            document.getElementById("locNotes").value = savedLoc.notes || "";
-            showSavedLocation(savedLoc);
+          // Load saved location
+          if (p.current_area) {
+            const loc = {
+              area: p.current_area,
+              notes: p.location_notes || "",
+              updatedAt: p.location_updated_at || new Date().toISOString(),
+            };
+            localStorage.setItem("ql_location", JSON.stringify(loc));
+            showSavedLocation(loc);
           }
         } catch (e) {
           toast("Failed to load profile", "error");
         }
       }
-      async function updateProfile(profileData) {
-        const response = await fetch("/api/delivery/profile", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(profileData),
-        });
-        return await response.json();
-      }
+
       async function saveProfile() {
         const btn = document.getElementById("saveProfileBtn");
         btn.disabled = true;
@@ -2016,7 +2004,7 @@
           const data = await res.json();
           if (!data.success) throw new Error(data.message);
           toast("Profile updated successfully ✅", "success");
-          loadProfile(); // refresh display
+          loadProfile();
         } catch (e) {
           toast(e.message || "Failed to save profile", "error");
         } finally {
@@ -2025,17 +2013,54 @@
         }
       }
 
-      // ── LOCATION UPDATE ──
-      async function updateLocation(current_area, notes) {
-        const response = await fetch("/api/delivery/location", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ current_area, notes }),
-        });
-        return await response.json();
+      // ── LOCATION UPDATE (FIXED) ──
+      async function updateLocation() {
+        const btn = document.getElementById("locBtn");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating…';
+
+        try {
+          const current_area = document.getElementById("locArea").value.trim();
+          const notes = document.getElementById("locNotes").value.trim();
+
+          if (!current_area) {
+            toast("Please enter your current area/locality", "error");
+            btn.disabled = false;
+            btn.innerHTML =
+              '<i class="fas fa-location-arrow"></i> Update My Location';
+            return;
+          }
+
+          const res = await fetch(`${API}/location`, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify({ current_area, notes }),
+          });
+
+          const data = await res.json();
+          if (!data.success) throw new Error(data.message);
+
+          // Save to localStorage
+          const locData = {
+            area: current_area,
+            notes: notes,
+            updatedAt: new Date().toISOString(),
+          };
+          localStorage.setItem("ql_location", JSON.stringify(locData));
+          showSavedLocation(locData);
+
+          toast(data.message, "success");
+
+          // Clear inputs or keep them - showing saved location is enough
+          document.getElementById("locArea").value = "";
+          document.getElementById("locNotes").value = "";
+        } catch (e) {
+          toast(e.message || "Failed to update location", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML =
+            '<i class="fas fa-location-arrow"></i> Update My Location';
+        }
       }
 
       function showSavedLocation(loc) {
@@ -2051,17 +2076,56 @@
           });
       }
 
-      // ── CHANGE PASSWORD ──
-      async function changePassword(old_password, new_password) {
-        const response = await fetch("/api/delivery/password", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ old_password, new_password }),
-        });
-        return await response.json();
+      // ── CHANGE PASSWORD (FIXED) ──
+      async function changePassword() {
+        const btn = document.getElementById("changePwBtn");
+        const oldPass = document.getElementById("oldPass").value;
+        const newPass = document.getElementById("newPass").value;
+        const confirmPass = document.getElementById("confirmPass").value;
+
+        if (!oldPass || !newPass || !confirmPass) {
+          toast("Please fill all password fields", "error");
+          return;
+        }
+
+        if (newPass.length < 6) {
+          toast("New password must be at least 6 characters", "error");
+          return;
+        }
+
+        if (newPass !== confirmPass) {
+          toast("New passwords do not match", "error");
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing…';
+
+        try {
+          const res = await fetch(`${API}/password`, {
+            method: "PUT",
+            headers,
+            body: JSON.stringify({
+              old_password: oldPass,
+              new_password: newPass,
+            }),
+          });
+
+          const data = await res.json();
+          if (!data.success) throw new Error(data.message);
+
+          toast("Password changed successfully ✅", "success");
+
+          // Clear password fields
+          document.getElementById("oldPass").value = "";
+          document.getElementById("newPass").value = "";
+          document.getElementById("confirmPass").value = "";
+        } catch (e) {
+          toast(e.message || "Failed to change password", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-key"></i> Change Password';
+        }
       }
 
       // ── DUTY TOGGLE ──
