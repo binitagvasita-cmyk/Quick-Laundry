@@ -187,7 +187,8 @@ def create_order(current_user):
             raise e
             
         finally:
-            cursor.close()
+            cursor.close()
+
         
     except Exception as e:
         print(f"❌ Error creating order: {str(e)}")
@@ -268,7 +269,8 @@ def get_user_orders(current_user):
             }
             formatted_orders.append(formatted_order)
         
-        cursor.close()
+        cursor.close()
+
         
         return APIResponse.success(
             message=f'Retrieved {len(formatted_orders)} orders',
@@ -305,7 +307,8 @@ def get_order_details(current_user, order_id):
         order = cursor.fetchone()
         
         if not order:
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(message='Order not found or access denied', status_code=404)
         
         cursor.execute("SELECT * FROM order_items WHERE order_id = %s ORDER BY item_id", (order_id,))
@@ -320,7 +323,8 @@ def get_order_details(current_user, order_id):
         """, (order_id,))
         history = cursor.fetchall()
         
-        cursor.close()
+        cursor.close()
+
         
         response_data = {
             'orderId': order['order_id'],
@@ -400,11 +404,13 @@ def cancel_order(current_user, order_id):
         order = cursor.fetchone()
         
         if not order:
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(message='Order not found or access denied', status_code=404)
         
         if order['status'] not in ['pending', 'confirmed']:
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(
                 message=f"Cannot cancel order with status '{order['status']}'",
                 status_code=400
@@ -420,7 +426,8 @@ def cancel_order(current_user, order_id):
         hours_since_order = (now_utc - created_at).total_seconds() / 3600
 
         if hours_since_order > 24:
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(
                 message='Cancellation window has expired. Orders can only be cancelled within 24 hours of placement.',
                 status_code=400
@@ -459,7 +466,8 @@ def cancel_order(current_user, order_id):
         # ───────────────────────────────────────────────────────────────────
 
         conn.connection.commit()
-        cursor.close()
+        cursor.close()
+
         
         return APIResponse.success(
             message='Order cancelled successfully',
@@ -525,7 +533,8 @@ def get_all_orders_admin(current_user):
             'createdAt': order['created_at'].isoformat()
         } for order in orders]
         
-        cursor.close()
+        cursor.close()
+
         
         return APIResponse.success(
             message=f'Retrieved {len(formatted_orders)} orders',
@@ -843,7 +852,7 @@ def place_order(current_user):
         total_amount    = round(subtotal + delivery_charge, 2)
         order_number    = _generate_order_number()
 
-        conn   = get_db_connection()
+        conn   = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
 
         try:
@@ -931,7 +940,8 @@ def place_order(current_user):
             raise e
 
         finally:
-            cursor.close()
+            cursor.close()
+
 
     except Exception as e:
         print(f"❌ place_order error: {str(e)}")
@@ -980,7 +990,8 @@ def get_user_notifications(current_user):
         for n in notifs:
             if hasattr(n.get('created_at'), 'isoformat'):
                 n['created_at'] = n['created_at'].isoformat()
-        cursor.close()
+        cursor.close()
+
         return APIResponse.success(data={'notifications': notifs})
     except Exception as e:
         print(f"❌ get_user_notifications error: {e}")
@@ -1001,7 +1012,8 @@ def mark_all_notifications_read(current_user):
             WHERE user_id = %s AND is_read = 0
         """, (current_user['user_id'],))
         conn.connection.commit()
-        cursor.close()
+        cursor.close()
+
         return APIResponse.success(message='All notifications marked as read')
     except Exception as e:
         return APIResponse.error(message='Failed', errors=str(e), status_code=500)
