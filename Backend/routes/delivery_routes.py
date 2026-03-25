@@ -224,7 +224,71 @@ def get_order_detail(order_id):
         print(f'❌ Order detail error: {e}')
         import traceback; traceback.print_exc()
         return APIResponse.error('Failed to fetch order details', None, 500)
+@delivery_bp.route('/profile', methods=['GET', 'PUT'])
+def delivery_profile():
+    # Auth: get current delivery boy from token
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    try:
+        import jwt
+        payload = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+        user_id = payload.get('user_id')
+    except Exception:
+        return APIResponse.error('Unauthorized', None, 401)
 
+    db = get_db()
+    cursor = db.connection.cursor(dictionary=True)
+
+    if request.method == 'GET':
+        cursor.execute("""
+            SELECT u.user_id, u.full_name, u.email, u.phone, u.city, u.address,
+                   db2.delivery_id, db2.vehicle_type, db2.vehicle_number,
+                   db2.is_available, db2.total_delivered, db2.joined_at,
+                   db2.current_area, db2.location_notes
+            FROM users u
+            JOIN delivery_boys db2 ON u.user_id = db2.user_id
+            WHERE u.user_id = %s
+        """, (user_id,))
+        profile = cursor.fetchone()
+        cursor.close()
+        if not profile:
+            return APIResponse.error('Profile not found', None, 404)
+        if profile.get('joined_at'):
+            profile['joined_at'] = str(profile['joined_at'])
+        return APIResponse.success(profile, 'Profile fetched')
+
+    elif request.method == 'PUT':
+        data = request.get_json() or {}
+
+        # Update users table
+        cursor.execute("""
+            UPDATE users
+            SET full_name = %s, phone = %s, city = %s, address = %s, updated_at = NOW()
+            WHERE user_id = %s
+        """, (
+            data.get('full_name', '').strip(),
+            data.get('phone', '').strip(),
+            data.get('city', '').strip(),
+            data.get('address', '').strip(),
+            user_id,
+        ))
+
+        # Update delivery_boys table
+        cursor.execute("""
+            UPDATE delivery_boys
+            SET vehicle_type = %s, vehicle_number = %s,
+                current_area = %s, location_notes = %s, updated_at = NOW()
+            WHERE user_id = %s
+        """, (
+            data.get('vehicle_type', 'bike').strip().lower(),
+            data.get('vehicle_number', '').strip(),
+            data.get('current_area', '').strip(),
+            data.get('location_notes', '').strip(),
+            user_id,
+        ))
+
+        db.connection.commit()
+        cursor.close()
+        return APIResponse.success(None, 'Profile updated successfully')
 
 # ─────────────────────────────────────────────
 # PUT /api/delivery/orders/<order_id>/status
