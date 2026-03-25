@@ -14,7 +14,8 @@ from datetime import datetime
 import random
 import string
 import os
-
+import pymysql
+import pymysql.cursors
 cart_bp = Blueprint('cart', __name__)
 
 
@@ -136,7 +137,8 @@ def add_to_cart(current_user):
             conn.rollback()
             raise e
         finally:
-            cursor.close()
+            cursor.close()
+
         
     except Exception as e:
         print(f"❌ Error adding to cart: {str(e)}")
@@ -202,7 +204,8 @@ def get_cart_items(current_user):
                 'updatedAt': item['updated_at'].isoformat()
             })
         
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Retrieved {len(formatted_items)} cart items for user {current_user['user_id']}")
         
@@ -240,7 +243,8 @@ def remove_from_cart(current_user, cart_id):
         item = cursor.fetchone()
         
         if not item:
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(
                 message='Cart item not found or access denied',
                 status_code=404
@@ -250,7 +254,8 @@ def remove_from_cart(current_user, cart_id):
         cursor.execute("DELETE FROM cart WHERE cart_id = %s", (cart_id,))
         conn.connection.commit()
         
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Item removed from cart: {cart_id}")
         
@@ -289,7 +294,8 @@ def update_cart_item(current_user, cart_id):
         item = cursor.fetchone()
         
         if not item:
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(
                 message='Cart item not found',
                 status_code=404
@@ -307,7 +313,8 @@ def update_cart_item(current_user, cart_id):
             """, (new_quantity, new_total, cart_id))
         
         conn.connection.commit()
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Cart item updated: {cart_id}")
         
@@ -342,7 +349,8 @@ def get_cart_status_history(current_user, cart_id):
         """, (cart_id, current_user['user_id']))
         
         if not cursor.fetchone():
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(
                 message='Cart item not found',
                 status_code=404
@@ -369,7 +377,8 @@ def get_cart_status_history(current_user, cart_id):
             'timestamp': h['created_at'].isoformat()
         } for h in history]
         
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Retrieved {len(formatted_history)} history records for cart {cart_id}")
         
@@ -405,7 +414,8 @@ def clear_cart(current_user):
         deleted_count = cursor.rowcount
         conn.connection.commit()
         
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Cleared {deleted_count} items from cart for user {current_user['user_id']}")
         
@@ -443,7 +453,8 @@ def get_cart_summary(current_user):
         
         summary = cursor.fetchone()
         
-        cursor.close()
+        cursor.close()
+
         
         return APIResponse.success(
             message='Cart summary retrieved',
@@ -493,7 +504,8 @@ def update_cart_status_admin(current_user, cart_id):
         ])
         
         conn.connection.commit()
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Cart status updated: {cart_id} -> {data['status']}")
         
@@ -575,7 +587,8 @@ def get_all_cart_items_admin(current_user):
                 'updatedAt': item['updated_at'].isoformat()
             })
         
-        cursor.close()
+        cursor.close()
+
         
         return APIResponse.success(
             message=f'Retrieved {len(formatted_items)} cart items',
@@ -818,7 +831,7 @@ def cart_checkout(current_user):
         if delivery_type not in ('express', 'standard', 'economy'):
             delivery_type = 'standard'
 
-        conn   = get_db_connection()
+        conn   = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
 
         try:
@@ -967,7 +980,8 @@ def cart_checkout(current_user):
             raise e
 
         finally:
-            cursor.close()
+            cursor.close()
+
 
     except Exception as e:
         print(f"❌ cart_checkout error: {e}")

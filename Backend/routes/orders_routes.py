@@ -15,7 +15,8 @@ from datetime import datetime
 import random
 import string
 import os
-
+import pymysql
+import pymysql.cursors
 
 orders_bp = Blueprint('orders', __name__)
 
