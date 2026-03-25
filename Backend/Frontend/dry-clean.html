@@ -8,11 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/sidebar.css" />
-    <link rel="stylesheet" href="css/footer.css" />
-    <link rel="stylesheet" href="css/dry-clean.css" />
-    <link rel="stylesheet" href="css/auth-modal.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link rel="stylesheet" href="/css/dry-clean.css" />
+    <link rel="stylesheet" href="/css/auth-modal.css" />
   </head>
   <body>
 
@@ -39,7 +39,7 @@
         <p class="congrats-subtitle">Your Dry Clean order has been placed successfully.</p>
         <div class="congrats-details" id="congratsDetails"></div>
         <div class="congrats-actions">
-          <a href="orders.html" class="congrats-btn congrats-btn-primary">
+          <a href="/orders.html" class="congrats-btn congrats-btn-primary">
             <i class="fas fa-shopping-bag"></i> View My Orders
           </a>
           <button class="congrats-btn congrats-btn-secondary" id="congratsClose">
@@ -547,7 +547,7 @@
 
     <!-- Load Header, Sidebar, Footer via JS -->
     <script>
-      fetch("header.html")
+      fetch("/header.html")
         .then(r => r.text())
         .then(data => {
           document.getElementById("header-container").innerHTML = data;
@@ -557,7 +557,7 @@
         })
         .catch(e => console.error("Header:", e));
 
-      fetch("sidebar.html")
+      fetch("/sidebar.html")
         .then(r => r.text())
         .then(data => {
           document.getElementById("sidebar-container").innerHTML = data;
@@ -567,7 +567,7 @@
         })
         .catch(e => console.error("Sidebar:", e));
 
-      fetch("footer.html")
+      fetch("/footer.html")
         .then(r => r.text())
         .then(data => {
           document.getElementById("footer-container").innerHTML = data;
@@ -578,7 +578,7 @@
         .catch(e => console.error("Footer:", e));
     </script>
 
-    <script src="js/storage-utils.js"></script>
-    <script src="js/dry-clean.js"></script>
+    <script src="/js/storage-utils.js"></script>
+    <script src="/js/dry-clean.js"></script>
   </body>
 </html>

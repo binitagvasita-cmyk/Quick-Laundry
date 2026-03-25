@@ -8,11 +8,11 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/sidebar.css" />
-    <link rel="stylesheet" href="css/auth-modal.css" />
-    <link rel="stylesheet" href="css/footer.css" />
-    <link rel="stylesheet" href="css/wash-iron.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/auth-modal.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link rel="stylesheet" href="/css/wash-iron.css" />
     <style>
       /* ── 5-Day Booking Window Banner ── */
       .date-limit-banner {
@@ -313,7 +313,7 @@
 
     <!-- Load Components -->
     <script>
-      fetch("header.html")
+      fetch("/header.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("header-container").innerHTML = data;
@@ -328,7 +328,7 @@
         .catch((error) => console.error("Error loading header:", error));
 
       function loadSidebar() {
-        fetch("sidebar.html")
+        fetch("/sidebar.html")
           .then((response) => response.text())
           .then((data) => {
             document.getElementById("sidebar-container").innerHTML = data;
@@ -343,7 +343,7 @@
           .catch((error) => console.error("Error loading sidebar:", error));
       }
 
-      fetch("footer.html")
+      fetch("/footer.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("footer-container").innerHTML = data;
@@ -354,7 +354,7 @@
         .catch((error) => console.error("Error loading footer:", error));
     </script>
 
-    <script src="js/home-content.js"></script>
-    <script src="js/wash-iron.js"></script>
+    <script src="/js/home-content.js"></script>
+    <script src="/js/wash-iron.js"></script>
   </body>
 </html>

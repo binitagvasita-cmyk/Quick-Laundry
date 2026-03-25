@@ -14,11 +14,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <!-- CSS Files (existing) -->
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/sidebar.css" />
-    <link rel="stylesheet" href="css/footer.css" />
-    <link rel="stylesheet" href="css/iron.css" />
-    <link rel="stylesheet" href="css/auth-modal.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link rel="stylesheet" href="/css/iron.css" />
+    <link rel="stylesheet" href="/css/auth-modal.css" />
 
     <!-- ══════════════════════════════════════════
          NEW IRON PAGE UI STYLES
@@ -917,7 +917,7 @@
                   <p class="form-note">
                     <i class="fas fa-info-circle"></i>
                     By placing this order, you agree to our
-                    <a href="terms.html">Terms of Service</a> and <a href="privacy-policy.html">Privacy Policy</a>
+                    <a href="/terms.html">Terms of Service</a> and <a href="/privacy-policy.html">Privacy Policy</a>
                   </p>
 
                 </form>
@@ -1117,7 +1117,7 @@
     </div>
 
     <!-- ✅ Load shared storage utility FIRST -->
-    <script src="js/storage-utils.js"></script>
+    <script src="/js/storage-utils.js"></script>
 
     <!-- ✅ AUTH MODAL CONTROLLER (unchanged) -->
     <script>
@@ -1173,7 +1173,7 @@
     <script>
       async function loadComponents() {
         try {
-          const headerResponse = await fetch("header.html");
+          const headerResponse = await fetch("/header.html");
           const headerData = await headerResponse.text();
           document.getElementById("header-container").innerHTML = headerData;
           await new Promise((resolve) => setTimeout(resolve, 100));
@@ -1194,7 +1194,7 @@
             setTimeout(() => { if (typeof window.checkAuthState === "function") window.checkAuthState(); }, 500);
           }
 
-          const sidebarResponse = await fetch("sidebar.html");
+          const sidebarResponse = await fetch("/sidebar.html");
           const sidebarData = await sidebarResponse.text();
           document.getElementById("sidebar-container").innerHTML = sidebarData;
           await new Promise((resolve) => setTimeout(resolve, 100));
@@ -1203,7 +1203,7 @@
           sidebarScript.src = "js/sidebar.js";
           document.body.appendChild(sidebarScript);
 
-          const footerResponse = await fetch("footer.html");
+          const footerResponse = await fetch("/footer.html");
           const footerData = await footerResponse.text();
           document.getElementById("footer-container").innerHTML = footerData;
 
@@ -1219,6 +1219,6 @@
     </script>
 
     <!-- ✅ Iron Service JavaScript (updated with date restriction) -->
-    <script src="js/iron.js"></script>
+    <script src="/js/iron.js"></script>
   </body>
 </html>

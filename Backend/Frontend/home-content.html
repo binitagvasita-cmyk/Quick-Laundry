@@ -8,12 +8,12 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/sidebar.css" />
-    <link rel="stylesheet" href="css/home-content.css" />
-    <link rel="stylesheet" href="css/delivery-zone.css" />
-    <link rel="stylesheet" href="css/auth-modal.css" />
-    <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/home-content.css" />
+    <link rel="stylesheet" href="/css/delivery-zone.css" />
+    <link rel="stylesheet" href="/css/auth-modal.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
   </head>
   <body>
     <!-- Auth Modal Overlay (Like Old Project) -->
@@ -40,7 +40,7 @@
           <!-- Video Background -->
           <div class="hero-video-bg">
             <video autoplay muted loop playsinline class="hero-bg-video">
-              <source src="../Frontend/images/services/background.mp4" type="video/mp4">
+              <source src="/images/services/background.mp4" type="video/mp4" />
             </video>
             <div class="hero-video-overlay"></div>
           </div>
@@ -51,12 +51,19 @@
                 <span class="gradient-text">Our Priority</span>
               </h1>
               <p class="hero-description">
-                Ahmedabad's trusted laundry — serving <strong>Satellite, Bodakdev, Vastrapur, 
-                Prahlad Nagar, Thaltej &amp; nearby areas</strong> within 10 km.
-                Doorstep pickup &amp; delivery, same-day service available!
+                Ahmedabad's trusted laundry — serving
+                <strong
+                  >Satellite, Bodakdev, Vastrapur, Prahlad Nagar, Thaltej &amp;
+                  nearby areas</strong
+                >
+                within 10 km. Doorstep pickup &amp; delivery, same-day service
+                available!
               </p>
               <div class="hero-buttons">
-                <button class="btn-primary" onclick="window.location.href='services.html'">
+                <button
+                  class="btn-primary"
+                  onclick="window.location.href='/services.html'"
+                >
                   <i class="fas fa-calendar-plus"></i>
                   Book Now
                 </button>
@@ -170,56 +177,84 @@
           <div class="services-grid">
             <div class="service-card">
               <div class="service-icon">
-                <img src="../Frontend/images/services/iron2.jpg" alt="Iron Only"
-                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
-                onerror="this.style.display='none'">
+                <img
+                  src="/images/services/iron2.jpg"
+                  alt="Iron Only"
+                  style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 50%;
+                  "
+                  onerror="this.style.display='none'"
+                />
               </div>
               <h3 class="service-title">Iron Only</h3>
               <p class="service-description">
                 Professional ironing service for your already washed clothes
               </p>
               <div class="service-price">Starting at ₹10/piece</div>
-              
             </div>
             <div class="service-card featured">
               <div class="featured-badge">Most Popular</div>
               <div class="service-icon">
-                <img src="../Frontend/images/services/wash-iron.jpg" alt="Iron Only"
-                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
-                onerror="this.style.display='none'">
+                <img
+                  src="/images/services/wash-iron.jpg"
+                  alt="Iron Only"
+                  style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 50%;
+                  "
+                  onerror="this.style.display='none'"
+                />
               </div>
               <h3 class="service-title">Wash & Iron</h3>
               <p class="service-description">
                 Complete wash and iron service with premium detergents
               </p>
               <div class="service-price">Starting at ₹100/piece</div>
-              
             </div>
             <div class="service-card">
               <div class="service-icon">
-                <img src="../Frontend/images/services/steam-press.jpg" alt="Iron Only"
-                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
-                onerror="this.style.display='none'">
+                <img
+                  src="/images/services/steam-press.jpg"
+                  alt="Iron Only"
+                  style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 50%;
+                  "
+                  onerror="this.style.display='none'"
+                />
               </div>
               <h3 class="service-title">Steam Press</h3>
               <p class="service-description">
                 Professional steam pressing for a crisp, fresh look
               </p>
               <div class="service-price">Starting at ₹25/piece</div>
-              
             </div>
             <div class="service-card">
               <div class="service-icon">
-                <img src="../Frontend/images/services/dry-clean.jpg" alt="Iron Only"
-                        style="width:100%;height:100%;object-fit:cover;border-radius:50%;"
-                onerror="this.style.display='none'">
+                <img
+                  src="/images/services/dry-clean.jpg"
+                  alt="Iron Only"
+                  style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 50%;
+                  "
+                  onerror="this.style.display='none'"
+                />
               </div>
               <h3 class="service-title">Dry Clean</h3>
               <p class="service-description">
                 Specialized dry cleaning for delicate fabrics
               </p>
               <div class="service-price">Starting at ₹80/piece</div>
-              
             </div>
           </div>
         </section>
@@ -227,16 +262,19 @@
         <!-- ═══ SERVICE AREA SECTION ═══ -->
         <section class="delivery-zone-section" id="service-area">
           <div class="delivery-zone-inner">
-
             <!-- Left: Info + Pincode checker -->
             <div class="dz-left">
               <div class="dz-badge">
                 <i class="fas fa-location-dot"></i>
                 Satellite, Ahmedabad
               </div>
-              <h2 class="dz-title">We Deliver <span class="dz-title-accent">To You</span></h2>
+              <h2 class="dz-title">
+                We Deliver <span class="dz-title-accent">To You</span>
+              </h2>
               <p class="dz-subtitle">
-                Serving within <strong>10 km of Satellite</strong> — free doorstep pickup &amp; delivery across Ahmedabad's western suburbs.
+                Serving within <strong>10 km of Satellite</strong> — free
+                doorstep pickup &amp; delivery across Ahmedabad's western
+                suburbs.
               </p>
 
               <!-- Pincode Checker -->
@@ -368,7 +406,6 @@
                 <a href="tel:+919876543210">Call us</a> — we may still help!
               </p>
             </div>
-
           </div>
         </section>
 
@@ -434,9 +471,13 @@
               Ready for Fresh Clothes, Delivered to Your Door?
             </h2>
             <p class="cta-description">
-              Serving Satellite, Bodakdev, Vastrapur &amp; nearby Ahmedabad areas. Book now — we pick up from your doorstep!
+              Serving Satellite, Bodakdev, Vastrapur &amp; nearby Ahmedabad
+              areas. Book now — we pick up from your doorstep!
             </p>
-            <button class="cta-button" onclick="window.location.href='services.html'">
+            <button
+              class="cta-button"
+              onclick="window.location.href='/services.html'"
+            >
               <i class="fas fa-calendar-plus"></i>
               Schedule Pickup Now
             </button>
@@ -450,7 +491,7 @@
 
     <script>
       // Load Header Component
-      fetch("header.html")
+      fetch("/header.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("header-container").innerHTML = data;
@@ -461,7 +502,7 @@
         .catch((error) => console.error("Error loading header:", error));
 
       // Load Sidebar Component
-      fetch("sidebar.html")
+      fetch("/sidebar.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("sidebar-container").innerHTML = data;
@@ -472,7 +513,7 @@
         .catch((error) => console.error("Error loading sidebar:", error));
 
       // Load Footer Component
-      fetch("footer.html")
+      fetch("/footer.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("footer-container").innerHTML = data;
@@ -483,7 +524,7 @@
         .catch((error) => console.error("Error loading footer:", error));
     </script>
 
-    <script src="js/home-content.js"></script>
-    <script src="js/delivery-zone.js"></script>
+    <script src="/js/home-content.js"></script>
+    <script src="/js/delivery-zone.js"></script>
   </body>
 </html>

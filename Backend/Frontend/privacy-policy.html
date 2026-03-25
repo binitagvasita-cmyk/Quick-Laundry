@@ -12,10 +12,10 @@
     />
 
     <!-- CSS Files -->
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/sidebar.css" />
-    <link rel="stylesheet" href="css/footer.css" />
-    <link rel="stylesheet" href="css/privacy-policy.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link rel="stylesheet" href="/css/privacy-policy.css" />
   </head>
   <body>
     <div class="main-wrapper">
@@ -528,7 +528,7 @@
     <!-- Load Components Script -->
     <script>
       // Load Header Component
-      fetch("header.html")
+      fetch("/header.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("header-container").innerHTML = data;
@@ -539,7 +539,7 @@
         .catch((error) => console.error("Error loading header:", error));
 
       // Load Sidebar Component
-      fetch("sidebar.html")
+      fetch("/sidebar.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("sidebar-container").innerHTML = data;
@@ -550,7 +550,7 @@
         .catch((error) => console.error("Error loading sidebar:", error));
 
       // Load Footer Component
-      fetch("footer.html")
+      fetch("/footer.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("footer-container").innerHTML = data;
@@ -562,6 +562,6 @@
     </script>
 
     <!-- Privacy Policy JavaScript -->
-    <script src="js/privacy-policy.js"></script>
+    <script src="/js/privacy-policy.js"></script>
   </body>
 </html>

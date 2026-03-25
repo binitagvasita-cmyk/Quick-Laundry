@@ -10,11 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/sidebar.css" />
-    <link rel="stylesheet" href="css/footer.css" />
-    <link rel="stylesheet" href="css/roll-press.css" />
-    <link rel="stylesheet" href="css/auth-modal.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link rel="stylesheet" href="/css/roll-press.css" />
+    <link rel="stylesheet" href="/css/auth-modal.css" />
 
     <style>
       /* ════════════════════════════════════════════
@@ -909,7 +909,7 @@
 
     <!-- ✅ Load Components (unchanged) -->
     <script>
-      fetch("header.html")
+      fetch("/header.html")
         .then(r => r.text())
         .then(data => {
           document.getElementById("header-container").innerHTML = data;
@@ -919,7 +919,7 @@
         })
         .catch(e => console.error("Header load error:", e));
 
-      fetch("sidebar.html")
+      fetch("/sidebar.html")
         .then(r => r.text())
         .then(data => {
           document.getElementById("sidebar-container").innerHTML = data;
@@ -929,7 +929,7 @@
         })
         .catch(e => console.error("Sidebar load error:", e));
 
-      fetch("footer.html")
+      fetch("/footer.html")
         .then(r => r.text())
         .then(data => {
           document.getElementById("footer-container").innerHTML = data;
@@ -941,6 +941,6 @@
     </script>
 
     <!-- ✅ roll-press.js unchanged — all IDs intact -->
-    <script src="js/roll-press.js"></script>
+    <script src="/js/roll-press.js"></script>
   </body>
 </html>

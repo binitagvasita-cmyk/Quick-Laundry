@@ -12,10 +12,10 @@
     />
 
     <!-- CSS Files -->
-    <link rel="stylesheet" href="css/header.css" />
-    <link rel="stylesheet" href="css/sidebar.css" />
-    <link rel="stylesheet" href="css/refund.css" />
-    <link rel="stylesheet" href="css/footer.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/refund.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
   </head>
   <body>
     <!-- Optional Video Background - Uncomment to enable -->
@@ -54,7 +54,7 @@
         <!-- Breadcrumb Navigation -->
         <div class="breadcrumb-container">
           <div class="breadcrumb">
-            <a href="home-content.html" class="breadcrumb-link">
+            <a href="/home-content.html" class="breadcrumb-link">
               <i class="fas fa-home"></i>
               <span>Home</span>
             </a>
@@ -684,11 +684,11 @@
               Our customer support team is ready to help you understand our refund terms and process your requests
             </p>
             <div class="cta-buttons">
-              <a href="contact.html" class="cta-button primary">
+              <a href="/contact.html" class="cta-button primary">
                 <i class="fas fa-envelope"></i>
                 Contact Support
               </a>
-              <a href="home-content.html" class="cta-button secondary">
+              <a href="/home-content.html" class="cta-button secondary">
                 <i class="fas fa-home"></i>
                 Back to Home
               </a>
@@ -704,7 +704,7 @@
     <!-- Component Loading Scripts -->
     <script>
       // Load Header Component
-      fetch("header.html")
+      fetch("/header.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("header-container").innerHTML = data;
@@ -715,7 +715,7 @@
         .catch((error) => console.error("Error loading header:", error));
 
       // Load Sidebar Component
-      fetch("sidebar.html")
+      fetch("/sidebar.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("sidebar-container").innerHTML = data;
@@ -726,7 +726,7 @@
         .catch((error) => console.error("Error loading sidebar:", error));
 
       // Load Footer Component
-      fetch("footer.html")
+      fetch("/footer.html")
         .then((response) => response.text())
         .then((data) => {
           document.getElementById("footer-container").innerHTML = data;
@@ -738,6 +738,6 @@
     </script>
 
     <!-- Page-specific JavaScript -->
-    <script src="js/refund.js"></script>
+    <script src="/js/refund.js"></script>
   </body>
 </html>
