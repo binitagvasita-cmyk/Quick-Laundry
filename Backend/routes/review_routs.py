@@ -10,7 +10,7 @@ from flask import Blueprint, request, current_app
 from werkzeug.utils import secure_filename
 from middleware.auth_middleware import token_required, admin_required
 from utils.response import APIResponse
-from database.db_connection import get_db_connection
+from database.db import get_db
 import traceback
 import os
 import cloudinary
@@ -50,8 +50,8 @@ def get_reviews():
     100% Dynamic - Fetches real data from database
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Get only approved reviews with user information
         # This is 100% dynamic - pulls from database in real-time
@@ -97,8 +97,7 @@ def get_reviews():
                 'createdAt': review['created_at'].isoformat()
             })
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         print(f"✅ Retrieved {len(formatted_reviews)} approved reviews from database")
         
@@ -124,8 +123,8 @@ def get_review_stats():
     100% Dynamic - Calculated from real database data
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Calculate statistics dynamically from database
         # No hardcoded values - everything calculated in real-time
@@ -144,8 +143,7 @@ def get_review_stats():
         
         stats = cursor.fetchone()
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         # Handle case when no reviews exist yet
         if not stats or stats['total_reviews'] == 0:
@@ -284,8 +282,8 @@ def add_review(current_user):
         # Convert image URLs to comma-separated string for database
         images_json = ','.join(image_urls) if image_urls else None
         
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         try:
             # Insert review into database (dynamic insertion)
@@ -302,7 +300,7 @@ def add_review(current_user):
 
             
             review_id = cursor.lastrowid
-            conn.commit()
+            conn.connection.commit()
             
             print(f"✅ Review added to database! Review ID: {review_id} with {len(image_urls)} images")
             
@@ -328,8 +326,7 @@ def add_review(current_user):
                     pass
             raise e
         finally:
-            cursor.close()
-            conn.close()
+            cursor.close()
         
     except Exception as e:
         print(f"❌ Error adding review: {str(e)}")
@@ -349,8 +346,8 @@ def get_my_reviews(current_user):
     100% Dynamic - Fetches user-specific data from database
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Get reviews for the logged-in user (dynamic query)
         cursor.execute("""
@@ -391,8 +388,7 @@ def get_my_reviews(current_user):
                 'updatedAt': review['updated_at'].isoformat()
             })
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         print(f"✅ Retrieved {len(formatted_reviews)} reviews for user {current_user['user_id']}")
         
@@ -418,8 +414,8 @@ def delete_review(current_user, review_id):
     Dynamically deletes from database and removes associated images
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Check ownership and get review details (dynamic check)
         cursor.execute("""
@@ -430,8 +426,7 @@ def delete_review(current_user, review_id):
         review = cursor.fetchone()
         
         if not review:
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(
                 message='Review not found or access denied',
                 status_code=404
@@ -451,10 +446,9 @@ def delete_review(current_user, review_id):
         
         # Delete review from database (dynamic deletion)
         cursor.execute("DELETE FROM reviews WHERE review_id = %s", (review_id,))
-        conn.commit()
+        conn.connection.commit()
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         print(f"✅ Review deleted from database: {review_id}")
         
@@ -485,8 +479,8 @@ def get_all_reviews_admin(current_user):
     100% Dynamic - Fetches all reviews from database with filtering
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Get filter parameters from query string
         status = request.args.get('status')  # 'pending', 'approved', 'all'
@@ -553,8 +547,7 @@ def get_all_reviews_admin(current_user):
                 'updatedAt': review['updated_at'].isoformat()
             })
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         print(f"✅ Admin retrieved {len(formatted_reviews)} reviews (filter: {status or 'all'})")
         
@@ -586,14 +579,13 @@ def approve_review(current_user, review_id):
         is_approved = data.get('isApproved', False)
         is_featured = data.get('isFeatured', False)
         
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        conn = get_db()
+        cursor = conn.connection.cursor()
         
         # Check if review exists
         cursor.execute("SELECT review_id FROM reviews WHERE review_id = %s", (review_id,))
         if not cursor.fetchone():
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(
                 message='Review not found',
                 status_code=404
@@ -606,9 +598,8 @@ def approve_review(current_user, review_id):
             WHERE review_id = %s
         """, (is_approved, is_featured, review_id))
         
-        conn.commit()
-        cursor.close()
-        conn.close()
+        conn.connection.commit()
+        cursor.close()
         
         status = "approved" if is_approved else "rejected"
         featured_text = " and featured" if is_featured else ""
@@ -642,16 +633,15 @@ def delete_review_admin(current_user, review_id):
     Dynamically deletes from database and removes associated images
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Get review details
         cursor.execute("SELECT * FROM reviews WHERE review_id = %s", (review_id,))
         review = cursor.fetchone()
         
         if not review:
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(
                 message='Review not found',
                 status_code=404
@@ -671,10 +661,9 @@ def delete_review_admin(current_user, review_id):
         
         # Delete review from database
         cursor.execute("DELETE FROM reviews WHERE review_id = %s", (review_id,))
-        conn.commit()
+        conn.connection.commit()
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         print(f"✅ Admin deleted review from database: {review_id}")
         

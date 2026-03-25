@@ -14,7 +14,7 @@ Pattern mirrors:
 
 from flask import Blueprint, request, jsonify, make_response
 from database.db import get_db                              # same as admin_order.py
-from database.db_connection import get_db_connection        # same as orders_routes.py
+from database.db import get_db        # same as orders_routes.py
 from utils.auth_middleware import admin_required            # same as admin_order.py
 from middleware.auth_middleware import token_required       # same as orders_routes.py
 from datetime import datetime
@@ -516,7 +516,7 @@ def check_invoice_preflight(order_id):
 def check_invoice(current_user, order_id):
     try:
         conn   = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             SELECT i.invoice_id, i.invoice_number, i.created_at
             FROM invoices i
@@ -524,8 +524,7 @@ def check_invoice(current_user, order_id):
             WHERE i.order_id = %s AND o.user_id = %s
         """, (order_id, current_user['user_id']))
         inv = cursor.fetchone()
-        cursor.close()
-        conn.close()
+        cursor.close()
         if inv and hasattr(inv.get('created_at'), 'isoformat'):
             inv['created_at'] = inv['created_at'].isoformat()
         return jsonify({
@@ -552,7 +551,7 @@ def download_invoice_preflight(order_id):
 def download_invoice(current_user, order_id):
     try:
         conn   = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             SELECT i.invoice_id, i.invoice_number, i.created_at, i.payment_status,
                    o.order_number,  o.pickup_address,  o.pickup_date,

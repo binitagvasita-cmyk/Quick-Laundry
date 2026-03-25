@@ -8,7 +8,7 @@ Complete cart functionality with status tracking
 from flask import Blueprint, request, make_response
 from middleware.auth_middleware import token_required
 from utils.response import APIResponse
-from database.db_connection import get_db_connection
+from database.db import get_db
 import traceback
 from datetime import datetime
 import random
@@ -99,8 +99,8 @@ def add_to_cart(current_user):
             print(f"✅ Cart pincode {cart_pincode} → {area_or_msg}")
         # ────────────────────────────────────────────────────────────────
 
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         try:
             # Call stored procedure
@@ -123,7 +123,7 @@ def add_to_cart(current_user):
             result = cursor.fetchone()
             cart_id = result['cart_id']
             
-            conn.commit()
+            conn.connection.commit()
             
             print(f"✅ Item added to cart! Cart ID: {cart_id}")
             
@@ -136,8 +136,7 @@ def add_to_cart(current_user):
             conn.rollback()
             raise e
         finally:
-            cursor.close()
-            conn.close()
+            cursor.close()
         
     except Exception as e:
         print(f"❌ Error adding to cart: {str(e)}")
@@ -156,8 +155,8 @@ def get_cart_items(current_user):
     Get all cart items for current user
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         query = """
             SELECT 
@@ -203,8 +202,7 @@ def get_cart_items(current_user):
                 'updatedAt': item['updated_at'].isoformat()
             })
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         print(f"✅ Retrieved {len(formatted_items)} cart items for user {current_user['user_id']}")
         
@@ -230,8 +228,8 @@ def remove_from_cart(current_user, cart_id):
     Remove item from cart
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Verify ownership
         cursor.execute("""
@@ -242,8 +240,7 @@ def remove_from_cart(current_user, cart_id):
         item = cursor.fetchone()
         
         if not item:
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(
                 message='Cart item not found or access denied',
                 status_code=404
@@ -251,10 +248,9 @@ def remove_from_cart(current_user, cart_id):
         
         # Delete item
         cursor.execute("DELETE FROM cart WHERE cart_id = %s", (cart_id,))
-        conn.commit()
+        conn.connection.commit()
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         print(f"✅ Item removed from cart: {cart_id}")
         
@@ -281,8 +277,8 @@ def update_cart_item(current_user, cart_id):
     try:
         data = request.get_json()
         
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Verify ownership
         cursor.execute("""
@@ -293,8 +289,7 @@ def update_cart_item(current_user, cart_id):
         item = cursor.fetchone()
         
         if not item:
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(
                 message='Cart item not found',
                 status_code=404
@@ -311,9 +306,8 @@ def update_cart_item(current_user, cart_id):
                 WHERE cart_id = %s
             """, (new_quantity, new_total, cart_id))
         
-        conn.commit()
-        cursor.close()
-        conn.close()
+        conn.connection.commit()
+        cursor.close()
         
         print(f"✅ Cart item updated: {cart_id}")
         
@@ -338,8 +332,8 @@ def get_cart_status_history(current_user, cart_id):
     Get status history for a cart item
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Verify ownership
         cursor.execute("""
@@ -348,8 +342,7 @@ def get_cart_status_history(current_user, cart_id):
         """, (cart_id, current_user['user_id']))
         
         if not cursor.fetchone():
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(
                 message='Cart item not found',
                 status_code=404
@@ -376,8 +369,7 @@ def get_cart_status_history(current_user, cart_id):
             'timestamp': h['created_at'].isoformat()
         } for h in history]
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         print(f"✅ Retrieved {len(formatted_history)} history records for cart {cart_id}")
         
@@ -402,8 +394,8 @@ def clear_cart(current_user):
     Clear all items from user's cart
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        conn = get_db()
+        cursor = conn.connection.cursor()
         
         cursor.execute("""
             DELETE FROM cart 
@@ -411,10 +403,9 @@ def clear_cart(current_user):
         """, (current_user['user_id'],))
         
         deleted_count = cursor.rowcount
-        conn.commit()
+        conn.connection.commit()
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         print(f"✅ Cleared {deleted_count} items from cart for user {current_user['user_id']}")
         
@@ -439,8 +430,8 @@ def get_cart_summary(current_user):
     Get cart summary (total items, total price)
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         cursor.execute("""
             SELECT 
@@ -452,8 +443,7 @@ def get_cart_summary(current_user):
         
         summary = cursor.fetchone()
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         return APIResponse.success(
             message='Cart summary retrieved',
@@ -491,8 +481,8 @@ def update_cart_status_admin(current_user, cart_id):
                 status_code=400
             )
         
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        conn = get_db()
+        cursor = conn.connection.cursor()
         
         # Update status using stored procedure
         cursor.callproc('sp_update_cart_status', [
@@ -502,9 +492,8 @@ def update_cart_status_admin(current_user, cart_id):
             data.get('notes', f"Status updated to {data['status']}")
         ])
         
-        conn.commit()
-        cursor.close()
-        conn.close()
+        conn.connection.commit()
+        cursor.close()
         
         print(f"✅ Cart status updated: {cart_id} -> {data['status']}")
         
@@ -529,8 +518,8 @@ def get_all_cart_items_admin(current_user):
     Get all cart items from all users (Admin only)
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         # Get status filter if provided
         status = request.args.get('status')
@@ -586,8 +575,7 @@ def get_all_cart_items_admin(current_user):
                 'updatedAt': item['updated_at'].isoformat()
             })
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         return APIResponse.success(
             message=f'Retrieved {len(formatted_items)} cart items',
@@ -831,7 +819,7 @@ def cart_checkout(current_user):
             delivery_type = 'standard'
 
         conn   = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
 
         try:
             # Fetch pending cart items
@@ -932,7 +920,7 @@ def cart_checkout(current_user):
                 cart_ids
             )
 
-            conn.commit()
+            conn.connection.commit()
 
             print(f"✅ Cart checkout: #{order_number} | {len(pending_items)} items | ₹{total_amount} | user:{user_id}")
 
@@ -979,8 +967,7 @@ def cart_checkout(current_user):
             raise e
 
         finally:
-            cursor.close()
-            conn.close()
+            cursor.close()
 
     except Exception as e:
         print(f"❌ cart_checkout error: {e}")

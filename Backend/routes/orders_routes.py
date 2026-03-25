@@ -8,7 +8,7 @@ Complete order creation and management
 from flask import Blueprint, request, make_response
 from middleware.auth_middleware import token_required
 from utils.response import APIResponse
-from database.db_connection import get_db_connection
+from database.db import get_db
 import traceback
 import json
 from datetime import datetime
@@ -109,8 +109,8 @@ def create_order(current_user):
                 status_code=400
             )
         
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         try:
             items_json = json.dumps(data['items'])
@@ -140,7 +140,7 @@ def create_order(current_user):
             order_id = result['order_id']
             order_number = result['order_number']
             
-            conn.commit()
+            conn.connection.commit()
             
             print(f"✅ Order created successfully! ID: {order_id}, Number: {order_number}")
             
@@ -187,8 +187,7 @@ def create_order(current_user):
             raise e
             
         finally:
-            cursor.close()
-            conn.close()
+            cursor.close()
         
     except Exception as e:
         print(f"❌ Error creating order: {str(e)}")
@@ -220,8 +219,8 @@ def get_user_orders(current_user):
     try:
         print(f"📋 GET /api/orders → user_id: {current_user['user_id']}, email: {current_user.get('email')}")
         
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         query = """
             SELECT 
@@ -269,8 +268,7 @@ def get_user_orders(current_user):
             }
             formatted_orders.append(formatted_order)
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         return APIResponse.success(
             message=f'Retrieved {len(formatted_orders)} orders',
@@ -295,8 +293,8 @@ def get_order_detail_preflight(order_id):
 def get_order_details(current_user, order_id):
     """Get detailed information about a specific order"""
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         cursor.execute("""
             SELECT o.*, u.full_name, u.email, u.phone
@@ -307,8 +305,7 @@ def get_order_details(current_user, order_id):
         order = cursor.fetchone()
         
         if not order:
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(message='Order not found or access denied', status_code=404)
         
         cursor.execute("SELECT * FROM order_items WHERE order_id = %s ORDER BY item_id", (order_id,))
@@ -323,8 +320,7 @@ def get_order_details(current_user, order_id):
         """, (order_id,))
         history = cursor.fetchall()
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         response_data = {
             'orderId': order['order_id'],
@@ -394,8 +390,8 @@ def cancel_order(current_user, order_id):
         data = request.get_json()
         cancel_reason = data.get('reason', 'Cancelled by customer')
         
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         cursor.execute(
             "SELECT * FROM orders WHERE order_id = %s AND user_id = %s",
@@ -404,13 +400,11 @@ def cancel_order(current_user, order_id):
         order = cursor.fetchone()
         
         if not order:
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(message='Order not found or access denied', status_code=404)
         
         if order['status'] not in ['pending', 'confirmed']:
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(
                 message=f"Cannot cancel order with status '{order['status']}'",
                 status_code=400
@@ -426,8 +420,7 @@ def cancel_order(current_user, order_id):
         hours_since_order = (now_utc - created_at).total_seconds() / 3600
 
         if hours_since_order > 24:
-            cursor.close()
-            conn.close()
+            cursor.close()
             return APIResponse.error(
                 message='Cancellation window has expired. Orders can only be cancelled within 24 hours of placement.',
                 status_code=400
@@ -465,9 +458,8 @@ def cancel_order(current_user, order_id):
             print(f"⚠️ Admin cancel notification skipped (non-critical): {notif_err}")
         # ───────────────────────────────────────────────────────────────────
 
-        conn.commit()
-        cursor.close()
-        conn.close()
+        conn.connection.commit()
+        cursor.close()
         
         return APIResponse.success(
             message='Order cancelled successfully',
@@ -490,8 +482,8 @@ def get_all_orders_admin(current_user):
         limit          = int(request.args.get('limit', 50))
         offset         = int(request.args.get('offset', 0))
         
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
         query = """
             SELECT o.*, u.full_name, u.email, u.phone,
@@ -533,8 +525,7 @@ def get_all_orders_admin(current_user):
             'createdAt': order['created_at'].isoformat()
         } for order in orders]
         
-        cursor.close()
-        conn.close()
+        cursor.close()
         
         return APIResponse.success(
             message=f'Retrieved {len(formatted_orders)} orders',
@@ -853,7 +844,7 @@ def place_order(current_user):
         order_number    = _generate_order_number()
 
         conn   = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
 
         try:
             cursor.execute("""
@@ -895,7 +886,7 @@ def place_order(current_user):
             except Exception as notif_err:
                 print(f"⚠️ Admin notification skipped (non-critical): {notif_err}")
 
-            conn.commit()
+            conn.connection.commit()
 
             # ✅ Fetch user email & name, then send confirmation email
             try:
@@ -940,8 +931,7 @@ def place_order(current_user):
             raise e
 
         finally:
-            cursor.close()
-            conn.close()
+            cursor.close()
 
     except Exception as e:
         print(f"❌ place_order error: {str(e)}")
@@ -966,8 +956,8 @@ def user_notifications_preflight():
 def get_user_notifications(current_user):
     """Return unread notifications and mark them read atomically"""
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        conn = get_db()
+        cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             SELECT notification_id, title, message, is_read, created_at
             FROM user_notifications
@@ -985,13 +975,12 @@ def get_user_notifications(current_user):
                 f'UPDATE user_notifications SET is_read = 1, read_at = NOW() WHERE notification_id IN ({placeholders})',
                 ids
             )
-            conn.commit()
+            conn.connection.commit()
 
         for n in notifs:
             if hasattr(n.get('created_at'), 'isoformat'):
                 n['created_at'] = n['created_at'].isoformat()
-        cursor.close()
-        conn.close()
+        cursor.close()
         return APIResponse.success(data={'notifications': notifs})
     except Exception as e:
         print(f"❌ get_user_notifications error: {e}")
@@ -1005,15 +994,14 @@ def mark_all_notifications_read(current_user):
     if request.method == 'OPTIONS':
         return make_response('', 200)
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        conn = get_db()
+        cursor = conn.connection.cursor()
         cursor.execute("""
             UPDATE user_notifications SET is_read = 1, read_at = NOW()
             WHERE user_id = %s AND is_read = 0
         """, (current_user['user_id'],))
-        conn.commit()
-        cursor.close()
-        conn.close()
+        conn.connection.commit()
+        cursor.close()
         return APIResponse.success(message='All notifications marked as read')
     except Exception as e:
         return APIResponse.error(message='Failed', errors=str(e), status_code=500)
