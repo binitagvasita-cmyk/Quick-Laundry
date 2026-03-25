@@ -1983,7 +1983,17 @@
           toast("Failed to load profile", "error");
         }
       }
-
+      async function updateProfile(profileData) {
+        const response = await fetch("/api/delivery/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(profileData),
+        });
+        return await response.json();
+      }
       async function saveProfile() {
         const btn = document.getElementById("saveProfileBtn");
         btn.disabled = true;
@@ -2016,38 +2026,16 @@
       }
 
       // ── LOCATION UPDATE ──
-      async function updateLocation() {
-        const area = document.getElementById("locArea").value.trim();
-        const notes = document.getElementById("locNotes").value.trim();
-        if (!area) {
-          toast("Please enter your current area / locality", "error");
-          return;
-        }
-
-        const btn = document.getElementById("locBtn");
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating…';
-
-        try {
-          const res = await fetch(`${API}/location`, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify({ current_area: area, notes }),
-          });
-          const data = await res.json();
-          if (!data.success) throw new Error(data.message);
-
-          const loc = { area, notes, updatedAt: new Date().toISOString() };
-          localStorage.setItem("ql_location", JSON.stringify(loc));
-          showSavedLocation(loc);
-          toast("Location updated ✅ Admin can now see your area", "success");
-        } catch (e) {
-          toast(e.message || "Failed to update location", "error");
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML =
-            '<i class="fas fa-location-arrow"></i> Update My Location';
-        }
+      async function updateLocation(current_area, notes) {
+        const response = await fetch("/api/delivery/location", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ current_area, notes }),
+        });
+        return await response.json();
       }
 
       function showSavedLocation(loc) {
@@ -2064,49 +2052,16 @@
       }
 
       // ── CHANGE PASSWORD ──
-      async function changePassword() {
-        const oldPass = document.getElementById("oldPass").value;
-        const newPass = document.getElementById("newPass").value;
-        const confirmPass = document.getElementById("confirmPass").value;
-
-        if (!oldPass || !newPass || !confirmPass) {
-          toast("Please fill all password fields", "error");
-          return;
-        }
-        if (newPass.length < 6) {
-          toast("New password must be at least 6 characters", "error");
-          return;
-        }
-        if (newPass !== confirmPass) {
-          toast("Passwords do not match", "error");
-          return;
-        }
-
-        const btn = document.getElementById("changePwBtn");
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing…';
-
-        try {
-          const res = await fetch(`${API}/password`, {
-            method: "PUT",
-            headers,
-            body: JSON.stringify({
-              old_password: oldPass,
-              new_password: newPass,
-            }),
-          });
-          const data = await res.json();
-          if (!data.success) throw new Error(data.message);
-          toast("Password changed successfully ✅", "success");
-          document.getElementById("oldPass").value = "";
-          document.getElementById("newPass").value = "";
-          document.getElementById("confirmPass").value = "";
-        } catch (e) {
-          toast(e.message || "Failed to change password", "error");
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fas fa-key"></i> Change Password';
-        }
+      async function changePassword(old_password, new_password) {
+        const response = await fetch("/api/delivery/password", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ old_password, new_password }),
+        });
+        return await response.json();
       }
 
       // ── DUTY TOGGLE ──

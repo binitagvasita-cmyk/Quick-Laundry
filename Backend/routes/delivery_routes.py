@@ -1,18 +1,17 @@
 """
 ============================================================
 QUICK LAUNDRY - DELIVERY BOY MAIN ROUTES
-Updated: New status flow with assigned_to_laundry + COD cash_collected
-Status transitions for delivery boy:
-  confirmed → picked_up → assigned_to_laundry
-  ready → out_for_delivery → delivered
-  COD: delivery boy marks cash_collected after delivery
+Updated: Complete delivery boy routes with profile, location,
+password change, and order management.
 ============================================================
 """
 
-from flask import Blueprint, request, current_app  # ← add current_app here
+from flask import Blueprint, request, current_app
 from database.db import get_db
 from utils.response import APIResponse
 from routes.delivery_auth import delivery_required
+import bcrypt
+from datetime import datetime
 
 delivery_bp = Blueprint('delivery', __name__, url_prefix='/api/delivery')
 
@@ -225,6 +224,7 @@ def get_order_detail(order_id):
         import traceback; traceback.print_exc()
         return APIResponse.error('Failed to fetch order details', None, 500)
 
+
 # ─────────────────────────────────────────────
 # PUT /api/delivery/orders/<order_id>/status
 # ─────────────────────────────────────────────
@@ -299,7 +299,7 @@ def update_order_status(order_id):
 
 
 # ─────────────────────────────────────────────
-# PUT /api/delivery/orders/<order_id>/cash-collected  (COD only)
+# PUT /api/delivery/orders/<order_id>/cash-collected
 # ─────────────────────────────────────────────
 @delivery_bp.route('/orders/<int:order_id>/cash-collected', methods=['PUT'])
 @delivery_required
@@ -372,14 +372,11 @@ def toggle_availability():
 
 
 # ─────────────────────────────────────────────
-# GET /api/delivery/profile
-# ─────────────────────────────────────────────
-# ─────────────────────────────────────────────
 # GET/PUT /api/delivery/profile
 # ─────────────────────────────────────────────
 @delivery_bp.route('/profile', methods=['GET', 'PUT'])
 @delivery_required
-def get_profile():
+def profile():
     try:
         uid    = request.delivery_user_id
         db     = get_db()
@@ -406,6 +403,8 @@ def get_profile():
 
         elif request.method == 'PUT':
             data = request.get_json() or {}
+            
+            # Update users table
             cursor.execute("""
                 UPDATE users
                 SET full_name = %s, phone = %s, city = %s, address = %s, updated_at = NOW()
@@ -417,6 +416,8 @@ def get_profile():
                 data.get('address', '').strip(),
                 uid,
             ))
+            
+            # Update delivery_boys table
             cursor.execute("""
                 UPDATE delivery_boys
                 SET vehicle_type = %s, vehicle_number = %s,
@@ -429,6 +430,7 @@ def get_profile():
                 data.get('location_notes', '').strip(),
                 uid,
             ))
+            
             db.connection.commit()
             cursor.close()
             return APIResponse.success(None, 'Profile updated successfully')
@@ -436,4 +438,107 @@ def get_profile():
     except Exception as e:
         print(f'❌ Profile error: {e}')
         import traceback; traceback.print_exc()
-        return APIResponse.error('Failed to load profile', None, 500)
+        return APIResponse.error('Failed to update profile', None, 500)
+
+
+# ─────────────────────────────────────────────
+# PUT /api/delivery/location
+# Delivery boy updates current area so admin can see where they are
+# ─────────────────────────────────────────────
+@delivery_bp.route('/location', methods=['PUT'])
+@delivery_required
+def update_location():
+    """
+    Saves the delivery boy's self-reported current area.
+    Admin sees this in the delivery boy list.
+    
+    Required columns in delivery_boys table:
+      current_area    VARCHAR(255)  DEFAULT NULL
+      location_notes  TEXT          DEFAULT NULL
+      location_updated_at DATETIME  DEFAULT NULL
+    """
+    try:
+        uid          = request.delivery_user_id
+        data         = request.get_json()
+        current_area = (data.get('current_area') or '').strip()
+        notes        = (data.get('notes') or '').strip()
+
+        if not current_area:
+            return APIResponse.error('current_area is required', None, 400)
+
+        db     = get_db()
+        cursor = db.connection.cursor()
+
+        cursor.execute("""
+            UPDATE delivery_boys
+            SET current_area = %s,
+                location_notes = %s,
+                location_updated_at = NOW()
+            WHERE user_id = %s
+        """, (current_area, notes or None, uid))
+
+        db.connection.commit()
+        cursor.close()
+
+        return APIResponse.success({
+            'current_area': current_area,
+            'notes': notes,
+            'updated_at': datetime.now().isoformat()
+        }, f'Location updated to "{current_area}" ✅')
+
+    except Exception as e:
+        print(f'❌ Update location error: {e}')
+        import traceback; traceback.print_exc()
+        return APIResponse.error('Failed to update location', None, 500)
+
+
+# ─────────────────────────────────────────────
+# PUT /api/delivery/password
+# Delivery boy changes own password
+# ─────────────────────────────────────────────
+@delivery_bp.route('/password', methods=['PUT'])
+@delivery_required
+def change_password():
+    try:
+        uid  = request.delivery_user_id
+        data = request.get_json()
+
+        old_password = data.get('old_password', '')
+        new_password = data.get('new_password', '')
+
+        if not old_password or not new_password:
+            return APIResponse.error('old_password and new_password are required', None, 400)
+
+        if len(new_password) < 6:
+            return APIResponse.error('New password must be at least 6 characters', None, 400)
+
+        db     = get_db()
+        cursor = db.connection.cursor()
+
+        cursor.execute("SELECT password_hash FROM users WHERE user_id=%s", (uid,))
+        user = cursor.fetchone()
+        if not user:
+            cursor.close()
+            return APIResponse.error('User not found', None, 404)
+
+        # Verify old password
+        if not bcrypt.checkpw(old_password.encode('utf-8'), user['password_hash'].encode('utf-8')):
+            cursor.close()
+            return APIResponse.error('Current password is incorrect', None, 401)
+
+        # Hash new password
+        new_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        cursor.execute(
+            "UPDATE users SET password_hash=%s, updated_at=NOW() WHERE user_id=%s",
+            (new_hash, uid)
+        )
+        db.connection.commit()
+        cursor.close()
+
+        return APIResponse.success(None, 'Password changed successfully ✅')
+
+    except Exception as e:
+        print(f'❌ Change password error: {e}')
+        import traceback; traceback.print_exc()
+        return APIResponse.error('Failed to change password', None, 500)
