@@ -3,69 +3,93 @@
 EMAIL ROUTES — Quick Laundry
 Blueprint: /api/email
 
-Handles 3 email flows:
-  1. POST /api/email/order-placed      → Customer confirmation (instant, on order)
-  2. POST /api/email/order-approved    → Customer approval (admin triggers this)
-  3. POST /api/email/delivery-assigned → Customer notified of delivery boy name (admin triggers)
-
-Admin triggers emails 2 & 3 from the admin panel.
-No new dependencies — uses Flask-Mail or smtplib (configured in config.py)
+Using BREVO HTTP API (NOT Resend)
+Works on Railway ✅
 ============================================
 """
 
-
 import traceback
-
-from datetime              import datetime
-
+from datetime import datetime
 import sys
 import os
+import requests  # ← CRITICAL: Use requests for HTTP API
 
-# ── Make sure the Backend root is on sys.path so that
-#    auth_middleware, config, etc. can be imported from routes/ ──────────────
+# ── Make sure the Backend root is on sys.path
 _root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if _root not in sys.path:
     sys.path.insert(0, _root)
 
-from flask           import Blueprint, request, jsonify
-from middleware.auth_middleware import token_required   # Backend/middleware/auth_middleware.py
-from config          import get_config
+from flask import Blueprint, request, jsonify
+from middleware.auth_middleware import token_required
+from config import get_config
 
 cfg = get_config()
 
 email_bp = Blueprint("email", __name__, url_prefix="/api/email")
 
+# ============================================
+# BREVO API CONFIGURATION
+# ============================================
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+BREVO_API_KEY = os.getenv('BREVO_API_KEY', '')
+
 
 # ============================================
-# HELPER: Send email via SMTP
+# HELPER: Send email via BREVO HTTP API
 # ============================================
 def _send_email(to_email, subject, html_body):
+    """
+    Send email via Brevo HTTP API
+    Works on Railway (no SMTP port blocking)
+    """
     try:
-        import requests as req
-        resend_api_key = os.getenv('RESEND_API_KEY', '')
-        email_from     = os.getenv('EMAIL_FROM', 'onboarding@resend.dev')
-
-        if not resend_api_key:
-            print("⚠️ RESEND_API_KEY not configured")
+        api_key = BREVO_API_KEY
+        email_from = cfg.EMAIL_FROM
+        
+        if not api_key:
+            print("❌ BREVO_API_KEY not configured in .env")
             return False
-
-        resp = req.post(
-            "https://api.resend.com/emails",
-            headers={
-                "Authorization": f"Bearer {resend_api_key}",
-                "Content-Type": "application/json"
+        
+        if not email_from:
+            print("❌ EMAIL_FROM not configured in config")
+            return False
+        
+        # Brevo API payload
+        payload = {
+            "sender": {
+                "name": cfg.APP_NAME,
+                "email": email_from
             },
-            json={
-                "from": f"Cleanify Laundry <{email_from}>",
-                "to": [to_email],
-                "subject": subject,
-                "html": html_body
-            },
+            "to": [{"email": to_email}],
+            "subject": subject,
+            "htmlContent": html_body
+        }
+        
+        # Brevo API headers
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "api-key": api_key
+        }
+        
+        # Make HTTP POST request (works on Railway!)
+        print(f"📤 Sending email via Brevo to {to_email}")
+        response = requests.post(
+            BREVO_API_URL,
+            json=payload,
+            headers=headers,
             timeout=10
         )
-        return resp.status_code in (200, 201)
+        
+        if response.status_code in (200, 201):
+            print(f"✅ Email sent successfully to {to_email}")
+            return True
+        else:
+            print(f"❌ Brevo API error {response.status_code}: {response.text}")
+            return False
+            
     except Exception as e:
-        print(f"❌ Email error: {e}")
+        print(f"❌ Email send error: {e}")
         return False
 
 
@@ -170,18 +194,11 @@ def _order_table(data: dict) -> str:
 
 # ============================================
 # 1. POST /api/email/order-placed
-#    Called by frontend immediately after successful order placement.
-#    Sends confirmation email to customer.
 # ============================================
 @email_bp.route("/order-placed", methods=["POST"])
 @token_required
 def send_order_placed_email(current_user):
-    """
-    Body (JSON):
-      orderNumber, customerName, customerEmail,
-      serviceName, quantity, totalAmount,
-      pickupDate, pickupTime, pickupAddress, paymentMethod
-    """
+    """Send order confirmation email"""
     try:
         data = request.get_json(silent=True) or {}
 
@@ -251,19 +268,11 @@ def send_order_placed_email(current_user):
 
 # ============================================
 # 2. POST /api/email/order-approved
-#    Admin triggers this after reviewing the order.
-#    Notifies customer their order is approved.
 # ============================================
 @email_bp.route("/order-approved", methods=["POST"])
 @token_required
 def send_order_approved_email(current_user):
-    """
-    Body (JSON):
-      orderNumber, customerName, customerEmail,
-      serviceName, pickupDate, pickupTime, pickupAddress,
-      adminNote (optional)
-    Requires: admin JWT token
-    """
+    """Send order approved email"""
     try:
         data     = request.get_json(silent=True) or {}
         to_email = data.get("customerEmail", "").strip()
@@ -331,20 +340,11 @@ def send_order_approved_email(current_user):
 
 # ============================================
 # 3. POST /api/email/delivery-assigned
-#    Admin triggers this after assigning a delivery boy.
-#    Sends delivery boy name + contact to customer.
 # ============================================
 @email_bp.route("/delivery-assigned", methods=["POST"])
 @token_required
 def send_delivery_assigned_email(current_user):
-    """
-    Body (JSON):
-      orderNumber, customerName, customerEmail,
-      serviceName, pickupDate, pickupTime,
-      deliveryBoyName, deliveryBoyPhone,
-      adminNote (optional)
-    Requires: admin JWT token
-    """
+    """Send delivery boy assignment email"""
     try:
         data     = request.get_json(silent=True) or {}
         to_email = data.get("customerEmail", "").strip()
@@ -432,4 +432,4 @@ def send_delivery_assigned_email(current_user):
         return jsonify({"success": False, "message": str(e)}), 500
 
 
-print("✅ Email Routes Blueprint Loaded")
+print("✅ Email Routes Blueprint Loaded (Using Brevo API)")

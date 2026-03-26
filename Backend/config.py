@@ -1,7 +1,7 @@
 """
 ============================================
-CONFIGURATION MODULE - UPDATED
-Added Google OAuth configuration
+CONFIGURATION MODULE - UPDATED WITH BREVO
+Added Brevo HTTP API email configuration (not Resend SMTP)
 ============================================
 """
 
@@ -91,13 +91,18 @@ class Config:
     OTP_LENGTH = int(os.getenv('OTP_LENGTH', 6))
     
     # ============================================
-    # EMAIL CONFIGURATION
+    # EMAIL CONFIGURATION - BREVO HTTP API
+    # ✅ Uses Brevo (HTTP API) - Works on Railway!
+    # NOT Resend (SMTP) which is blocked on Railway
     # ============================================
+    BREVO_API_KEY = os.getenv('BREVO_API_KEY', '')
+    EMAIL_FROM = os.getenv('EMAIL_FROM', 'noreply@quicklaundry.shop')
+    
+    # Keep for backward compatibility (but not used anymore)
     SMTP_HOST = os.getenv('SMTP_HOST', 'smtp.gmail.com')
     SMTP_PORT = int(os.getenv('SMTP_PORT', 587))
     SMTP_USER = os.getenv('SMTP_USER', '')
     SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')
-    EMAIL_FROM = os.getenv('EMAIL_FROM', 'noreply@quicklaundry.com')
     
     # ============================================
     # SESSION CONFIGURATION
@@ -123,14 +128,12 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
     UPLOAD_FOLDER = 'uploads'
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
+    
     # Cloudinary Configuration
     CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', 'didrdetea')
     CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY', '')
     CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET', '')
-
-    # Email via Resend API (replaces SMTP)
-    RESEND_API_KEY = os.getenv('RESEND_API_KEY', '')
-    EMAIL_FROM = os.getenv('EMAIL_FROM', 'onboarding@resend.dev')
+    
     # Pagination
     ITEMS_PER_PAGE = 20
     
@@ -144,17 +147,16 @@ class Config:
         'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
     }
 
-
     # ============================================
-    # SHOP CREDENTIALS — Cleanify Laundry, Satellite Ahmedabad
+    # SHOP CREDENTIALS — Quick Laundry, Satellite Ahmedabad
     # ============================================
-    SHOP_NAME        = "Cleanify Laundry"
-    SHOP_TAGLINE     = "Satellite's Favourite Laundry Service"
-    SHOP_ADDRESS     = "Shop No. 5, Satellite Road, Satellite, Ahmedabad - 380015, Gujarat"
+    SHOP_NAME        = "Quick Laundry"
+    SHOP_TAGLINE     = "Premium Dry Cleaning & Laundry Service"
+    SHOP_ADDRESS     = "Satellite, Ahmedabad, Gujarat - 380015"
     SHOP_PHONE       = "+91 98765 43210"
     SHOP_WHATSAPP    = "919876543210"
-    SHOP_EMAIL       = "cleanify.satellite@gmail.com"
-    SHOP_HOURS       = "Monday to Saturday: 8:00 AM – 9:00 PM | Sunday: Closed"
+    SHOP_EMAIL       = "noreply@quicklaundry.shop"
+    SHOP_HOURS       = "Mon-Sat: 9AM-7PM | Sun: 10AM-5PM"
     SHOP_LAT         = 23.0225
     SHOP_LNG         = 72.5714
     SERVICE_RADIUS_KM = 10
@@ -247,6 +249,7 @@ def print_config():
     print(f"JWT Expires: {current_config.JWT_ACCESS_TOKEN_EXPIRES}")
     print(f"CORS Origins: {current_config.CORS_ORIGINS}")
     print(f"OTP Expiry: {current_config.OTP_EXPIRY_MINUTES} minutes")
+    print(f"Email Service: {'Brevo (HTTP API)' if current_config.BREVO_API_KEY else 'Not configured'}")
     print(f"Google OAuth: {'Configured' if current_config.GOOGLE_CLIENT_ID else 'Not Configured'}")
     print("=" * 50)
 
@@ -262,3 +265,4 @@ if __name__ == "__main__":
     cfg = get_config()
     print(f"\n✅ Configuration loaded successfully!")
     print(f"🔧 Environment: {os.getenv('FLASK_ENV', 'development')}")
+    print(f"📧 Email Service: {'Brevo (HTTP API - Works on Railway!)' if cfg.BREVO_API_KEY else 'Not configured'}")

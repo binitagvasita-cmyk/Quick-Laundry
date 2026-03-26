@@ -3,8 +3,12 @@
 REVIEW ROUTES - PRODUCTION READY VERSION
 100% Dynamic Data from Database - No Static Content
 Complete review functionality with image upload support
+FIX: Added missing pymysql import
 ============================================
 """
+
+# ✅ CRITICAL FIX: Import pymysql at the top!
+import pymysql
 
 from flask import Blueprint, request, current_app
 from werkzeug.utils import secure_filename
@@ -97,7 +101,8 @@ def get_reviews():
                 'createdAt': review['created_at'].isoformat()
             })
         
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Retrieved {len(formatted_reviews)} approved reviews from database")
         
@@ -143,7 +148,8 @@ def get_review_stats():
         
         stats = cursor.fetchone()
         
-        cursor.close()
+        cursor.close()
+
         
         # Handle case when no reviews exist yet
         if not stats or stats['total_reviews'] == 0:
@@ -184,6 +190,7 @@ def get_review_stats():
         
     except Exception as e:
         print(f"❌ Error fetching stats: {str(e)}")
+        print(traceback.format_exc())
         return APIResponse.error(
             message='Failed to fetch review statistics',
             errors=str(e),
@@ -287,11 +294,6 @@ def add_review(current_user):
         
         try:
             # Insert review into database (dynamic insertion)
-            # cursor.execute("""
-            #     INSERT INTO reviews 
-            #     (user_id, rating, review_text, service_type, images, is_approved, created_at)
-            #     VALUES (%s, %s, %s, %s, %s, TRUE, NOW())
-            # """, (current_user['user_id'], rating, review_text, service_type, images_json))
             cursor.execute("""
                 INSERT INTO reviews 
                 (user_id, rating, review_text, service_type, images, created_at)
@@ -326,7 +328,8 @@ def add_review(current_user):
                     pass
             raise e
         finally:
-            cursor.close()
+            cursor.close()
+
         
     except Exception as e:
         print(f"❌ Error adding review: {str(e)}")
@@ -388,7 +391,8 @@ def get_my_reviews(current_user):
                 'updatedAt': review['updated_at'].isoformat()
             })
         
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Retrieved {len(formatted_reviews)} reviews for user {current_user['user_id']}")
         
@@ -399,6 +403,7 @@ def get_my_reviews(current_user):
         
     except Exception as e:
         print(f"❌ Error fetching user reviews: {str(e)}")
+        print(traceback.format_exc())
         return APIResponse.error(
             message='Failed to fetch your reviews',
             errors=str(e),
@@ -426,7 +431,8 @@ def delete_review(current_user, review_id):
         review = cursor.fetchone()
         
         if not review:
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(
                 message='Review not found or access denied',
                 status_code=404
@@ -448,7 +454,8 @@ def delete_review(current_user, review_id):
         cursor.execute("DELETE FROM reviews WHERE review_id = %s", (review_id,))
         conn.connection.commit()
         
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Review deleted from database: {review_id}")
         
@@ -459,6 +466,7 @@ def delete_review(current_user, review_id):
         
     except Exception as e:
         print(f"❌ Error deleting review: {str(e)}")
+        print(traceback.format_exc())
         return APIResponse.error(
             message='Failed to delete review',
             errors=str(e),
@@ -547,7 +555,8 @@ def get_all_reviews_admin(current_user):
                 'updatedAt': review['updated_at'].isoformat()
             })
         
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Admin retrieved {len(formatted_reviews)} reviews (filter: {status or 'all'})")
         
@@ -558,6 +567,7 @@ def get_all_reviews_admin(current_user):
         
     except Exception as e:
         print(f"❌ Error fetching admin reviews: {str(e)}")
+        print(traceback.format_exc())
         return APIResponse.error(
             message='Failed to fetch reviews',
             errors=str(e),
@@ -585,7 +595,8 @@ def approve_review(current_user, review_id):
         # Check if review exists
         cursor.execute("SELECT review_id FROM reviews WHERE review_id = %s", (review_id,))
         if not cursor.fetchone():
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(
                 message='Review not found',
                 status_code=404
@@ -599,7 +610,8 @@ def approve_review(current_user, review_id):
         """, (is_approved, is_featured, review_id))
         
         conn.connection.commit()
-        cursor.close()
+        cursor.close()
+
         
         status = "approved" if is_approved else "rejected"
         featured_text = " and featured" if is_featured else ""
@@ -617,6 +629,7 @@ def approve_review(current_user, review_id):
         
     except Exception as e:
         print(f"❌ Error updating review: {str(e)}")
+        print(traceback.format_exc())
         return APIResponse.error(
             message='Failed to update review',
             errors=str(e),
@@ -641,7 +654,8 @@ def delete_review_admin(current_user, review_id):
         review = cursor.fetchone()
         
         if not review:
-            cursor.close()
+            cursor.close()
+
             return APIResponse.error(
                 message='Review not found',
                 status_code=404
@@ -663,7 +677,8 @@ def delete_review_admin(current_user, review_id):
         cursor.execute("DELETE FROM reviews WHERE review_id = %s", (review_id,))
         conn.connection.commit()
         
-        cursor.close()
+        cursor.close()
+
         
         print(f"✅ Admin deleted review from database: {review_id}")
         
@@ -674,6 +689,7 @@ def delete_review_admin(current_user, review_id):
         
     except Exception as e:
         print(f"❌ Error deleting review: {str(e)}")
+        print(traceback.format_exc())
         return APIResponse.error(
             message='Failed to delete review',
             errors=str(e),
@@ -771,4 +787,4 @@ def review_routes_info():
 # EXPORT BLUEPRINT
 # ============================================
 
-print("✅ Review routes loaded - 100% dynamic data from database")
+print("✅ Review routes loaded - 100% dynamic data from database - WITH pymysql FIX")
