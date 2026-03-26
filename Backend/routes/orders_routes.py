@@ -15,10 +15,52 @@ from datetime import datetime
 import random
 import string
 import os
+import requests as req
 import pymysql
 import pymysql.cursors
 
 orders_bp = Blueprint('orders', __name__)
+
+
+# ============================================
+# BREVO EMAIL HELPER
+# ============================================
+
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+
+def _brevo_send(to_email: str, subject: str, html_body: str) -> bool:
+    """Send email via Brevo HTTP API. Works on Railway."""
+    api_key    = os.getenv("BREVO_API_KEY", "")
+    from_email = os.getenv("EMAIL_FROM", "noreply@quicklaundry.shop")
+    from_name  = os.getenv("APP_NAME", "Quick Laundry")
+
+    if not api_key:
+        print("❌ BREVO_API_KEY not set — skipping email")
+        return False
+
+    payload = {
+        "sender":      {"name": from_name, "email": from_email},
+        "to":          [{"email": to_email}],
+        "subject":     subject,
+        "htmlContent": html_body,
+    }
+    headers = {
+        "accept":       "application/json",
+        "content-type": "application/json",
+        "api-key":      api_key,
+    }
+
+    try:
+        print(f"📤 Brevo → {to_email} | {subject}")
+        resp = req.post(BREVO_API_URL, json=payload, headers=headers, timeout=10)
+        if resp.status_code in (200, 201):
+            print(f"✅ Email sent to {to_email} | messageId: {resp.json().get('messageId', 'N/A')}")
+            return True
+        print(f"❌ Brevo error {resp.status_code}: {resp.text}")
+        return False
+    except Exception as exc:
+        print(f"❌ Brevo send exception: {exc}")
+        return False
 
 
 # ============================================
@@ -64,17 +106,12 @@ def extract_pincode_from_address(address_str):
 @orders_bp.route('/api/orders/create', methods=['POST'])
 @token_required
 def create_order(current_user):
-    """
-    Create a new order
-    Required: Authentication token
-    """
+    """Create a new order"""
     try:
         data = request.get_json()
         
         print(f"📦 Creating order for user {current_user['user_id']}")
-        print(f"   Order data: {data}")
         
-        # Validate required fields
         required_fields = [
             'items', 'pickupAddress', 'pickupDate', 'pickupTime',
             'deliveryType', 'paymentMethod', 'subtotal', 'totalAmount'
@@ -89,10 +126,7 @@ def create_order(current_user):
             )
         
         if not data['items'] or not isinstance(data['items'], list):
-            return APIResponse.error(
-                message='Items must be a non-empty array',
-                status_code=400
-            )
+            return APIResponse.error(message='Items must be a non-empty array', status_code=400)
         
         valid_delivery_types = ['express', 'standard', 'economy']
         if data['deliveryType'] not in valid_delivery_types:
@@ -138,12 +172,12 @@ def create_order(current_user):
             if not result:
                 raise Exception("Failed to create order - no result from stored procedure")
             
-            order_id = result['order_id']
+            order_id     = result['order_id']
             order_number = result['order_number']
             
             conn.connection.commit()
             
-            print(f"✅ Order created successfully! ID: {order_id}, Number: {order_number}")
+            print(f"✅ Order created! ID: {order_id}, Number: {order_number}")
             
             cursor.execute("""
                 SELECT o.*, u.full_name, u.email, u.phone
@@ -157,60 +191,43 @@ def create_order(current_user):
             order_items = cursor.fetchall()
             
             response_data = {
-                'orderId': order_id,
-                'orderNumber': order_number,
-                'status': order_details['status'],
+                'orderId':       order_id,
+                'orderNumber':   order_number,
+                'status':        order_details['status'],
                 'paymentStatus': order_details['payment_status'],
-                'totalAmount': float(order_details['total_amount']),
-                'pickupDate': order_details['pickup_date'].strftime('%Y-%m-%d'),
-                'pickupTime': order_details['pickup_time'],
-                'deliveryType': order_details['delivery_type'],
+                'totalAmount':   float(order_details['total_amount']),
+                'pickupDate':    order_details['pickup_date'].strftime('%Y-%m-%d'),
+                'pickupTime':    order_details['pickup_time'],
+                'deliveryType':  order_details['delivery_type'],
                 'items': [
                     {
                         'serviceName': item['service_name'],
-                        'quantity': item['quantity'],
-                        'unitPrice': float(item['unit_price']),
-                        'totalPrice': float(item['total_price']),
-                        'unit': item['unit']
+                        'quantity':    item['quantity'],
+                        'unitPrice':   float(item['unit_price']),
+                        'totalPrice':  float(item['total_price']),
+                        'unit':        item['unit']
                     }
                     for item in order_items
                 ],
                 'createdAt': order_details['created_at'].isoformat()
             }
             
-            return APIResponse.success(
-                message='Order created successfully',
-                data=response_data
-            )
+            return APIResponse.success(message='Order created successfully', data=response_data)
             
         except Exception as e:
             conn.rollback()
             raise e
-            
         finally:
             cursor.close()
 
-        
     except Exception as e:
         print(f"❌ Error creating order: {str(e)}")
         print(traceback.format_exc())
-        return APIResponse.error(
-            message='Failed to create order',
-            errors=str(e),
-            status_code=500
-        )
+        return APIResponse.error(message='Failed to create order', errors=str(e), status_code=500)
 
 
-# ============================================================
-# ✅ FIX: OPTIONS preflight for GET /api/orders
-# SAME ROOT CAUSE as /api/orders/place:
-# Browser sends OPTIONS before GET — @token_required returns 401
-# with no CORS headers → browser blocks the real GET request.
-# This silent failure is why "Loading your orders..." gets stuck.
-# ============================================================
 @orders_bp.route('/api/orders', methods=['OPTIONS'])
 def get_orders_preflight():
-    """Handle CORS preflight for GET /api/orders (list orders)"""
     return make_response('', 200)
 
 
@@ -219,7 +236,7 @@ def get_orders_preflight():
 def get_user_orders(current_user):
     """Get all orders for the current user"""
     try:
-        print(f"📋 GET /api/orders → user_id: {current_user['user_id']}, email: {current_user.get('email')}")
+        print(f"📋 GET /api/orders → user_id: {current_user['user_id']}")
         
         conn = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
@@ -245,33 +262,31 @@ def get_user_orders(current_user):
         cursor.execute(query, (current_user['user_id'],))
         orders = cursor.fetchall()
         
-        print(f"   Found {len(orders)} orders in DB for user {current_user['user_id']}")
+        print(f"   Found {len(orders)} orders for user {current_user['user_id']}")
         
         formatted_orders = []
         for order in orders:
-            formatted_order = {
-                'orderId': order['order_id'],
-                'orderNumber': order['order_number'],
-                'pickupAddress': order['pickup_address'],
-                'pickupDate': order['pickup_date'].strftime('%Y-%m-%d') if order['pickup_date'] else None,
-                'pickupTime': order['pickup_time'],
-                'deliveryType': order['delivery_type'],
+            formatted_orders.append({
+                'orderId':             order['order_id'],
+                'orderNumber':         order['order_number'],
+                'pickupAddress':       order['pickup_address'],
+                'pickupDate':          order['pickup_date'].strftime('%Y-%m-%d') if order['pickup_date'] else None,
+                'pickupTime':          order['pickup_time'],
+                'deliveryType':        order['delivery_type'],
                 'specialInstructions': order['special_instructions'],
-                'paymentMethod': order['payment_method'],
-                'subtotal': float(order['subtotal']),
-                'deliveryCharge': float(order['delivery_charge']),
-                'totalAmount': float(order['total_amount']),
-                'status': order['status'],
-                'paymentStatus': order['payment_status'],
-                'itemsCount': int(order['items_count']) if order['items_count'] else 0,
-                'totalQuantity': int(order['total_quantity']) if order['total_quantity'] else 0,
-                'createdAt': order['created_at'].isoformat(),
-                'updatedAt': order['updated_at'].isoformat()
-            }
-            formatted_orders.append(formatted_order)
+                'paymentMethod':       order['payment_method'],
+                'subtotal':            float(order['subtotal']),
+                'deliveryCharge':      float(order['delivery_charge']),
+                'totalAmount':         float(order['total_amount']),
+                'status':              order['status'],
+                'paymentStatus':       order['payment_status'],
+                'itemsCount':          int(order['items_count']) if order['items_count'] else 0,
+                'totalQuantity':       int(order['total_quantity']) if order['total_quantity'] else 0,
+                'createdAt':           order['created_at'].isoformat(),
+                'updatedAt':           order['updated_at'].isoformat()
+            })
         
         cursor.close()
-
         
         return APIResponse.success(
             message=f'Retrieved {len(formatted_orders)} orders',
@@ -284,10 +299,8 @@ def get_user_orders(current_user):
         return APIResponse.error(message='Failed to fetch orders', errors=str(e), status_code=500)
 
 
-# ✅ FIX: OPTIONS preflight for /api/orders/<id>
 @orders_bp.route('/api/orders/<int:order_id>', methods=['OPTIONS'])
 def get_order_detail_preflight(order_id):
-    """Handle CORS preflight for GET /api/orders/<id>"""
     return make_response('', 200)
 
 
@@ -309,7 +322,6 @@ def get_order_details(current_user, order_id):
         
         if not order:
             cursor.close()
-
             return APIResponse.error(message='Order not found or access denied', status_code=404)
         
         cursor.execute("SELECT * FROM order_items WHERE order_id = %s ORDER BY item_id", (order_id,))
@@ -325,46 +337,45 @@ def get_order_details(current_user, order_id):
         history = cursor.fetchall()
         
         cursor.close()
-
         
         response_data = {
-            'orderId': order['order_id'],
-            'orderNumber': order['order_number'],
-            'pickupAddress': order['pickup_address'],
-            'pickupDate': order['pickup_date'].strftime('%Y-%m-%d'),
-            'pickupTime': order['pickup_time'],
-            'deliveryType': order['delivery_type'],
+            'orderId':             order['order_id'],
+            'orderNumber':         order['order_number'],
+            'pickupAddress':       order['pickup_address'],
+            'pickupDate':          order['pickup_date'].strftime('%Y-%m-%d'),
+            'pickupTime':          order['pickup_time'],
+            'deliveryType':        order['delivery_type'],
             'specialInstructions': order['special_instructions'],
-            'paymentMethod': order['payment_method'],
-            'subtotal': float(order['subtotal']),
-            'deliveryCharge': float(order['delivery_charge']),
-            'totalAmount': float(order['total_amount']),
-            'status': order['status'],
-            'paymentStatus': order['payment_status'],
+            'paymentMethod':       order['payment_method'],
+            'subtotal':            float(order['subtotal']),
+            'deliveryCharge':      float(order['delivery_charge']),
+            'totalAmount':         float(order['total_amount']),
+            'status':              order['status'],
+            'paymentStatus':       order['payment_status'],
             'customer': {
-                'name': order['full_name'],
+                'name':  order['full_name'],
                 'email': order['email'],
                 'phone': order['phone']
             },
             'items': [
                 {
-                    'itemId': item['item_id'],
-                    'serviceId': item['service_id'],
+                    'itemId':      item['item_id'],
+                    'serviceId':   item['service_id'],
                     'serviceName': item['service_name'],
-                    'quantity': item['quantity'],
-                    'unitPrice': float(item['unit_price']),
-                    'totalPrice': float(item['total_price']),
-                    'unit': item['unit']
+                    'quantity':    item['quantity'],
+                    'unitPrice':   float(item['unit_price']),
+                    'totalPrice':  float(item['total_price']),
+                    'unit':        item['unit']
                 }
                 for item in items
             ],
             'statusHistory': [
                 {
-                    'status': h['new_status'],
+                    'status':         h['new_status'],
                     'previousStatus': h['old_status'],
-                    'changedBy': h['changed_by_name'],
-                    'notes': h['notes'],
-                    'timestamp': h['created_at'].isoformat()
+                    'changedBy':      h['changed_by_name'],
+                    'notes':          h['notes'],
+                    'timestamp':      h['created_at'].isoformat()
                 }
                 for h in history
             ],
@@ -380,10 +391,8 @@ def get_order_details(current_user, order_id):
         return APIResponse.error(message='Failed to fetch order details', errors=str(e), status_code=500)
 
 
-# ✅ FIX: OPTIONS preflight for /api/orders/<id>/cancel
 @orders_bp.route('/api/orders/<int:order_id>/cancel', methods=['OPTIONS'])
 def cancel_order_preflight(order_id):
-    """Handle CORS preflight for POST /api/orders/<id>/cancel"""
     return make_response('', 200)
 
 
@@ -392,7 +401,7 @@ def cancel_order_preflight(order_id):
 def cancel_order(current_user, order_id):
     """Cancel an order (only if status is pending or confirmed)"""
     try:
-        data = request.get_json()
+        data          = request.get_json()
         cancel_reason = data.get('reason', 'Cancelled by customer')
         
         conn = get_db()
@@ -406,21 +415,18 @@ def cancel_order(current_user, order_id):
         
         if not order:
             cursor.close()
-
             return APIResponse.error(message='Order not found or access denied', status_code=404)
         
         if order['status'] not in ['pending', 'confirmed']:
             cursor.close()
-
             return APIResponse.error(
                 message=f"Cannot cancel order with status '{order['status']}'",
                 status_code=400
             )
 
-        # ── 24-hour cancellation window check ──────────────────────────────
+        # 24-hour cancellation window check
         from datetime import timezone
         created_at = order['created_at']
-        # Make created_at offset-aware if it's naive
         if created_at.tzinfo is None:
             created_at = created_at.replace(tzinfo=timezone.utc)
         now_utc = datetime.now(timezone.utc)
@@ -428,12 +434,10 @@ def cancel_order(current_user, order_id):
 
         if hours_since_order > 24:
             cursor.close()
-
             return APIResponse.error(
                 message='Cancellation window has expired. Orders can only be cancelled within 24 hours of placement.',
                 status_code=400
             )
-        # ───────────────────────────────────────────────────────────────────
 
         cursor.execute("""
             UPDATE orders 
@@ -447,11 +451,9 @@ def cancel_order(current_user, order_id):
             VALUES (%s, %s, 'cancelled', %s, %s)
         """, (order_id, order['status'], current_user['user_id'], cancel_reason))
 
-        # ── Notify admin that user cancelled an order ──────────────────────
+        # Notify admin
         try:
-            cursor.execute("""
-                SELECT order_number FROM orders WHERE order_id = %s
-            """, (order_id,))
+            cursor.execute("SELECT order_number FROM orders WHERE order_id = %s", (order_id,))
             ord_row = cursor.fetchone()
             ord_num = ord_row['order_number'] if ord_row else f"#{order_id}"
             cursor.execute("""
@@ -463,12 +465,10 @@ def cancel_order(current_user, order_id):
                 order_id
             ))
         except Exception as notif_err:
-            print(f"⚠️ Admin cancel notification skipped (non-critical): {notif_err}")
-        # ───────────────────────────────────────────────────────────────────
+            print(f"⚠️ Admin cancel notification skipped: {notif_err}")
 
         conn.connection.commit()
         cursor.close()
-
         
         return APIResponse.success(
             message='Order cancelled successfully',
@@ -494,7 +494,7 @@ def get_all_orders_admin(current_user):
         conn = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
-        query = """
+        query  = """
             SELECT o.*, u.full_name, u.email, u.phone,
                    COUNT(oi.item_id) as items_count
             FROM orders o
@@ -519,23 +519,22 @@ def get_all_orders_admin(current_user):
         orders = cursor.fetchall()
         
         formatted_orders = [{
-            'orderId': order['order_id'],
-            'orderNumber': order['order_number'],
+            'orderId':       order['order_id'],
+            'orderNumber':   order['order_number'],
             'customer': {
-                'name': order['full_name'],
+                'name':  order['full_name'],
                 'email': order['email'],
                 'phone': order['phone']
             },
-            'totalAmount': float(order['total_amount']),
-            'status': order['status'],
+            'totalAmount':   float(order['total_amount']),
+            'status':        order['status'],
             'paymentStatus': order['payment_status'],
-            'itemsCount': order['items_count'],
-            'pickupDate': order['pickup_date'].strftime('%Y-%m-%d'),
-            'createdAt': order['created_at'].isoformat()
+            'itemsCount':    order['items_count'],
+            'pickupDate':    order['pickup_date'].strftime('%Y-%m-%d'),
+            'createdAt':     order['created_at'].isoformat()
         } for order in orders]
         
         cursor.close()
-
         
         return APIResponse.success(
             message=f'Retrieved {len(formatted_orders)} orders',
@@ -548,30 +547,19 @@ def get_all_orders_admin(current_user):
 
 
 # ============================================================
-# ✅ /api/orders/place  — Place order from service pages
+# HELPERS
 # ============================================================
 
 def _generate_order_number():
-    """Generate unique order number e.g. QL-20260217-AB1C2D"""
+    """Generate unique order number e.g. CL-20260217-AB1C2D"""
     date_str = datetime.now().strftime('%Y%m%d')
-    suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    suffix   = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
     return f"CL-{date_str}-{suffix}"
 
 
-# ============================================================
-# ✅ EMAIL HELPER — Send attractive order confirmation email
-# ============================================================
-
 def send_order_confirmation_email(user_email, user_name, order_number, order_data):
-    """Send a beautiful HTML order confirmation email to the customer."""
+    """Send a beautiful HTML order confirmation email via Brevo."""
     try:
-        import requests as req
-        resend_api_key = os.getenv('RESEND_API_KEY', '')
-        email_from     = os.getenv('EMAIL_FROM', 'onboarding@resend.dev')
-
-        if not resend_api_key:
-            print("⚠️ RESEND_API_KEY not set — skipping email")
-            return False
         payment_label = "Cash on Delivery" if order_data.get('payment_method') == 'cod' else "Online / UPI"
         payment_icon  = "💵" if order_data.get('payment_method') == 'cod' else "📱"
         placed_at     = datetime.now().strftime('%d %b %Y, %I:%M %p')
@@ -582,45 +570,35 @@ def send_order_confirmation_email(user_email, user_name, order_number, order_dat
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Order Confirmed – Cleanify Laundry</title>
+<title>Order Confirmed – Quick Laundry</title>
 </head>
 <body style="margin:0;padding:0;background:#f0f4ff;font-family:'Segoe UI',Arial,sans-serif;">
-
-  <!-- Outer wrapper -->
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4ff;padding:30px 0;">
     <tr><td align="center">
-
-      <!-- Card -->
       <table width="580" cellpadding="0" cellspacing="0"
              style="background:#ffffff;border-radius:20px;overflow:hidden;
                     box-shadow:0 8px 40px rgba(124,58,237,0.15);max-width:580px;">
 
-        <!-- ── HEADER ── -->
+        <!-- HEADER -->
         <tr>
           <td style="background:linear-gradient(135deg,#7c3aed 0%,#a855f7 60%,#c084fc 100%);
                      padding:40px 30px;text-align:center;">
-            <!-- Logo bubble -->
             <div style="width:70px;height:70px;background:rgba(255,255,255,0.2);
                         border-radius:50%;display:inline-flex;align-items:center;
-                        justify-content:center;font-size:32px;margin-bottom:16px;">
-              👕
-            </div>
-            <h1 style="margin:0 0 6px;color:#fff;font-size:26px;font-weight:800;
-                       letter-spacing:-0.5px;">Cleanify Laundry</h1>
+                        justify-content:center;font-size:32px;margin-bottom:16px;">👕</div>
+            <h1 style="margin:0 0 6px;color:#fff;font-size:26px;font-weight:800;">Quick Laundry</h1>
             <p style="margin:0;color:rgba(255,255,255,0.85);font-size:14px;">
               Premium Laundry &amp; Dry Cleaning Services
             </p>
           </td>
         </tr>
 
-        <!-- ── SUCCESS BADGE ── -->
+        <!-- SUCCESS BADGE -->
         <tr>
           <td style="padding:32px 30px 0;text-align:center;">
             <div style="display:inline-block;background:#dcfce7;border-radius:50px;
                         padding:8px 22px;margin-bottom:16px;">
-              <span style="color:#16a34a;font-weight:700;font-size:13px;">
-                ✅ &nbsp; ORDER CONFIRMED
-              </span>
+              <span style="color:#16a34a;font-weight:700;font-size:13px;">✅ &nbsp; ORDER CONFIRMED</span>
             </div>
             <h2 style="margin:0 0 8px;color:#1e1b4b;font-size:24px;font-weight:800;">
               Thank You, {user_name}! 🎉
@@ -632,19 +610,17 @@ def send_order_confirmation_email(user_email, user_name, order_number, order_dat
           </td>
         </tr>
 
-        <!-- ── ORDER NUMBER BANNER ── -->
+        <!-- ORDER NUMBER BANNER -->
         <tr>
           <td style="padding:24px 30px 0;">
             <div style="background:linear-gradient(135deg,#ede9fe,#f3e8ff);
-                        border-radius:14px;padding:18px 24px;
-                        border-left:4px solid #7c3aed;">
+                        border-radius:14px;padding:18px 24px;border-left:4px solid #7c3aed;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
                     <span style="color:#7c3aed;font-size:12px;font-weight:600;
                                  text-transform:uppercase;letter-spacing:1px;">Order Number</span><br>
-                    <span style="color:#1e1b4b;font-size:22px;font-weight:800;
-                                 letter-spacing:1px;">{order_number}</span>
+                    <span style="color:#1e1b4b;font-size:22px;font-weight:800;">{order_number}</span>
                   </td>
                   <td align="right">
                     <span style="color:#7c3aed;font-size:12px;font-weight:600;
@@ -657,19 +633,16 @@ def send_order_confirmation_email(user_email, user_name, order_number, order_dat
           </td>
         </tr>
 
-        <!-- ── ORDER DETAILS ── -->
+        <!-- ORDER DETAILS -->
         <tr>
           <td style="padding:24px 30px 0;">
-            <h3 style="margin:0 0 14px;color:#1e1b4b;font-size:16px;font-weight:700;">
-              📋 Order Details
-            </h3>
+            <h3 style="margin:0 0 14px;color:#1e1b4b;font-size:16px;font-weight:700;">📋 Order Details</h3>
             <table width="100%" cellpadding="0" cellspacing="0"
                    style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
               {"".join([
-                f'''<tr style="background:{'#f9fafb' if i % 2 == 0 else '#ffffff'};">
-                      <td style="padding:12px 18px;color:#6b7280;font-size:14px;width:42%;">{row[0]}</td>
-                      <td style="padding:12px 18px;color:#111827;font-size:14px;font-weight:600;">{row[1]}</td>
-                    </tr>'''
+                f'<tr style="background:{("#f9fafb" if i % 2 == 0 else "#ffffff")};">'
+                f'<td style="padding:12px 18px;color:#6b7280;font-size:14px;width:42%;">{row[0]}</td>'
+                f'<td style="padding:12px 18px;color:#111827;font-size:14px;font-weight:600;">{row[1]}</td></tr>'
                 for i, row in enumerate([
                     ("🧺 Service",        order_data.get("service_name", "Laundry Service")),
                     ("📦 Quantity",       f"{order_data.get('quantity', 1)} {order_data.get('unit', 'piece')}"),
@@ -683,7 +656,7 @@ def send_order_confirmation_email(user_email, user_name, order_number, order_dat
           </td>
         </tr>
 
-        <!-- ── TOTAL AMOUNT ── -->
+        <!-- TOTAL AMOUNT -->
         <tr>
           <td style="padding:20px 30px 0;">
             <div style="background:linear-gradient(135deg,#1e1b4b,#3730a3);
@@ -691,8 +664,7 @@ def send_order_confirmation_email(user_email, user_name, order_number, order_dat
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="color:rgba(255,255,255,0.75);font-size:14px;">Total Amount Payable</td>
-                  <td align="right"
-                      style="color:#fff;font-size:26px;font-weight:800;">
+                  <td align="right" style="color:#fff;font-size:26px;font-weight:800;">
                     ₹{order_data.get('total_price', 0)}
                   </td>
                 </tr>
@@ -701,54 +673,33 @@ def send_order_confirmation_email(user_email, user_name, order_number, order_dat
           </td>
         </tr>
 
-        <!-- ── WHAT HAPPENS NEXT ── -->
+        <!-- WHAT HAPPENS NEXT -->
         <tr>
           <td style="padding:28px 30px 0;">
-            <h3 style="margin:0 0 16px;color:#1e1b4b;font-size:16px;font-weight:700;">
-              🚀 What Happens Next?
-            </h3>
+            <h3 style="margin:0 0 16px;color:#1e1b4b;font-size:16px;font-weight:700;">🚀 What Happens Next?</h3>
             <table width="100%" cellpadding="0" cellspacing="0">
               {"".join([
-                f'''<tr>
-                      <td style="vertical-align:top;padding-right:14px;width:40px;">
-                        <div style="width:34px;height:34px;
-                                    background:linear-gradient(135deg,#7c3aed,#a855f7);
-                                    border-radius:50%;text-align:center;line-height:34px;
-                                    color:#fff;font-weight:800;font-size:14px;">{step[0]}</div>
-                      </td>
-                      <td style="padding-bottom:14px;">
-                        <div style="font-weight:700;color:#1e1b4b;font-size:14px;">{step[1]}</div>
-                        <div style="color:#6b7280;font-size:13px;margin-top:2px;">{step[2]}</div>
-                      </td>
-                    </tr>'''
+                f'<tr><td style="vertical-align:top;padding-right:14px;width:40px;">'
+                f'<div style="width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#a855f7);'
+                f'border-radius:50%;text-align:center;line-height:34px;color:#fff;font-weight:800;font-size:14px;">{step[0]}</div>'
+                f'</td><td style="padding-bottom:14px;">'
+                f'<div style="font-weight:700;color:#1e1b4b;font-size:14px;">{step[1]}</div>'
+                f'<div style="color:#6b7280;font-size:13px;margin-top:2px;">{step[2]}</div>'
+                f'</td></tr>'
                 for step in [
-                    (1, "Order Confirmed",   "We've received your order and it's being processed."),
-                    (2, "Pickup Scheduled",  f"Our team will arrive on {order_data.get('pickup_date', '')} at {order_data.get('pickup_time', '')}."),
-                    (3, "Cleaning in Progress", "Expert cleaning with premium products — handled with care."),
-                    (4, "Delivery",          "Your fresh laundry will be delivered back to you. ✨"),
+                    (1, "Order Confirmed",        "We've received your order and it's being processed."),
+                    (2, "Pickup Scheduled",        f"Our team arrives on {order_data.get('pickup_date', '')} at {order_data.get('pickup_time', '')}."),
+                    (3, "Cleaning in Progress",    "Expert cleaning with premium products — handled with care."),
+                    (4, "Delivery",                "Your fresh laundry will be delivered back to you. ✨"),
                 ]
               ])}
             </table>
           </td>
         </tr>
 
-        <!-- ── FOOTER ── -->
+        <!-- FOOTER -->
         <tr>
-          <td style="padding:28px 30px 30px;text-align:center;
-                     border-top:1px solid #f3f4f6;margin-top:20px;">
-            <p style="margin:0 0 6px;color:#374151;font-size:14px;font-weight:600;">
-              Questions? We're here to help!
-            </p>
-            <p style="margin:0 0 20px;color:#6b7280;font-size:13px;">
-              Reply to this email or contact us at
-             <a href="mailto:support@quicklaundry.com" style="color:#7c3aed;">support@quicklaundry.com</a>
-            </p>
-            <div style="background:#f9fafb;border-radius:10px;padding:14px;margin-bottom:20px;">
-              <p style="margin:0;color:#9ca3af;font-size:12px;line-height:1.8;">
-                Cleanify Laundry &nbsp;|&nbsp; Premium Laundry Services<br>
-                You received this email because you placed an order with us.
-              </p>
-            </div>
+          <td style="padding:28px 30px 30px;text-align:center;border-top:1px solid #f3f4f6;">
             <p style="margin:0;color:#c4b5fd;font-size:22px;">👕 ✨ 🧺</p>
           </td>
         </tr>
@@ -759,27 +710,12 @@ def send_order_confirmation_email(user_email, user_name, order_number, order_dat
 </body>
 </html>
 """
-
-
-        response = req.post(
-            "https://api.resend.com/emails",
-            headers={
-                "Authorization": f"Bearer {resend_api_key}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "from": f"Cleanify Laundry <{email_from}>",
-                "to": [user_email],
-                "subject": f"✅ Order Confirmed #{order_number} – Cleanify Laundry",
-                "html": html_body
-            },
-            timeout=10
+        # ✅ Send via Brevo (NOT Resend)
+        return _brevo_send(
+            user_email,
+            f"✅ Order Confirmed #{order_number} – Quick Laundry",
+            html_body
         )
-        if response.status_code not in (200, 201):
-            raise Exception(f"Resend error: {response.status_code} - {response.text}")
-
-        print(f"✅ Confirmation email sent to {user_email} for order {order_number}")
-        return True
 
     except Exception as e:
         print(f"⚠️ Failed to send confirmation email: {e}")
@@ -788,25 +724,22 @@ def send_order_confirmation_email(user_email, user_name, order_number, order_dat
 
 @orders_bp.route('/api/orders/place', methods=['OPTIONS'])
 def place_order_preflight():
-    """Handle CORS preflight for /api/orders/place"""
     return make_response('', 200)
 
 
 @orders_bp.route('/api/orders/place', methods=['POST'])
 @token_required
 def place_order(current_user):
-    """
-    Place a direct order from any service page (iron, dry clean, etc.)
-    """
+    """Place a direct order from any service page"""
     try:
         data    = request.get_json(silent=True) or {}
         user_id = current_user['user_id']
 
-        print(f"📦 place_order → user {user_id} | data: {data}")
+        print(f"📦 place_order → user {user_id}")
 
         required = ['serviceId', 'serviceName', 'quantity', 'unitPrice',
                     'pickupDate', 'pickupTime', 'pickupAddress']
-        missing = [f for f in required if not data.get(f)]
+        missing  = [f for f in required if not data.get(f)]
         if missing:
             return APIResponse.error(
                 message=f"Missing required fields: {', '.join(missing)}",
@@ -825,10 +758,13 @@ def place_order(current_user):
         pickup_time          = data['pickupTime']
         pickup_address       = str(data['pickupAddress'])
         special_instructions = str(data.get('specialInstructions', ''))
-        payment_method       = str(data.get('payment_method') or data.get('paymentMode') or data.get('paymentMethod') or 'cod')
+        payment_method       = str(
+            data.get('payment_method') or
+            data.get('paymentMode') or
+            data.get('paymentMethod') or 'cod'
+        )
 
         # ── SERVICE AREA CHECK ───────────────────────────────────────────
-        # Extract pincode from pickup address or from explicit field
         order_pincode = data.get('pincode') or extract_pincode_from_address(pickup_address)
         if order_pincode:
             serviceable, area_or_msg = is_pincode_serviceable(order_pincode)
@@ -841,7 +777,7 @@ def place_order(current_user):
                 )
             print(f"✅ Order pincode {order_pincode} → {area_or_msg}")
         else:
-            print(f"⚠️  No pincode found in address — skipping zone check for: {pickup_address[:60]}")
+            print(f"⚠️  No pincode found in address — skipping zone check")
         # ────────────────────────────────────────────────────────────────
 
         if payment_method not in ('cod', 'online', 'wallet'):
@@ -894,11 +830,11 @@ def place_order(current_user):
                     order_id
                 ))
             except Exception as notif_err:
-                print(f"⚠️ Admin notification skipped (non-critical): {notif_err}")
+                print(f"⚠️ Admin notification skipped: {notif_err}")
 
             conn.connection.commit()
 
-            # ✅ Fetch user email & name, then send confirmation email
+            # Send confirmation email (non-blocking)
             try:
                 cursor.execute(
                     "SELECT full_name, email FROM users WHERE user_id = %s", (user_id,)
@@ -943,7 +879,6 @@ def place_order(current_user):
         finally:
             cursor.close()
 
-
     except Exception as e:
         print(f"❌ place_order error: {str(e)}")
         print(traceback.format_exc())
@@ -953,8 +888,9 @@ def place_order(current_user):
             status_code=500
         )
 
+
 # ============================================================
-# USER NOTIFICATIONS — poll for unread notifications
+# USER NOTIFICATIONS
 # ============================================================
 
 @orders_bp.route('/api/orders/notifications', methods=['OPTIONS'])
@@ -967,7 +903,7 @@ def user_notifications_preflight():
 def get_user_notifications(current_user):
     """Return unread notifications and mark them read atomically"""
     try:
-        conn = get_db()
+        conn   = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         cursor.execute("""
             SELECT notification_id, title, message, is_read, created_at
@@ -978,9 +914,8 @@ def get_user_notifications(current_user):
         """, (current_user['user_id'],))
         notifs = cursor.fetchall()
 
-        # Mark them read immediately so they never repeat on next poll
         if notifs:
-            ids = [n['notification_id'] for n in notifs]
+            ids          = [n['notification_id'] for n in notifs]
             placeholders = ','.join(['%s'] * len(ids))
             cursor.execute(
                 f'UPDATE user_notifications SET is_read = 1, read_at = NOW() WHERE notification_id IN ({placeholders})',
@@ -994,6 +929,7 @@ def get_user_notifications(current_user):
         cursor.close()
 
         return APIResponse.success(data={'notifications': notifs})
+
     except Exception as e:
         print(f"❌ get_user_notifications error: {e}")
         return APIResponse.error(message='Failed to fetch notifications', errors=str(e), status_code=500)
@@ -1006,7 +942,7 @@ def mark_all_notifications_read(current_user):
     if request.method == 'OPTIONS':
         return make_response('', 200)
     try:
-        conn = get_db()
+        conn   = get_db()
         cursor = conn.connection.cursor()
         cursor.execute("""
             UPDATE user_notifications SET is_read = 1, read_at = NOW()
@@ -1014,7 +950,6 @@ def mark_all_notifications_read(current_user):
         """, (current_user['user_id'],))
         conn.connection.commit()
         cursor.close()
-
         return APIResponse.success(message='All notifications marked as read')
     except Exception as e:
         return APIResponse.error(message='Failed', errors=str(e), status_code=500)

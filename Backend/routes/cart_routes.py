@@ -14,9 +14,52 @@ from datetime import datetime
 import random
 import string
 import os
+import requests as req
 import pymysql
 import pymysql.cursors
+
 cart_bp = Blueprint('cart', __name__)
+
+
+# ============================================
+# BREVO EMAIL HELPER
+# ============================================
+
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+
+def _brevo_send(to_email: str, subject: str, html_body: str) -> bool:
+    """Send email via Brevo HTTP API. Works on Railway."""
+    api_key    = os.getenv("BREVO_API_KEY", "")
+    from_email = os.getenv("EMAIL_FROM", "noreply@quicklaundry.shop")
+    from_name  = os.getenv("APP_NAME", "Quick Laundry")
+
+    if not api_key:
+        print("❌ BREVO_API_KEY not set — skipping email")
+        return False
+
+    payload = {
+        "sender":      {"name": from_name, "email": from_email},
+        "to":          [{"email": to_email}],
+        "subject":     subject,
+        "htmlContent": html_body,
+    }
+    headers = {
+        "accept":       "application/json",
+        "content-type": "application/json",
+        "api-key":      api_key,
+    }
+
+    try:
+        print(f"📤 Brevo → {to_email} | {subject}")
+        resp = req.post(BREVO_API_URL, json=payload, headers=headers, timeout=10)
+        if resp.status_code in (200, 201):
+            print(f"✅ Email sent to {to_email} | messageId: {resp.json().get('messageId', 'N/A')}")
+            return True
+        print(f"❌ Brevo error {resp.status_code}: {resp.text}")
+        return False
+    except Exception as exc:
+        print(f"❌ Brevo send exception: {exc}")
+        return False
 
 
 # ============================================
@@ -153,9 +196,7 @@ def add_to_cart(current_user):
 @cart_bp.route('/api/cart', methods=['GET'])
 @token_required
 def get_cart_items(current_user):
-    """
-    Get all cart items for current user
-    """
+    """Get all cart items for current user"""
     try:
         conn = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
@@ -184,7 +225,6 @@ def get_cart_items(current_user):
         cursor.execute(query, (current_user['user_id'],))
         cart_items = cursor.fetchall()
         
-        # Format response
         formatted_items = []
         for item in cart_items:
             formatted_items.append({
@@ -205,7 +245,6 @@ def get_cart_items(current_user):
             })
         
         cursor.close()
-
         
         print(f"✅ Retrieved {len(formatted_items)} cart items for user {current_user['user_id']}")
         
@@ -227,14 +266,11 @@ def get_cart_items(current_user):
 @cart_bp.route('/api/cart/<int:cart_id>', methods=['DELETE'])
 @token_required
 def remove_from_cart(current_user, cart_id):
-    """
-    Remove item from cart
-    """
+    """Remove item from cart"""
     try:
         conn = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
-        # Verify ownership
         cursor.execute("""
             SELECT * FROM cart 
             WHERE cart_id = %s AND user_id = %s
@@ -244,18 +280,14 @@ def remove_from_cart(current_user, cart_id):
         
         if not item:
             cursor.close()
-
             return APIResponse.error(
                 message='Cart item not found or access denied',
                 status_code=404
             )
         
-        # Delete item
         cursor.execute("DELETE FROM cart WHERE cart_id = %s", (cart_id,))
         conn.connection.commit()
-        
         cursor.close()
-
         
         print(f"✅ Item removed from cart: {cart_id}")
         
@@ -276,16 +308,13 @@ def remove_from_cart(current_user, cart_id):
 @cart_bp.route('/api/cart/<int:cart_id>', methods=['PUT'])
 @token_required
 def update_cart_item(current_user, cart_id):
-    """
-    Update cart item quantity
-    """
+    """Update cart item quantity"""
     try:
         data = request.get_json()
         
         conn = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
-        # Verify ownership
         cursor.execute("""
             SELECT * FROM cart 
             WHERE cart_id = %s AND user_id = %s
@@ -295,13 +324,11 @@ def update_cart_item(current_user, cart_id):
         
         if not item:
             cursor.close()
-
             return APIResponse.error(
                 message='Cart item not found',
                 status_code=404
             )
         
-        # Update quantity and total
         if 'quantity' in data:
             new_quantity = int(data['quantity'])
             new_total = item['unit_price'] * new_quantity
@@ -314,7 +341,6 @@ def update_cart_item(current_user, cart_id):
         
         conn.connection.commit()
         cursor.close()
-
         
         print(f"✅ Cart item updated: {cart_id}")
         
@@ -335,14 +361,11 @@ def update_cart_item(current_user, cart_id):
 @cart_bp.route('/api/cart/<int:cart_id>/status', methods=['GET'])
 @token_required
 def get_cart_status_history(current_user, cart_id):
-    """
-    Get status history for a cart item
-    """
+    """Get status history for a cart item"""
     try:
         conn = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
-        # Verify ownership
         cursor.execute("""
             SELECT * FROM cart 
             WHERE cart_id = %s AND user_id = %s
@@ -350,13 +373,11 @@ def get_cart_status_history(current_user, cart_id):
         
         if not cursor.fetchone():
             cursor.close()
-
             return APIResponse.error(
                 message='Cart item not found',
                 status_code=404
             )
         
-        # Get history
         cursor.execute("""
             SELECT 
                 h.*,
@@ -378,7 +399,6 @@ def get_cart_status_history(current_user, cart_id):
         } for h in history]
         
         cursor.close()
-
         
         print(f"✅ Retrieved {len(formatted_history)} history records for cart {cart_id}")
         
@@ -399,9 +419,7 @@ def get_cart_status_history(current_user, cart_id):
 @cart_bp.route('/api/cart/clear', methods=['DELETE'])
 @token_required
 def clear_cart(current_user):
-    """
-    Clear all items from user's cart
-    """
+    """Clear all items from user's cart"""
     try:
         conn = get_db()
         cursor = conn.connection.cursor()
@@ -413,9 +431,7 @@ def clear_cart(current_user):
         
         deleted_count = cursor.rowcount
         conn.connection.commit()
-        
         cursor.close()
-
         
         print(f"✅ Cleared {deleted_count} items from cart for user {current_user['user_id']}")
         
@@ -436,9 +452,7 @@ def clear_cart(current_user):
 @cart_bp.route('/api/cart/summary', methods=['GET'])
 @token_required
 def get_cart_summary(current_user):
-    """
-    Get cart summary (total items, total price)
-    """
+    """Get cart summary (total items, total price)"""
     try:
         conn = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
@@ -452,9 +466,7 @@ def get_cart_summary(current_user):
         """, (current_user['user_id'],))
         
         summary = cursor.fetchone()
-        
         cursor.close()
-
         
         return APIResponse.success(
             message='Cart summary retrieved',
@@ -480,9 +492,7 @@ def get_cart_summary(current_user):
 @cart_bp.route('/api/admin/cart/<int:cart_id>/status', methods=['PUT'])
 @token_required
 def update_cart_status_admin(current_user, cart_id):
-    """
-    Update cart item status (Admin only)
-    """
+    """Update cart item status (Admin only)"""
     try:
         data = request.get_json()
         
@@ -495,7 +505,6 @@ def update_cart_status_admin(current_user, cart_id):
         conn = get_db()
         cursor = conn.connection.cursor()
         
-        # Update status using stored procedure
         cursor.callproc('sp_update_cart_status', [
             cart_id,
             data['status'],
@@ -505,7 +514,6 @@ def update_cart_status_admin(current_user, cart_id):
         
         conn.connection.commit()
         cursor.close()
-
         
         print(f"✅ Cart status updated: {cart_id} -> {data['status']}")
         
@@ -526,14 +534,11 @@ def update_cart_status_admin(current_user, cart_id):
 @cart_bp.route('/api/admin/cart/all', methods=['GET'])
 @token_required
 def get_all_cart_items_admin(current_user):
-    """
-    Get all cart items from all users (Admin only)
-    """
+    """Get all cart items from all users (Admin only)"""
     try:
         conn = get_db()
         cursor = conn.connection.cursor(pymysql.cursors.DictCursor)
         
-        # Get status filter if provided
         status = request.args.get('status')
         
         if status:
@@ -588,7 +593,6 @@ def get_all_cart_items_admin(current_user):
             })
         
         cursor.close()
-
         
         return APIResponse.success(
             message=f'Retrieved {len(formatted_items)} cart items',
@@ -604,12 +608,8 @@ def get_all_cart_items_admin(current_user):
         )
 
 
-# ============================================
-# ROUTE INFORMATION
-# ============================================
-
 # ============================================================
-# ✅ CART CHECKOUT — Place order for all pending cart items
+# CART CHECKOUT — Place order for all pending cart items
 # ============================================================
 
 def _generate_order_number():
@@ -619,7 +619,7 @@ def _generate_order_number():
 
 
 def _send_cart_order_email(user_email, user_name, order_number, items, total_amount, payment_method, delivery_type):
-    """Send attractive HTML confirmation email for cart checkout."""
+    """Send attractive HTML confirmation email for cart checkout via Brevo."""
     try:
         payment_label = "Cash on Delivery" if payment_method == 'cod' else "Online / UPI"
         payment_icon  = "💵" if payment_method == 'cod' else "📱"
@@ -652,7 +652,7 @@ def _send_cart_order_email(user_email, user_name, order_number, items, total_amo
       <tr>
         <td style="background:linear-gradient(135deg,#7c3aed,#a855f7,#c084fc);padding:36px 30px;text-align:center;">
           <div style="font-size:40px;margin-bottom:10px;">👕</div>
-          <h1 style="margin:0 0 4px;color:#fff;font-size:24px;font-weight:800;">Cleanify Laundry</h1>
+          <h1 style="margin:0 0 4px;color:#fff;font-size:24px;font-weight:800;">Quick Laundry</h1>
           <p style="margin:0;color:rgba(255,255,255,0.85);font-size:13px;">Premium Laundry & Dry Cleaning Services</p>
         </td>
       </tr>
@@ -737,13 +737,13 @@ def _send_cart_order_email(user_email, user_name, order_number, items, total_amo
         <td style="padding:22px 30px 0;">
           <h3 style="margin:0 0 14px;color:#1e1b4b;font-size:15px;font-weight:700;">🚀 What Happens Next?</h3>
           <table width="100%" cellpadding="0" cellspacing="0">
-            {''.join([f'''<tr><td style="vertical-align:top;padding-right:12px;width:36px;">
+            {''.join([f"""<tr><td style="vertical-align:top;padding-right:12px;width:36px;">
               <div style="width:30px;height:30px;background:linear-gradient(135deg,#7c3aed,#a855f7);
                           border-radius:50%;text-align:center;line-height:30px;color:#fff;font-weight:800;font-size:13px;">{s[0]}</div>
             </td><td style="padding-bottom:12px;">
               <div style="font-weight:700;color:#1e1b4b;font-size:13px;">{s[1]}</div>
               <div style="color:#6b7280;font-size:12px;margin-top:1px;">{s[2]}</div>
-            </td></tr>''' for s in [
+            </td></tr>""" for s in [
               (1,"Order Confirmed","We've received your cart order and it's being processed."),
               (2,"Pickup Scheduled","Our team will arrive at your scheduled pickup time."),
               (3,"Expert Cleaning","Premium cleaning with professional care."),
@@ -755,11 +755,7 @@ def _send_cart_order_email(user_email, user_name, order_number, items, total_amo
 
       <!-- FOOTER -->
       <tr>
-        <td style="padding:24px 30px 28px;text-align:center;border-top:1px solid #f3f4f6;margin-top:16px;">
-          <p style="margin:0 0 4px;color:#374151;font-size:13px;font-weight:600;">Questions? We're here!</p>
-          <p style="margin:0 0 16px;color:#6b7280;font-size:12px;">
-           Contact us at <a href="mailto:support@quicklaundry.com" style="color:#7c3aed;">support@quicklaundry.com</a>
-          </p>
+        <td style="padding:24px 30px 28px;text-align:center;border-top:1px solid #f3f4f6;">
           <p style="margin:0;color:#c4b5fd;font-size:20px;">👕 ✨ 🧺</p>
         </td>
       </tr>
@@ -769,38 +765,12 @@ def _send_cart_order_email(user_email, user_name, order_number, items, total_amo
 </body>
 </html>"""
 
-        import requests as req
-        resend_api_key = os.getenv('RESEND_API_KEY', '')
-        email_from     = os.getenv('EMAIL_FROM', 'onboarding@resend.dev')
-
-        if not resend_api_key:
-            print("⚠️ RESEND_API_KEY not set — skipping email")
-            return False
-
-        response = req.post(
-            "https://api.resend.com/emails",
-            headers={
-                "Authorization": f"Bearer {resend_api_key}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "from": f"Cleanify Laundry <{email_from}>",
-                "to": [user_email],
-                "subject": f"✅ Cart Order Confirmed #{order_number} – Cleanify Laundry",
-                "html": html_body
-            },
-            timeout=10
+        # ✅ Send via Brevo (NOT Resend)
+        return _brevo_send(
+            user_email,
+            f"✅ Cart Order Confirmed #{order_number} – Quick Laundry",
+            html_body
         )
-
-        if response.status_code in (200, 201):
-            print(f"✅ Cart checkout email sent to {user_email} for order {order_number}")
-            return True
-        else:
-            print(f"❌ Cart email failed: {response.status_code} - {response.text}")
-            return False
-
-        print(f"✅ Cart checkout email sent to {user_email} for order {order_number}")
-        return True
 
     except Exception as e:
         print(f"⚠️ Cart email failed (non-critical): {e}")
@@ -849,7 +819,7 @@ def cart_checkout(current_user):
             if not pending_items:
                 return APIResponse.error(message='No pending items in cart', status_code=400)
 
-            # ── SERVICE AREA CHECK — validate pincode of first item's address ──
+            # ── SERVICE AREA CHECK ──────────────────────────────────────────
             first_pincode = (
                 data.get('pincode') or
                 extract_pincode_from_address(pending_items[0].get('pickup_address', ''))
@@ -864,16 +834,15 @@ def cart_checkout(current_user):
                         status_code=400
                     )
                 print(f"✅ Checkout pincode {first_pincode} → {area_or_msg}")
-            # ─────────────────────────────────────────────────────────────────
+            # ───────────────────────────────────────────────────────────────
 
             # Compute totals
-            subtotal      = sum(float(i['total_price']) for i in pending_items)
+            subtotal        = sum(float(i['total_price']) for i in pending_items)
             delivery_charge = 50.0 if delivery_type == 'express' else (-30.0 if delivery_type == 'economy' else 0.0)
-            total_amount  = round(subtotal + delivery_charge, 2)
-            order_number  = _generate_order_number()
+            total_amount    = round(subtotal + delivery_charge, 2)
+            order_number    = _generate_order_number()
 
-            # Use the pickup details from the first cart item
-            first_item = pending_items[0]
+            first_item     = pending_items[0]
             pickup_address = first_item['pickup_address']
             pickup_date    = first_item['pickup_date']
             pickup_time    = first_item['pickup_time']
@@ -964,14 +933,14 @@ def cart_checkout(current_user):
             return APIResponse.success(
                 message='Order placed successfully',
                 data={
-                    'orderId':      order_id,
-                    'orderNumber':  order_number,
-                    'itemsCount':   len(pending_items),
-                    'subtotal':     subtotal,
+                    'orderId':        order_id,
+                    'orderNumber':    order_number,
+                    'itemsCount':     len(pending_items),
+                    'subtotal':       subtotal,
                     'deliveryCharge': delivery_charge,
-                    'totalAmount':  total_amount,
-                    'status':       'pending',
-                    'paymentStatus':'pending'
+                    'totalAmount':    total_amount,
+                    'status':         'pending',
+                    'paymentStatus':  'pending'
                 }
             )
 
@@ -981,7 +950,6 @@ def cart_checkout(current_user):
 
         finally:
             cursor.close()
-
 
     except Exception as e:
         print(f"❌ cart_checkout error: {e}")
@@ -995,71 +963,20 @@ def cart_checkout(current_user):
 
 @cart_bp.route('/api/cart/info', methods=['GET'])
 def cart_routes_info():
-    """
-    Get information about available cart routes
-    """
+    """Get information about available cart routes"""
     routes = {
         'customer_routes': {
-            'add_to_cart': {
-                'method': 'POST',
-                'path': '/api/cart/add',
-                'auth': 'required',
-                'description': 'Add item to cart'
-            },
-            'get_cart': {
-                'method': 'GET',
-                'path': '/api/cart',
-                'auth': 'required',
-                'description': 'Get all cart items'
-            },
-            'remove_item': {
-                'method': 'DELETE',
-                'path': '/api/cart/<cart_id>',
-                'auth': 'required',
-                'description': 'Remove item from cart'
-            },
-            'update_item': {
-                'method': 'PUT',
-                'path': '/api/cart/<cart_id>',
-                'auth': 'required',
-                'description': 'Update cart item quantity'
-            },
-            'get_status_history': {
-                'method': 'GET',
-                'path': '/api/cart/<cart_id>/status',
-                'auth': 'required',
-                'description': 'Get status history'
-            },
-            'clear_cart': {
-                'method': 'DELETE',
-                'path': '/api/cart/clear',
-                'auth': 'required',
-                'description': 'Clear all pending items'
-            },
-            'get_summary': {
-                'method': 'GET',
-                'path': '/api/cart/summary',
-                'auth': 'required',
-                'description': 'Get cart summary'
-            }
+            'add_to_cart':        {'method': 'POST',   'path': '/api/cart/add',            'auth': 'required'},
+            'get_cart':           {'method': 'GET',    'path': '/api/cart',                'auth': 'required'},
+            'remove_item':        {'method': 'DELETE', 'path': '/api/cart/<cart_id>',      'auth': 'required'},
+            'update_item':        {'method': 'PUT',    'path': '/api/cart/<cart_id>',      'auth': 'required'},
+            'get_status_history': {'method': 'GET',    'path': '/api/cart/<cart_id>/status','auth': 'required'},
+            'clear_cart':         {'method': 'DELETE', 'path': '/api/cart/clear',          'auth': 'required'},
+            'get_summary':        {'method': 'GET',    'path': '/api/cart/summary',        'auth': 'required'},
         },
         'admin_routes': {
-            'update_status': {
-                'method': 'PUT',
-                'path': '/api/admin/cart/<cart_id>/status',
-                'auth': 'admin',
-                'description': 'Update cart item status'
-            },
-            'get_all_items': {
-                'method': 'GET',
-                'path': '/api/admin/cart/all',
-                'auth': 'admin',
-                'description': 'Get all cart items (all users)'
-            }
+            'update_status': {'method': 'PUT', 'path': '/api/admin/cart/<cart_id>/status', 'auth': 'admin'},
+            'get_all_items': {'method': 'GET', 'path': '/api/admin/cart/all',              'auth': 'admin'},
         }
     }
-    
-    return APIResponse.success(
-        data=routes,
-        message='Cart routes information'
-    )
+    return APIResponse.success(data=routes, message='Cart routes information')
