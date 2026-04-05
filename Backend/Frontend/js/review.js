@@ -895,30 +895,29 @@ function createReviewCard(review) {
         </div>
         
         
-${
-  review.images && review.images.length > 0
-    ? `
-    <div class="review-images">
-        ${review.images
-          .map(
-            (img) => `
-            <div class="review-image-item">
-                <img 
-                  src="${img}" 
-                  alt="Review image" 
-                  onerror="this.src=''; this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                >
-                <div class="review-image-placeholder" style="display:none; width:100%; height:100%; min-height:80px; align-items:center; justify-content:center; background:#f3f0ff; border-radius:8px; color:#9333ea; font-size:1.5rem;">
-                  <i class='fas fa-image'></i>
-                </div>
-            </div>
-        `
-          )
-          .join("")}
-    </div>
-`
-    : ""
-}
+        ${
+          review.images && review.images.length > 0
+            ? `<div class="review-images">
+              ${review.images
+                .map((img) => {
+                  const cleanUrl = img.trim();
+                  console.log("🖼️ Image URL:", cleanUrl); // remove after debugging
+                  return `
+                  <div class="review-image-item">
+                    <img 
+                      src="${cleanUrl}" 
+                      alt="Review image"
+                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                    >
+                    <div class="review-image-placeholder" style="display:none; width:100%; height:100%; min-height:80px; align-items:center; justify-content:center; background:#f3f0ff; border-radius:8px; color:#9333ea; font-size:1.5rem;">
+                      <i class='fas fa-image'></i>
+                    </div>
+                  </div>`;
+                })
+                .join("")}
+            </div>`
+            : ""
+        }
         
         <div class="review-footer">
             ${

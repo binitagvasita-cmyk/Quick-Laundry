@@ -85,7 +85,7 @@ def get_reviews():
             # Parse images (stored as comma-separated string in DB)
             images = []
             if review['images']:
-                images = review['images'].split(',')
+                images = [url.strip() for url in review['images'].split(',') if url.strip()]
             
             # Build dynamic review object
             formatted_reviews.append({
