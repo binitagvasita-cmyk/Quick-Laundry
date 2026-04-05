@@ -16,7 +16,23 @@ const reviewsPerPage = 12;
 let selectedImages = [];
 const MAX_IMAGES = 5;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
-
+// Add once at the top of review.js after the globals
+const reviewImageStyle = document.createElement("style");
+reviewImageStyle.textContent = `
+  .review-image-item {
+    position: relative;
+    min-height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .review-image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+`;
+document.head.appendChild(reviewImageStyle);
 // ============================================
 // AUTHENTICATION HELPER FUNCTIONS
 // ============================================
@@ -878,23 +894,31 @@ function createReviewCard(review) {
             <p class="review-text">${escapeHtml(review.reviewText)}</p>
         </div>
         
-        ${
-          review.images && review.images.length > 0
-            ? `
-            <div class="review-images">
-                ${review.images
-                  .map(
-                    (img) => `
-                    <div class="review-image-item">
-                        <img src="${API_BASE_URL}${img}" alt="Review image" onerror="this.style.display='none'">
-                    </div>
-                `
-                  )
-                  .join("")}
+        // REPLACE this section in createReviewCard():
+${
+  review.images && review.images.length > 0
+    ? `
+    <div class="review-images">
+        ${review.images
+          .map(
+            (img) => `
+            <div class="review-image-item">
+                <img 
+                  src="${img}" 
+                  alt="Review image" 
+                  onerror="this.src=''; this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                >
+                <div class="review-image-placeholder" style="display:none; width:100%; height:100%; min-height:80px; align-items:center; justify-content:center; background:#f3f0ff; border-radius:8px; color:#9333ea; font-size:1.5rem;">
+                  <i class='fas fa-image'></i>
+                </div>
             </div>
         `
-            : ""
-        }
+          )
+          .join("")}
+    </div>
+`
+    : ""
+}
         
         <div class="review-footer">
             ${

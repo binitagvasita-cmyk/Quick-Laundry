@@ -197,7 +197,100 @@ function createProfileModal() {
 window.openProfileModal = openProfileModal;
 window.closeProfileModal = closeProfileModal;
 window.createProfileModal = createProfileModal;
+// ============================================
+// OPEN AUTH MODAL (LOGIN/REGISTER)
+// ============================================
 
+function openAuthModal(type = "login") {
+  // Create modal if it doesn't exist
+  let authModalOverlay = document.getElementById("authModalOverlay");
+  if (!authModalOverlay) {
+    createProfileModal(); // reuses same modal structure
+    authModalOverlay = document.getElementById("authModalOverlay");
+  }
+
+  const iframe = document.getElementById("authIframe");
+  const container = document.getElementById("authModalContainer");
+
+  if (!authModalOverlay || !iframe) {
+    console.error("❌ Auth modal elements not found");
+    return;
+  }
+
+  // Only reload if not already on the right page
+  const targetPage = type === "login" ? "login.html" : "registration.html";
+  if (!iframe.src.includes(targetPage)) {
+    iframe.src = targetPage;
+    if (container) container.classList.add("loading");
+
+    iframe.onload = () => {
+      if (container) container.classList.remove("loading");
+      console.log(`✅ ${targetPage} loaded in modal`);
+    };
+  }
+
+  // Show modal
+  setTimeout(() => {
+    authModalOverlay.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }, 50);
+
+  console.log(`✅ Auth modal opened: ${type}`);
+}
+
+// Handle messages from login/register iframes
+window.addEventListener("message", function (event) {
+  const { type, data } = event.data;
+
+  if (type === "AUTH_SUCCESS") {
+    // User logged in successfully from iframe
+    if (data) {
+      window.safeStorage.setItem("isLoggedIn", "true");
+      window.safeStorage.setItem("userName", data.userName || "");
+      window.safeStorage.setItem("userEmail", data.userEmail || "");
+      window.safeStorage.setItem("jwtToken", data.token || "");
+    }
+
+    // Close modal
+    const overlay = document.getElementById("authModalOverlay");
+    const iframe = document.getElementById("authIframe");
+    if (overlay) {
+      overlay.classList.add("closing");
+      setTimeout(() => {
+        overlay.classList.remove("active", "closing");
+        if (iframe) iframe.src = "about:blank";
+        document.body.style.overflow = "";
+      }, 300);
+    }
+
+    // Fire login success event so header updates
+    window.dispatchEvent(
+      new CustomEvent("loginSuccess", {
+        detail: { userName: data?.userName },
+      })
+    );
+  }
+
+  if (type === "CLOSE_MODAL") {
+    const overlay = document.getElementById("authModalOverlay");
+    const iframe = document.getElementById("authIframe");
+    if (overlay) {
+      overlay.classList.add("closing");
+      setTimeout(() => {
+        overlay.classList.remove("active", "closing");
+        if (iframe) iframe.src = "about:blank";
+        document.body.style.overflow = "";
+      }, 300);
+    }
+  }
+
+  if (type === "SWITCH_TO_REGISTRATION") {
+    const iframe = document.getElementById("authIframe");
+    if (iframe) iframe.src = "registration.html";
+  }
+});
+
+window.openAuthModal = openAuthModal;
 // ============================================
 // WAIT FOR HEADER DOM TO BE READY - WITH RETRY ✅
 // ============================================
@@ -418,6 +511,30 @@ async function initHeader() {
       console.log("✅ Login button shown, user menu hidden");
     }
   }
+  // Pre-load login iframe in background for instant modal open
+  function preloadAuthIframe() {
+    let overlay = document.getElementById("authModalOverlay");
+    if (!overlay) createProfileModal();
+
+    const iframe = document.getElementById("authIframe");
+    if (iframe && iframe.src === "about:blank") {
+      // Load silently in background
+      const tempFrame = document.createElement("iframe");
+      tempFrame.style.display = "none";
+      tempFrame.src = "login.html";
+      tempFrame.onload = () => {
+        // Now swap: pre-warm the real iframe
+        if (iframe && iframe.src === "about:blank") {
+          iframe.src = "login.html";
+        }
+        tempFrame.remove();
+      };
+      document.body.appendChild(tempFrame);
+    }
+  }
+
+  // Pre-load after page is fully ready (low priority)
+  setTimeout(preloadAuthIframe, 2000);
 
   // ============================================
   // LOGIN/LOGOUT HANDLERS

@@ -401,5 +401,22 @@
 
     <!-- Profile JavaScript -->
     <script src="/js/profile.js"></script>
+    <script>
+      // Show back button only when NOT inside an iframe
+      if (window.self === window.top) {
+        const backBtn = document.createElement("button");
+        backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Home';
+        backBtn.style.cssText = `
+          position: fixed; top: 16px; left: 16px; z-index: 9999;
+          background: #6B46C1; color: white; border: none;
+          padding: 10px 18px; border-radius: 25px; cursor: pointer;
+          font-size: 14px; font-weight: 600; display: flex;
+          align-items: center; gap: 8px;
+          box-shadow: 0 4px 15px rgba(107,70,193,0.4);
+        `;
+        backBtn.onclick = () => (window.location.href = "/home-content.html");
+        document.body.appendChild(backBtn);
+      }
+    </script>
   </body>
 </html>
