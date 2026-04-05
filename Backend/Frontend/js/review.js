@@ -894,7 +894,7 @@ function createReviewCard(review) {
             <p class="review-text">${escapeHtml(review.reviewText)}</p>
         </div>
         
-        // REPLACE this section in createReviewCard():
+        
 ${
   review.images && review.images.length > 0
     ? `
